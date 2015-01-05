@@ -1,7 +1,7 @@
 \begin{theindex}
 
   \item \'acido
-    \subitem amino, \hyperpage{3--4}
+    \subitem amino, \hyperpage{3}
     \subitem nucl\'eico, \hyperpage{3}
   \item \'area do trabalho
     \subitem fundamentos, \hyperpage{3}
@@ -9,20 +9,15 @@
   \indexspace
 
   \item DFT, 
-		\hyperindexformat{\see{transformada discreta de Fourier}}{12}
+		\hyperindexformat{\see{transformada discreta de Fourier}}{11}
   \item DSP, 
-		\hyperindexformat{\see{processamento digital de sinais}}{12}
+		\hyperindexformat{\see{processamento digital de sinais}}{11}
 
   \indexspace
 
   \item Fourier
     \subitem transformada, 
-		\hyperindexformat{\see{transformada de Fourier}}{12}
-
-  \indexspace
-
-  \item genoma
-    \subitem projetos, \hyperpage{1}
+		\hyperindexformat{\see{transformada de Fourier}}{11}
 
   \indexspace
 
@@ -31,11 +26,11 @@
   \indexspace
 
   \item STFT, 
-		\hyperindexformat{\see{transformada de Fourier de tempo reduzido}}{12}
+		\hyperindexformat{\see{transformada de Fourier de tempo reduzido}}{11}
 
   \indexspace
 
   \item TBP, 
-		\hyperindexformat{\see{periodicidade regi\~ao codificante}}{12}
+		\hyperindexformat{\see{periodicidade regi\~ao codificante}}{11}
 
 \end{theindex}

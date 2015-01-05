@@ -6,45 +6,45 @@ The style file: plainnat-ime.bst
 Database file #1: bibliografia.bib
 Warning--empty publisher Em bobaoglu93:concepts
 Warning--empty year in FSF:GNU-GPL
-You've used 19 entries,
+You've used 13 entries,
             2750 wiz_defined-function locations,
-            717 strings with 7850 characters,
-and the built_in function-call counts, 6994 in all, are:
-= -- 621
-> -- 361
-< -- 18
-+ -- 128
-- -- 109
-* -- 434
-:= -- 1127
-add.period$ -- 62
-call.type$ -- 19
-change.case$ -- 71
-chr.to.int$ -- 19
-cite$ -- 40
-duplicate$ -- 338
-empty$ -- 587
-format.name$ -- 132
-if$ -- 1473
+            685 strings with 7199 characters,
+and the built_in function-call counts, 5210 in all, are:
+= -- 475
+> -- 281
+< -- 13
++ -- 98
+- -- 85
+* -- 339
+:= -- 826
+add.period$ -- 43
+call.type$ -- 13
+change.case$ -- 52
+chr.to.int$ -- 13
+cite$ -- 28
+duplicate$ -- 235
+empty$ -- 418
+format.name$ -- 102
+if$ -- 1103
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 19
-newline$ -- 106
-num.names$ -- 78
-pop$ -- 217
+missing$ -- 7
+newline$ -- 75
+num.names$ -- 54
+pop$ -- 148
 preamble$ -- 1
-purify$ -- 55
+purify$ -- 41
 quote$ -- 0
-skip$ -- 234
+skip$ -- 178
 stack$ -- 0
-substring$ -- 152
-swap$ -- 46
+substring$ -- 140
+swap$ -- 40
 text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 174
+type$ -- 138
 warning$ -- 2
-while$ -- 67
+while$ -- 49
 width$ -- 0
-write$ -- 298
+write$ -- 207
 (There were 2 warnings)

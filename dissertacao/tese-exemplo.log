@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.5.6)  5 JAN 2015 09:54
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.5.6)  5 JAN 2015 15:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -506,7 +506,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 245--250
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 252--263
+Underfull \hbox (badness 10000) in paragraph at lines 251--263
 
  []
 
@@ -605,33 +605,18 @@ Package babel Info: Redefining portuges shorthand "|
 Cap\'{\i }tulo 1.
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 2.
-LaTeX Font Info:    Try loading font information for T1+pcr on input line 24.
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
-File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-)
-Overfull \hbox (5.66743pt too wide) in paragraph at lines 31--31
-[]\T1/pcr/m/n/10 certo : Andrew e Foster introduziram o algoritmo ótimo (Andrew
- e Foster, 1983).[] 
- []
-
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 50.
+(babel)             in language  on input line 19.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 61.
+(babel)             in language  on input line 25.
+) (./cap-conceitos.tex
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 69.
+(babel)             in language  on input line 2.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 75.
-Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 75.
-[1
+(babel)             in language  on input line 2.
+ [1
 
 ]
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 75.
-Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 84.
-) (./cap-conceitos.tex
 
 Package Fancyhdr Warning: \headheight is too small (12.0pt): 
  Make it at least 13.59999pt.
@@ -642,42 +627,48 @@ Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 2.
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 2.
-[2]
+[2
+
+]
 Cap\'{\i }tulo 2.
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 2.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 12.
+(babel)             in language  on input line 11.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 22.
-<./figuras/graph.pdf, id=232, 722.7pt x 722.7pt>
+(babel)             in language  on input line 21.
+<./figuras/graph.pdf, id=198, 722.7pt x 722.7pt>
 File: ./figuras/graph.pdf Graphic file (type pdf)
  <use ./figuras/graph.pdf>
-Package pdftex.def Info: ./figuras/graph.pdf used on input line 33.
+Package pdftex.def Info: ./figuras/graph.pdf used on input line 32.
 (pdftex.def)             Requested size: 187.33015pt x 187.32413pt.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 39.
-Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 47.
-Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 47.
+(babel)             in language  on input line 38.
+LaTeX Font Info:    Try loading font information for T1+pcr on input line 52.
 
-[3
-
- <./figuras/graph.pdf>]
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+)
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 73.
+(babel)             in language  on input line 69.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 94.
+(babel)             in language  on input line 69.
+ [3 <./figuras/graph.pdf>]
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 136.
+(babel)             in language  on input line 72.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 136.
+(babel)             in language  on input line 93.
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 100.
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 135.
+Package babel Info: Redefining portuges shorthand "|
+(babel)             in language  on input line 135.
  [4]
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 214.
+(babel)             in language  on input line 213.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 214.
+(babel)             in language  on input line 213.
  [5]) (./cap-conclusoes.tex
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 2.
@@ -729,28 +720,24 @@ Package babel Info: Redefining portuges shorthand "|
 
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 1.
-Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 110.
-Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 110.
- [11
-
-
-
-]) (./tese-exemplo.ind
+) (./tese-exemplo.ind
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 1.
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 1.
 
-[12]
+[11
+
+
+
+]
 Package babel Info: Redefining portuges shorthand "|
 (babel)             in language  on input line 1.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 41.
+(babel)             in language  on input line 36.
 Package babel Info: Redefining portuges shorthand "|
-(babel)             in language  on input line 41.
- [13
+(babel)             in language  on input line 36.
+ [12
 
 
 ])
@@ -760,27 +747,27 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 329.
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 329.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 329.
 Package rerunfilecheck Info: File `tese-exemplo.out' has not changed.
-(rerunfilecheck)             Checksum: 62D6749472CB4C61BCC9DE017787ECF8;1300.
+(rerunfilecheck)             Checksum: 208C9B59E4CAFFDD69A11819EBEE24CE;1157.
 Package rerunfilecheck Info: File `tese-exemplo.brf' has not changed.
-(rerunfilecheck)             Checksum: 761A7AEE358621E29DE0377B4FEFCCF7;880.
+(rerunfilecheck)             Checksum: 7977FCC239ECE94E4349FF4C04EE2FF0;630.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 329.
  ) 
 Here is how much of TeX's memory you used:
- 11081 strings out of 495004
- 161646 string characters out of 6180663
- 299243 words of memory out of 5000000
- 14023 multiletter control sequences out of 15000+600000
- 25875 words of font info for 59 fonts, out of 8000000 for 9000
+ 11028 strings out of 495004
+ 160840 string characters out of 6180663
+ 300243 words of memory out of 5000000
+ 13981 multiletter control sequences out of 15000+600000
+ 25254 words of font info for 57 fonts, out of 8000000 for 9000
  16 hyphenation exceptions out of 8191
  36i,12n,43p,322b,1203s stack positions out of 5000i,500n,10000p,200000b,80000s
  </home/goroba/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1000.600pk> </home/
-goroba/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecti0900.600pk> </home/goroba/.te
-xmf-var/fonts/pk/ljfour/jknappen/ec/ecbx0900.600pk> </home/goroba/.texmf-var/fo
-nts/pk/ljfour/jknappen/ec/ecti1000.600pk> </home/goroba/.texmf-var/fonts/pk/ljf
-our/jknappen/ec/ecbx1000.600pk> </home/goroba/.texmf-var/fonts/pk/ljfour/jknapp
-en/ec/ecbx1200.600pk> </home/goroba/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm
-0600.600pk> </home/goroba/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0800.600pk
->{/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc} </home/goroba/.tex
+goroba/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0600.600pk> </home/goroba/.te
+xmf-var/fonts/pk/ljfour/jknappen/ec/ecrm0800.600pk> </home/goroba/.texmf-var/fo
+nts/pk/ljfour/jknappen/ec/ecti0900.600pk> </home/goroba/.texmf-var/fonts/pk/ljf
+our/jknappen/ec/ecbx0900.600pk>{/usr/share/texlive/texmf-dist/fonts/enc/dvips/b
+ase/8r.enc} </home/goroba/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1000.600pk
+> </home/goroba/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1000.600pk> </home/g
+oroba/.texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600pk> </home/goroba/.tex
 mf-var/fonts/pk/ljfour/jknappen/ec/ecbx2074.600pk> </home/goroba/.texmf-var/fon
 ts/pk/ljfour/jknappen/ec/ecrm0900.600pk> </home/goroba/.texmf-var/fonts/pk/ljfo
 ur/jknappen/ec/ecti1095.600pk> </home/goroba/.texmf-var/fonts/pk/ljfour/jknappe
@@ -793,10 +780,10 @@ f-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600pk></usr/share/texlive/texmf-dist
 /type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
 public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/co
 urier/ucrr8a.pfb>
-Output written on tese-exemplo.pdf (29 pages, 266418 bytes).
+Output written on tese-exemplo.pdf (28 pages, 259384 bytes).
 PDF statistics:
- 1028 PDF objects out of 1200 (max. 8388607)
- 415 compressed objects within 5 object streams
- 83 named destinations out of 1000 (max. 500000)
- 174 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 974 PDF objects out of 1000 (max. 8388607)
+ 373 compressed objects within 4 object streams
+ 73 named destinations out of 1000 (max. 500000)
+ 158 words of extra memory for PDF output out of 10000 (max. 10000000)
 

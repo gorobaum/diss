@@ -1,4 +1,4 @@
-\begin{thebibliography}{19}
+\begin{thebibliography}{13}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -51,13 +51,6 @@ Greg Bronevetsky, Daniel Marques, Keshav Pingali e Paul Stodghill.
   Principles and Practice of Parallel Programming}, p\'{a}ginas 84--89.
   {\scriptsize Citado na p\'{a}g.}
 
-\bibitem[Eco (2009)]{eco:09}{\bf Eco (2009)}
-Umberto Eco.
-\newblock \emph{Como se Faz uma Tese}.
-\newblock Perspectiva, 22º ed.
-\newblock Tradução Gilson Cesar Cardoso de Souza.   {\scriptsize Citado na
-  p\'{a}g.}
-
 \bibitem[Foundation ()]{FSF:GNU-GPL}{\bf Foundation ()}
 Free~Software Foundation.
 \newblock {GNU} general public license.
@@ -76,23 +69,10 @@ Islene~C. Garcia.
 \newblock Tese de Doutorado, Instituto de Computação, Universidade de Campinas,
   Brasil.   {\scriptsize Citado na p\'{a}g.}
 
-\bibitem[Higham (1998)]{Higham:98}{\bf Higham (1998)}
-Nicholas~J. Higham.
-\newblock \emph{Handbook of Writing for the Mathematical Sciences}.
-\newblock SIAM: Society for Industrial and Applied Mathematics, second ed.
-  {\scriptsize Citado na p\'{a}g.}
-
 \bibitem[Johnson e Wichern (1983)]{JW82}{\bf Johnson e Wichern (1983)}
 Richard~A. Johnson e Dean~W. Wichern.
 \newblock \emph{Applied Multivariate Statistical Analysis}.
 \newblock Prentice-Hall.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Knuth {\rm{\em et~al.}} (1996)Knuth, Larrabee, e
-  Roberts]{Knuth:96}{\bf Knuth {\rm{\em et~al.}} (1996)}
-Donald~E. Knuth, Tracy Larrabee e Paul~M. Roberts.
-\newblock \emph{Mathematical Writing}.
-\newblock The Mathematical Association of America.   {\scriptsize Citado na
-  p\'{a}g.}
 
 \bibitem[Mena-Chalco {\rm{\em et~al.}} (2008)Mena-Chalco, Carrer, Zana, e
   Cesar-Jr.]{MenaChalco08}{\bf Mena-Chalco {\rm{\em et~al.}} (2008)}
@@ -113,21 +93,5 @@ Rodrigo~M. Schmidt.
 \newblock Coleta de lixo para protocolos de \emph{Checkpointing}.
 \newblock Disserta\c{c}\~{a}o de Mestrado, Instituto de Computação,
   Universidade de Campinas, Brasil.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Tufte (2001)]{tufte01:visualDisplay}{\bf Tufte (2001)}
-Edward Tufte.
-\newblock \emph{The Visual Display of Quantitative Information}.
-\newblock Graphics Pr, second ed.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Wazlawick (2009)]{waz:09}{\bf Wazlawick (2009)}
-Raul~S. Wazlawick.
-\newblock \emph{Metodologia de Pesquisa em Ciencia da Computação}.
-\newblock Campus, primeira ed.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Zobel (2004)]{zobel:04}{\bf Zobel (2004)}
-Justin Zobel.
-\newblock \emph{Writing for Computer Science: The art of effective
-  communication}.
-\newblock Springer, second ed.   {\scriptsize Citado na p\'{a}g.}
 
 \end{thebibliography}
