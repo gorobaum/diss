@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2013/Debian)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: tese-exemplo.aux
+A level-1 auxiliary file: ape-conjuntos.aux
+The style file: plainnat-ime.bst
+Database file #1: bibliografia.bib
+Warning--empty publisher Em bobaoglu93:concepts
+Warning--empty year in FSF:GNU-GPL
+You've used 19 entries,
+            2750 wiz_defined-function locations,
+            717 strings with 7850 characters,
+and the built_in function-call counts, 6994 in all, are:
+= -- 621
+> -- 361
+< -- 18
++ -- 128
+- -- 109
+* -- 434
+:= -- 1127
+add.period$ -- 62
+call.type$ -- 19
+change.case$ -- 71
+chr.to.int$ -- 19
+cite$ -- 40
+duplicate$ -- 338
+empty$ -- 587
+format.name$ -- 132
+if$ -- 1473
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 19
+newline$ -- 106
+num.names$ -- 78
+pop$ -- 217
+preamble$ -- 1
+purify$ -- 55
+quote$ -- 0
+skip$ -- 234
+stack$ -- 0
+substring$ -- 152
+swap$ -- 46
+text.length$ -- 4
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 174
+warning$ -- 2
+while$ -- 67
+width$ -- 0
+write$ -- 298
+(There were 2 warnings)
