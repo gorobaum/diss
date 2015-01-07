@@ -1,14 +1,9 @@
-\begin{thebibliography}{13}
+\begin{thebibliography}{5}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
-
-\bibitem[Allcock (2003)]{gridftp}{\bf Allcock (2003)}
-William Allcock.
-\newblock {GridFTP} protocol specification. {Global Grid Forum} recommendation
-  ({GFD}.20), 2003.   {\scriptsize Citado na p\'{a}g.}
 
 \bibitem[Alon (2009)]{alon09:how}{\bf Alon (2009)}
 Uri Alon.
@@ -17,81 +12,30 @@ Uri Alon.
 \newblock \doi{10.1016/j.molcel.2009.09.013}.   {\scriptsize Citado na
   p\'{a}g.}
 
-\bibitem[Alves {\rm{\em et~al.}} (2003)Alves, Cáceres, Dehne, e
-  Song]{alves03:simi}{\bf Alves {\rm{\em et~al.}} (2003)}
-Carlos E.~R. Alves, Edson~N. Cáceres, Frank Dehne e Siang~W. Song.
-\newblock A parallel wavefront algorithm for efficient biological sequence
-  comparison.
-\newblock Em \emph{ICCSA '03: The 2003 International Conference on
-  Computational Science and its Applications}, p\'{a}ginas 249--258.
-  Springer-Verlag.   {\scriptsize Citado na p\'{a}g.}
+\bibitem[Bay {\rm{\em et~al.}} (2006)Bay, Tuytelaars, e
+  Van~Gool]{bay2006surf}{\bf Bay {\rm{\em et~al.}} (2006)}
+Herbert Bay, Tinne Tuytelaars e Luc Van~Gool.
+\newblock Surf: Speeded up robust features.
+\newblock Em \emph{Computer Vision--ECCV 2006}, p\'{a}ginas 404--417. Springer.
+    {\scriptsize Citado na p\'{a}g.}
 
-\bibitem[Alvisi {\rm{\em et~al.}} (1999)Alvisi, Elnozahy, Rao, Husain, e
-  Mel]{alvisi99:analysisCIC}{\bf Alvisi {\rm{\em et~al.}} (1999)}
-Lorenzo Alvisi, Elmootazbellah Elnozahy, Sriram~S. Rao, Syed~A. Husain e
-  Asanka~Del Mel.
-\newblock An analysis of comunication-induced checkpointing.
-\newblock Relat\'{o}rio T\'{e}cnico TR-99-01, Department of Computer Science,
-  University of Texas at Austin, Austin, {USA}.   {\scriptsize Citado na
-  p\'{a}g.}
+\bibitem[Brown (1992)]{brown1992survey}{\bf Brown (1992)}
+Lisa~Gottesfeld Brown.
+\newblock A survey of image registration techniques.
+\newblock \emph{ACM computing surveys (CSUR)}, 24\penalty0 (4):\penalty0
+  325--376.   {\scriptsize Citado na p\'{a}g.}
 
-\bibitem[Babaoglu e Marzullo (1993)]{bobaoglu93:concepts}{\bf Babaoglu e
-  Marzullo (1993)}
-Ozalp Babaoglu e Keith Marzullo.
-\newblock Consistent global states of distributed systems: Fundamental concepts
-  and mechanisms.
-\newblock Em Sape Mullender, editor, \emph{Distributed Systems}, p\'{a}ginas
-  55--96. Second ed.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Bronevetsky {\rm{\em et~al.}} (2003)Bronevetsky, Marques, Pingali, e
-  Stodghill]{bronevetsky02}{\bf Bronevetsky {\rm{\em et~al.}} (2003)}
-Greg Bronevetsky, Daniel Marques, Keshav Pingali e Paul Stodghill.
-\newblock Automated application-level checkpointing of {MPI} programs.
-\newblock Em \emph{PPoPP '03: Proceedings of the 9th ACM SIGPLAN Symposium on
-  Principles and Practice of Parallel Programming}, p\'{a}ginas 84--89.
+\bibitem[Lowe (1999)]{lowe1999object}{\bf Lowe (1999)}
+David~G Lowe.
+\newblock Object recognition from local scale-invariant features.
+\newblock Em \emph{Computer vision, 1999. The proceedings of the seventh IEEE
+  international conference on}, volume~2, p\'{a}ginas 1150--1157. Ieee.
   {\scriptsize Citado na p\'{a}g.}
 
-\bibitem[Foundation ()]{FSF:GNU-GPL}{\bf Foundation ()}
-Free~Software Foundation.
-\newblock {GNU} general public license.
-\newblock \url{http://www.gnu.org/copyleft/gpl.html}.
-\newblock Último acesso em 30/1/2010.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Fowler (2004)]{fowler04:designDead}{\bf Fowler (2004)}
-Martin Fowler.
-\newblock Is design dead?
-\newblock \url{http://martinfowler.com/articles/designDead.html}, Maio 2004.
-\newblock Último acesso em 30/1/2010.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Garcia (2001)]{garcia01:PhD}{\bf Garcia (2001)}
-Islene~C. Garcia.
-\newblock \emph{Visões Progressivas de Computações Distribuídas}.
-\newblock Tese de Doutorado, Instituto de Computação, Universidade de Campinas,
-  Brasil.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Johnson e Wichern (1983)]{JW82}{\bf Johnson e Wichern (1983)}
-Richard~A. Johnson e Dean~W. Wichern.
-\newblock \emph{Applied Multivariate Statistical Analysis}.
-\newblock Prentice-Hall.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Mena-Chalco {\rm{\em et~al.}} (2008)Mena-Chalco, Carrer, Zana, e
-  Cesar-Jr.]{MenaChalco08}{\bf Mena-Chalco {\rm{\em et~al.}} (2008)}
-Jesús~P. Mena-Chalco, Helaine Carrer, Yossi Zana e Roberto~M. Cesar-Jr.
-\newblock Identification of protein coding regions using the modified
-  {G}abor-wavelet transform.
-\newblock \emph{{IEEE/ACM} Transactions on Computational Biology and
-  Bioinformatics}, 5:\penalty0 198--207.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[{Object Management Group} (2002)]{CORBA:spec}{\bf {Object Management
-  Group} (2002)}
-{Object Management Group}.
-\newblock \emph{{CORBA v3.0 Specification}}, Julho 2002.
-\newblock {OMG Document 02-06-33}.   {\scriptsize Citado na p\'{a}g.}
-
-\bibitem[Schmidt (2003)]{schmidt03:MSc}{\bf Schmidt (2003)}
-Rodrigo~M. Schmidt.
-\newblock Coleta de lixo para protocolos de \emph{Checkpointing}.
-\newblock Disserta\c{c}\~{a}o de Mestrado, Instituto de Computação,
-  Universidade de Campinas, Brasil.   {\scriptsize Citado na p\'{a}g.}
+\bibitem[Zitova e Flusser (2003)]{zitova2003image}{\bf Zitova e Flusser (2003)}
+Barbara Zitova e Jan Flusser.
+\newblock Image registration methods: a survey.
+\newblock \emph{Image and vision computing}, 21\penalty0 (11):\penalty0
+  977--1000.   {\scriptsize Citado na p\'{a}g.}
 
 \end{thebibliography}

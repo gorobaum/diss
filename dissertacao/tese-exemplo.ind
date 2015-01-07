@@ -1,36 +1,33 @@
 \begin{theindex}
 
-  \item \'acido
-    \subitem amino, \hyperpage{3}
-    \subitem nucl\'eico, \hyperpage{3}
-  \item \'area do trabalho
-    \subitem fundamentos, \hyperpage{3}
+  \item Correspond\^encia de caracteristicas, \hyperpage{4}
 
   \indexspace
 
+  \item Detec\c c\~ao de caracteristicas, \hyperpage{3}
   \item DFT, 
-		\hyperindexformat{\see{transformada discreta de Fourier}}{11}
+		\hyperindexformat{\see{transformada discreta de Fourier}}{13}
   \item DSP, 
-		\hyperindexformat{\see{processamento digital de sinais}}{11}
+		\hyperindexformat{\see{processamento digital de sinais}}{13}
 
   \indexspace
 
   \item Fourier
     \subitem transformada, 
-		\hyperindexformat{\see{transformada de Fourier}}{11}
+		\hyperindexformat{\see{transformada de Fourier}}{13}
 
   \indexspace
 
-  \item nucleot\IeC {\'\i }deos, \hyperpage{3}
+  \item Registro, \hyperpage{3}
 
   \indexspace
 
   \item STFT, 
-		\hyperindexformat{\see{transformada de Fourier de tempo reduzido}}{11}
+		\hyperindexformat{\see{transformada de Fourier de tempo reduzido}}{13}
 
   \indexspace
 
   \item TBP, 
-		\hyperindexformat{\see{periodicidade regi\~ao codificante}}{11}
+		\hyperindexformat{\see{periodicidade regi\~ao codificante}}{13}
 
 \end{theindex}
