@@ -34,14 +34,14 @@ diferente para encontrar a função de transformação $f$, mas os passos gerais são
     \item Reamostragem da imagem Alvo.
 \end{enumerate}
     É importante salientar que nem todos algoritmos de registro seguem essa lista a risca, e mesmo que sigam eles ainda
-podem realizar mais de um passo por vez. Os passos gerais são representados na imagem \ref{fig:regExplicacao}, retirado 
-de \cite{zitova2003image}. Vamos tratar brevemente dos passos nas seções abaixo.
+podem realizar mais de um passo por vez. Os passos gerais são representados na imagem \ref{fig:regExplicacao}. 
+Vamos tratar brevemente dos passos nas seções abaixo.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{figuras/regSteps.jpg}
     \caption{Na primeira linha estam a imagem referência e a alvo, respectivamente. Na segunda linha as características
 da imagem referência foram encontradas e suas correspondentes na imagem Alvo. A última linha mostra a estimação da 
-função e a sua reamostragem da imagem Alvo. }
+função e a sua reamostragem da imagem Alvo. \citep{zitova2003image}}
     \label{fig:regExplicacao}
 \end{figure}
 
@@ -75,9 +75,12 @@ regiões vizinhas. Ao identificar uma região, ele cálcula a caracteristica dela u
 
 \subsection{Correspondência de caracteristicas}\index{Correspondência de caracteristicas}
 
-    O primeiro método, Correspondência por Área, mescla o passo de Detecção com o de Correspondência. Ele utiliza duas
-janelas, uma para cada imagem, de formato retangular ou circular, e utiliza metricas para enumerar a relação entre 
-elas. O algoritmo então move as janelas afim de encontrar a máxima relação. Os algoritmos 
+    Com as caracteristiscas de cada uma das imagens encontradas, o próximo passo é realizar a correspondencia entre elas.
+A primeira soluço a ser apresentada, a Correspondência por Área, mescla o passo de Detecção com o de Correspondência. 
+Ele utiliza duas janelas, uma para cada imagem, de formato retangular ou circular, e utiliza metricas para enumerar a 
+relação entre elas. O algoritmo então move as janelas dentro das imagens afim de encontrar o par que tem a máxima
+relação entre si. Várias métricas podem ser utilizadas, como a Correlação entre as intensidades das janelas, o estudo
+do spectro da transformada de \textit{Fourier} das janelas ou o cálculo da informação mutua entre elas. 
 
 
 \bibliographystyle{plainnat-ime} % citação bibliográfica textual
