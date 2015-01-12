@@ -13,19 +13,23 @@ explicar os algoritmos estudados
 \section{Registro}\index{Registro}
 \label{sec:fundamentos}
 
-    O registro de imagens, tem como objetivo encontrar um alinhamento entre duas imagens diferentes, é uma técnica
-bem consolidada dentro da área de visão computacional. Dada duas imagens, a imagem Referência (R) e a imagem Alvo (A),
-algoritmos de registro utilizam métricas diferentes para encontrar um campo vetorial de deslocamento que, quando aplicado
-a imagem Alvo, fazem com que ela se alinhe com a imagem Referência.
+    O registro de imagens tem como objetivo encontrar um alinhamento entre duas imagens diferentes. Dada duas imagens, 
+a imagem Referência (R) e a imagem Alvo (A), os algoritmos de registro encontram um campo
+vetorial de deslocamento que é aplicado a imagem Alvo, movendo seus pixels para um estado no qual ela esteja alinhada
+com a imagem Referência.
+
+
 
 Podemos definir o processo de registro com a seguinte equação, como \cite{brown1992survey} fez em seu estudo:
 \begin{align}\label{eq:defregistro}
     R(x,y) = g(A(f(x,y)))
 \end{align}
-    Onde $f(x,y) = (x',y')$ é uma função que representa o deslocamento do campo vetorial encontrado pelo registro e 
-$g$ é uma função que modifica a intensidade dos pixels, se for necessário. Cada algoritmo de registro utiliza um método
-diferente para encontrar a função de transformação $f$, mas os passos gerais são:
+    Representamos uma imagem como uma matriz de pixels e acessamos seus pixels utilizando a seguinte convenção $R(x,y)$ 
+que nos dá o pixel da imagem $R$ na possição $(x,y)$. $f(x,y) = (x',y')$ é uma função que representa o deslocamento do 
+campo vetorial encontrado pelo registro e $g$ é uma função que modifica a intensidade dos pixels, se for necessário. 
+Cada algoritmo de registro utiliza um método diferente para encontrar a função de transformação $f$, mas os passos gerais são:
 \begin{enumerate}
+    \item Pré-processamento;
     \item Detecção de caracteristicas;
     \item Correspondência de caracteristicas;
     \item Estimação da função de transofrmação;
@@ -44,12 +48,20 @@ função e a sua reamostragem da imagem Alvo. \citep{zitova2003image}}
 \end{figure}
 
 %% ------------------------------------------------------------------------- %%
+\subsection{Pré-processamento}
+    Essa é a etapa mais aberta dentre todas. Antes de iniciar o processo de registro, é possível que as imagens tenham
+que passar por algum processamento para melhorar o resultado final do registro. Esse pré-processamento muda de acordo
+com as necessídades de cada caso. Se temos imagens com muito ruido, essa é a hora de aplicar filtros para melhorar sua 
+qualidade. Certos algoritmos de registro não trabalham com as imagens, e sim com segmentações delas ou somente com suas
+bordas, então a aquisição desses dados é feita nessa etapa.
+
+%% ------------------------------------------------------------------------- %%
 \subsection{Detecção de caracteristicas}\index{Detecção de caracteristicas}
 \label{sec:dec_corr_carac}
 
-    O primeiro passo para um algoritmo de registro é a localização de estruturas de destaque dentro de uma cena ou de
-um objeto. Tais estruturas devem ser facilmente identificadas em fotos obtidas sob outra perspectiva ou ângulação. 
-Elas são separadas em 3 grupos:
+    Com as imagens já pré-processadas, o primeiro passo para um algoritmo de registro é a localização de estruturas de 
+destaque dentro de uma cena ou de um objeto. Tais estruturas devem ser facilmente identificadas em fotos obtidas sob 
+outra perspectiva ou ângulação. Elas são separadas em 3 grupos:
 
 \textbf{Características de Região} - São demarcadas como regiões de alto contraste dentro da imagem. Lagos, florestas ou
 regiões urbanas são exemplos desse tipo de característica. Sua detecção é feita utilizando algoritmos de segmentação.
@@ -71,6 +83,7 @@ Hessian para identificar regiões da imagem que tenham um valor diferenciado par
 regiões vizinhas. Ao identificar uma região, ele cálcula a caracteristica dela utilizando a soma dos 
 \textit{Wavelets de Haar}.
 
+%% ------------------------------------------------------------------------- %%
 \subsection{Correspondência de caracteristicas}\index{Correspondência de caracteristicas}
 
     Com as caracteristiscas de cada uma das imagens encontradas, o próximo passo é realizar a correspondencia entre elas.
