@@ -2,12 +2,9 @@
 \chapter{Conceitos}
 \label{cap:conceitos}
 
-
-
-Explicar gigapixel
-explicar gpgpu
 explicar registro
 explicar os algoritmos estudados
+explicar gpgpu
 
 %% ------------------------------------------------------------------------- %%
 \section{Registro}\index{Registro}
@@ -32,7 +29,7 @@ Cada algoritmo de registro utiliza um método diferente para encontrar a funçã
     \item Pré-processamento;
     \item Detecção de caracteristicas;
     \item Correspondência de caracteristicas;
-    \item Estimação da função de transofrmação;
+    \item Estimativa da função de transformação;
     \item Reamostragem da imagem Alvo.
 \end{enumerate}
     É importante salientar que nem todos algoritmos de registro seguem essa lista a risca, e mesmo que sigam eles ainda
@@ -49,25 +46,30 @@ função e a sua reamostragem da imagem Alvo. \citep{zitova2003image}}
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Pré-processamento}
-    Essa é a etapa mais aberta dentre todas. Antes de iniciar o processo de registro, é possível que as imagens tenham
-que passar por algum processamento para melhorar o resultado final do registro. Esse pré-processamento muda de acordo
-com as necessídades de cada caso. Se temos imagens com muito ruido, essa é a hora de aplicar filtros para melhorar sua 
-qualidade. Certos algoritmos de registro não trabalham com as imagens, e sim com segmentações delas ou somente com suas
-bordas, então a aquisição desses dados é feita nessa etapa.
+    Essa é a etapa mais aberta dentre todas, já que sua aplicação é totalmente dependente do problema a ser resolvido. 
+Antes de iniciar o processo de registro, é possível que as imagens tenham que passar por algum processamento para 
+melhorar o resultado final do registro. O pré-processamento muda de acordo com as necessídades de cada caso. Caso as
+imagens tenham muito ruido, essa é a hora de aplicar filtros para melhorar sua qualidade, como um filtro Gaussiano ou 
+o de Medianas. Certos algoritmos de registro não trabalham com as imagens, e sim com segmentações delas ou somente com 
+suas bordas, então é necessário aplicar algoritmos como o \textit{Watershed} ou o \textit{Canny} para obter as 
+segmentações e bordas, respectivamente.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Detecção de caracteristicas}\index{Detecção de caracteristicas}
 \label{sec:dec_corr_carac}
 
     Com as imagens já pré-processadas, o primeiro passo para um algoritmo de registro é a localização de estruturas de 
-destaque dentro de uma cena ou de um objeto. Tais estruturas devem ser facilmente identificadas em fotos obtidas sob 
-outra perspectiva ou ângulação. Elas são separadas em 3 grupos:
+destaque dentro da cena ou objeto representado pelas imagens. Caracteristicas devem ser facilmente identificadas, 
+independente de variações na aquisição das fotografias, como mudanças na ângulação ou perspectiva. 
+Elas são separadas em 3 grupos, baseando-se nas suas propriedades:
 
-\textbf{Características de Região} - São demarcadas como regiões de alto contraste dentro da imagem. Lagos, florestas ou
-regiões urbanas são exemplos desse tipo de característica. Sua detecção é feita utilizando algoritmos de segmentação.
+\textbf{Características de Região} - São caracteristicas encontradas utilizando a diferença de contraste entre elas e
+as regiões vizinhas. Lagos, florestas ou regiões urbanas são exemplos desse tipo de característica.
+Sua detecção é feita utilizando algoritmos de segmentação.
 
-\textbf{Características de Linha} - São linhas encontradas dentro da imagem. Podem ser ruas, rios ou o litoral. Métodos
-clássicos de detecção de bordas como o Canny ou o filtro laplaciano são usados para identificar essas características.
+\textbf{Características de Retas} - Essas caracteristicas são marcadas pelas suas bordas. Podem ser ruas, rios ou o 
+litoral. Métodos clássicos de detecção de bordas como o Canny ou o filtro laplaciano são usados para identificar essas 
+características.
 
 \textbf{Características de Ponto} - São pontos de intersecção entre linhas, representados por intersecções de ruas ou
 rios, ou pontos de máxima curvatura. Algoritmos para identificação de pontos utilizam técnicas mais avançadas, dada a 
@@ -87,17 +89,55 @@ regiões vizinhas. Ao identificar uma região, ele cálcula a caracteristica del
 \subsection{Correspondência de caracteristicas}\index{Correspondência de caracteristicas}
 
     Com as caracteristiscas de cada uma das imagens encontradas, o próximo passo é realizar a correspondencia entre elas.
-A primeira soluço a ser apresentada, a Correspondência por Área, mescla o passo de Detecção com o de Correspondência. 
-Ele utiliza duas janelas, uma para cada imagem, de formato retangular ou circular, e utiliza metricas para enumerar a 
-relação entre elas. O algoritmo então move as janelas dentro das imagens afim de encontrar o par que tem a máxima
-relação entre si. Várias métricas podem ser utilizadas, como a Correlação entre as intensidades das janelas, o estudo
-do spectro da transformada de \textit{Fourier} das janelas ou o cálculo da informação mutua entre elas. 
+A função desse passo é encontrar a correspondência entre pontos da imagem Referência para a imagem Alvo, ou vice-versa. 
+O processo pode ser realizado tanto escolhendo ponto a ponto da imagem Referência e procurando o ponto com maior valor 
+de proximidade entre os pontos da imagem Alvo, quanto utilizando métodos estatisticos para determinar quais pontos são 
+correspondentes entre as duas imagens. É importante que esse passo consiga identificar pontos fisicos, com coordenadas, 
+em cada par de caracteristicas, para que uma primeira estimativa dos parametros da função de transformação possa ser 
+utilizada como ponto de partida para o próximo passo.
 
- Outro grupo de algoritmos recebe como entrada dois conjuntos de caracteristicas e estabelece as correspondências
-usando relações espaciais entre as caracteristicas de conjuntos diferentes. Cada algoritmo dentro desse grupo 
+    A primeira solução a ser apresentada, a \textbf{Correspondência por Área}, mescla o passo de Detecção com o de 
+Correspondência. Esse método utiliza duas janelas, uma em cada imagem, com formato retangular ou circular, aplicando
+métricas em cada uma das janelas com a finalidade de calcular a relação entre as janelas. O algoritmo segue realizando
+esse cálculo para todas as combinações possiveis de janelas entre as duas imagens, e sempre que um máximo é encontrado
+o centro das janelas são usados para marcar a correspondência. Várias métricas podem ser utilizadas, como a 
+Correlação entre as intensidades das janelas, o estudo do spectro da transformada de \textit{Fourier} das janelas ou 
+o cálculo da informação mutua entre elas.
 
+    A descoberta de correspondencia entre \textbf{Caracteristicas de Região} é feita utilizando, principalmente, duas 
+técnicas. A primeira, mais simples na sua ideia, é parear regiões da imagem Referência com a região da imagem Alvo a qual
+tenha o contorno mais parecido possível. Os métodos que fazem esse pareamento devem ser capazes de encontrar os pares mesmo
+que eles tenham sofrido rotações ou mudança de escala. Descritores de Fourier e representações matriciais das regiões são
+exemplos de métodos usados para realizar a correspondencia entre caracteristicas de região.
 
+    Os metodos para encontrar correspondencias entre \textbf{Caracteristicas de Retas} tem as mesmas restrições que os
+de Região, ou seja, devem conseguir realizar o pareamento de linhas que sofreram rotação, mudança de escala ou translação.
+O primeiro passo de um algoritmo é comparar as retas da imagem Referência com todas as possiveis rotações de todas as retas
+da imagem Alvo. Quando um possivel par é encontrado, um valor de correspondencia é calculado, utilizando um peso maior para
+a direção da reta, algo que não sofre tanta influência de ruido, e um peso menor para atributos como comprimento e largura,
+que são influenciados pelo ruido. O algoritmo ainda deve ser capaz de parear mais de duas retas por vez, dada a possibilidade
+de uma reta em uma das imagens ser representada por duas retas na outra imagem.
+
+    Por fim, as correspondencias entre \textbf{Caracteristicas de Ponto} podem ser encontradas utilizando-se várias técnicas
+distintas. Como o número e o agrupamento de pontos não muda com rotações e translações de imagens, métodos de 
+\textit{Clustering} são usados para parear pontos. Os \textit{Clusters} são montados com base na proximidade dos parametros
+de uma transformação que leve pontos da imagem Alvo para pontos da imagem Referência. Outro método define as caracteristicas
+atraves de descritores invariantes que podem obedecer a 4 regras: \textbf{Invariancia}, caracteristicas correspondentes 
+devem ter os mesmos descritores; \textbf{Unicidade}, caracteristicas diferentes devem ter descritores diferentes; 
+\textbf{Estabilidade}, os descritores devem deformar de maneira proporcional a deformação aplicada na imagem; e 
+\textbf{Independencia}, se o descritor for representado por um vetor, seus componentes devem ser independentes. 
+O que define um descritor deve ser decidido caso a caso. O modelo mais simples usado é a propria intensidade do pixel, 
+e a intensidade de seus vizinhos. Outros descritores válidos são ângulos entre correspondências vizinhas ou a distribuição
+espacial dos vizinhos.
+
+%% ------------------------------------------------------------------------- %%
+\subsection{Estimativa da função de transformação}\index{Estimativa da função de transformação}
     
+    Com o conjunto de pares de caracteristicas encontrado pelo passo anterior, é possivel que cada algorimto de registro
+inicie 
+
+%% ------------------------------------------------------------------------- %%
+%% ------------------------------------------------------------------------- %%
 \section{Computação de Alto Desempenho}
     Para criar a imagem \textit{Gigapixel} um algoritmo de registro é executado $(n_c-1)*(n_l-1)$ vezes no minimo, 
 onde $n_c$ e $n_l$ são o número de colunas e linhas de fotografias que compõem a imagem \textit{Gigapixel}, 
