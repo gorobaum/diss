@@ -133,8 +133,29 @@ espacial dos vizinhos.
 %% ------------------------------------------------------------------------- %%
 \subsection{Estimativa da função de transformação}\index{Estimativa da função de transformação}
     
-    Com o conjunto de pares de caracteristicas encontrado pelo passo anterior, é possivel que cada algorimto de registro
-inicie 
+    Com o conjunto de pares de caracteristicas encontrado pelo passo anterior, os algoritmos de registro conseguem encontrar
+um conjunto de parametros iniciais para sua transformação. Cada algoritmo representa a transformação necessária para
+levar a imagem Alvo para a imagem Referência usando um modelo diferente, e utiliza métricas diferentes para passear
+pelo espaço de paramêtros em busca do melhor resultado. Dada a grande diferença que os algoritmos mostram nesse passo 
+em especifico, ele sera cobrido algoritmo por aloritmo na seção \ref{sec:algReg}.
+
+%% ------------------------------------------------------------------------- %%
+\subsection{Reamostragem da imagem Alvo}\index{Reamostragem da imagem Alvo}
+
+    O último passo do registro é a montagem da imagem registrada, ou a reamostragem da imagem Alvo. O passo anterior
+dá o conjunto de parametros ótimo para a montagem da imagem final, logo esse passo tem como objetivo a aplicação
+da transformação $f$ utilizando os parametros encontrados sob todas as posições da imagem Alvo. Temos:
+
+\begin{align}\label{eq:reamostragem}
+    F(x_i,y_j) = A(f_o(x_i,y_j))), \forall (i = 1, \dots, n_c), (j = 1, \dots, n_l)
+\end{align}
+
+    Onde $F(x_i,y_j)$ representa a posição $(x_i,y_j)$ da imagem registrada e $f_o$ é a função $f$ sob os parametros
+encontrados no passo anterior.
+
+%% ------------------------------------------------------------------------- %%
+%% ------------------------------------------------------------------------- %%
+\section{Algoritmos de Registro}\label{sec:algReg}
 
 %% ------------------------------------------------------------------------- %%
 %% ------------------------------------------------------------------------- %%
