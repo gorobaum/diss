@@ -2,10 +2,6 @@
 \chapter{Conceitos}
 \label{cap:conceitos}
 
-explicar registro
-explicar os algoritmos estudados
-explicar gpgpu
-
 %% ------------------------------------------------------------------------- %%
 \section{Registro}\index{Registro}
 \label{sec:fundamentos}
@@ -13,9 +9,10 @@ explicar gpgpu
     O registro de imagens tem como objetivo encontrar um alinhamento entre duas imagens diferentes. Dada duas imagens, 
 a imagem Referência (R) e a imagem Alvo (A), os algoritmos de registro encontram um campo
 vetorial de deslocamento que é aplicado a imagem Alvo, movendo seus pixels para um estado no qual ela esteja alinhada
-com a imagem Referência.
-
-
+com a imagem Referência. Para encontrar um alinhamento, supomos que a imagem Alvo sofreu algum tipo de deformação,
+e queremos, dado algum modelo que nos de informação sobre a deformação, encontrar os parametros para uma função de
+transformação que nos leve da imagem Alvo para a imagem Registrada, que nada mais é que a imagem Alvo alinhada a imagem
+Referência.
 
 Podemos definir o processo de registro com a seguinte equação, como \cite{brown1992survey} fez em seu estudo:
 \begin{align}\label{eq:defregistro}
@@ -34,7 +31,8 @@ Cada algoritmo de registro utiliza um método diferente para encontrar a funçã
 \end{enumerate}
     É importante salientar que nem todos algoritmos de registro seguem essa lista a risca, e mesmo que sigam eles ainda
 podem realizar mais de um passo por vez. Os passos gerais são representados na imagem \ref{fig:regExplicacao}. 
-Vamos tratar brevemente dos passos nas seções abaixo.
+Vamos tratar brevemente dos passos nas seções abaixo, explicitando em alguns pontos onde os passos podem ser acelerados,
+principalmente pela paralelização de suas operações.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{figuras/regSteps.jpg}
@@ -85,6 +83,10 @@ Hessian para identificar regiões da imagem que tenham um valor diferenciado par
 regiões vizinhas. Ao identificar uma região, ele cálcula a caracteristica dela utilizando a soma dos 
 \textit{Wavelets de Haar}.
 
+    A verificação de existencia de caracteristica em um pixel não interfere na verificação em quaisquer outro pixel da
+imagem, já que não precisamos modificar a imagem em nenhuma maneira. Uma simples paralelização do processamento já o
+acelera.
+
 %% ------------------------------------------------------------------------- %%
 \subsection{Correspondência de caracteristicas}\index{Correspondência de caracteristicas}
 
@@ -119,7 +121,7 @@ que são influenciados pelo ruido. O algoritmo ainda deve ser capaz de parear ma
 de uma reta em uma das imagens ser representada por duas retas na outra imagem.
 
     Por fim, as correspondencias entre \textbf{Caracteristicas de Ponto} podem ser encontradas utilizando-se várias técnicas
-distintas. Como o número e o agrupamento de pontos não muda com rotações e translações de imagens, métodos de 
+distintas. Como o número e o agrupamento de pontos geralmente não muda tanto com rotações e translações de imagens, métodos de 
 \textit{Clustering} são usados para parear pontos. Os \textit{Clusters} são montados com base na proximidade dos parametros
 de uma transformação que leve pontos da imagem Alvo para pontos da imagem Referência. Outro método define as caracteristicas
 atraves de descritores invariantes que podem obedecer a 4 regras: \textbf{Invariancia}, caracteristicas correspondentes 
@@ -130,36 +132,48 @@ O que define um descritor deve ser decidido caso a caso. O modelo mais simples u
 e a intensidade de seus vizinhos. Outros descritores válidos são ângulos entre correspondências vizinhas ou a distribuição
 espacial dos vizinhos.
 
+    Podemos separar os algoritmos de correspondencias em dois tipos com base no estilo com que eles fazem a busca de 
+correspondencias. O primeiro tipo escolhe uma correspondencia na imagem Referência e realiza uma busca em largura por
+todas as correspondencias da imagem Alvo, buscando aquela com maior relação com a da imagem Referência. Esse processo
+pode ser fácilmente acelerado utilizando uma paralelização com todas as correspondencias da imagem Referência. Já o outro
+tipo realiza uma busca entre as relações das caracteristicas e encontra os pares de maneira iterativa. A aceleração
+desse passo depende totalmente da sua implementação.
+
+    Podemos ainda utilizar o modelo \textit{MapReduce}, desenvolvido por \cite{dean2008mapreduce} e pela Google, para
+acelerar esse passo e o anterior. O modelo \textit{MapReduce} foi desenvolvido para realizar processamento em lote de
+um número gigantesco de dados, o popular \textit{Big Data}, dado que não exista muita diferença em como os dados
+devem ser processados. Ele é composto de dois passos, o \textit{Map} onde os dados são pré-processados e mapeados para
+grupos em comum; e o \textit{Reduce}, onde esses grupos são unidos de alguma maneira. O nosso \textit{Map} é a descoberta
+das caracteristicas, e o \textit{Reduce} realiza a correspondencia entre elas.
+
 %% ------------------------------------------------------------------------- %%
 \subsection{Estimativa da função de transformação}\index{Estimativa da função de transformação}
     
-    Com o conjunto de pares de caracteristicas encontrado pelo passo anterior, os algoritmos de registro conseguem encontrar
-um conjunto de parametros iniciais para sua transformação. Cada algoritmo representa a transformação necessária para
-levar a imagem Alvo para a imagem Referência usando um modelo diferente, e utiliza métricas diferentes para passear
-pelo espaço de paramêtros em busca do melhor resultado. Dada a grande diferença que os algoritmos mostram nesse passo 
-em especifico, ele sera cobrido algoritmo por aloritmo na seção \ref{sec:algReg}.
+    Com o conjunto de correspondencias encontrado pelo passo anterior, os algoritmos de registro tem uma base para 
+começar o processo de estimativa da função de transformação. Cada algoritmo assume um modelo de transformação diferente
+para a deformação que a imagem sofreu, como por exemplo, uma modelagem elástica, por propagação de fluidos ou uma
+simples translação. Juntando a modelagem com as correspondências, os algoritmos conseguem estimar parametros iniciais
+para a função de transformação. Utilizando alguma métrica para passear pelo espaço de parametros, os algoritmos encontram
+algum conjunto de parametros que alinhe a imagem Alvo com a imagem Referência. Na seção \ref{sec:algReg}, apresentaremos
+dois algoritmos estudados com enfasse nessa etapa.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Reamostragem da imagem Alvo}\index{Reamostragem da imagem Alvo}
 
-    O último passo do registro é a montagem da imagem registrada, ou a reamostragem da imagem Alvo. O passo anterior
-dá o conjunto de parametros ótimo para a montagem da imagem final, logo esse passo tem como objetivo a aplicação
+    O último passo do registro é a montagem da imagem Registrada, ou a reamostragem da imagem Alvo. O passo anterior
+dá um conjunto de parametros para a montagem da imagem final, logo esse passo tem como objetivo a aplicação
 da transformação $f$ utilizando os parametros encontrados sob todas as posições da imagem Alvo. Temos:
 
 \begin{align}\label{eq:reamostragem}
     F(x_i,y_j) = A(f_o(x_i,y_j))), \forall (i = 1, \dots, n_c), (j = 1, \dots, n_l)
 \end{align}
 
-    Onde $F(x_i,y_j)$ representa a posição $(x_i,y_j)$ da imagem registrada e $f_o$ é a função $f$ sob os parametros
+    Onde $F(x_i,y_j)$ representa a posição $(x_i,y_j)$ da imagem Registrada e $f_o$ é a função $f$ sob os parametros
 encontrados no passo anterior.
 
 %% ------------------------------------------------------------------------- %%
 %% ------------------------------------------------------------------------- %%
-\section{Algoritmos de Registro}\label{sec:algReg}
-
-%% ------------------------------------------------------------------------- %%
-%% ------------------------------------------------------------------------- %%
-\section{Computação de Alto Desempenho}
+\section{Computação de Alto Desempenho}\index{HPC,GPGPU}\label{GPGPU}
     Para criar a imagem \textit{Gigapixel} um algoritmo de registro é executado $(n_c-1)*(n_l-1)$ vezes no minimo, 
 onde $n_c$ e $n_l$ são o número de colunas e linhas de fotografias que compõem a imagem \textit{Gigapixel}, 
 respectivamente. Esse número é uma estimativa otimista, já que mais processos de registro são potencialmente executados
@@ -319,3 +333,7 @@ que ele quer que aquele elemento fique na memória. Os possiveis qualificadores 
 \end{itemize}
 
 GPUs com Compute Cabapility maior ou igual a 2.0 podem alocar memória dentro do \textit{device} em tempo de execução.
+
+%% ------------------------------------------------------------------------- %%
+%% ------------------------------------------------------------------------- %%
+\section{Algoritmos de Registro}\label{sec:algReg}
