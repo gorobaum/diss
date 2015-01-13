@@ -22,6 +22,23 @@ Eu tenho que explicar que o registro é utilizado em várias áreas, e que ele l
 rasoavel para ser executado, dado o tamanho das imagens e a complexidade intrinsica do processo.
 
 
+    Para criar a imagem \textit{Gigapixel} um algoritmo de registro é executado $(n_c-1)*(n_l-1)$ vezes no minimo, 
+onde $n_c$ e $n_l$ são o número de colunas e linhas de fotografias que compõem a imagem \textit{Gigapixel}, 
+respectivamente. Esse número é uma estimativa otimista, já que mais processos de registro são potencialmente executados
+entre fragmentos para melhorar a qualidade da imagem final. Uma das maiores imagens \textit{Gigapixel} até hoje, 
+o projeto \textit{Servilla 111 Gigapixels}, coordenado por \cite{sevilla111},  conta com 9,750 fotografias, dispostas
+em 65 linhas. Nesse projeto foram executados, no melhor dos casos, 9536 registros entre fotos de 22 \textit{Megapixels}
+, algo claramente custoso.
+
+    Podemos acelerar o processo de custura das imagens usando várias abordagens diferentes. A mais clássica seria
+paralelizar o algoritmo inteiro, utilizando a grande capacidade das \textit{CPUs} atuais em executar processos paralelos.
+Outra abordagem é atacar diretamente o passo do registro, construindo algoritmos menos custosos ou melhorar algoritmos
+existentes. A abordagem escolhida foi modificar o TPS, criando uma versão que segue a arquitetura 
+\textit{Single Instruction Multiple Data} (SIMD). A escolha foi feita pensando em uma implementação para 
+Unidades de Processamento Gráfico (\textit{Graphic Processing Units} (GPUs)).
+
+
+
 Falar sobre
 gigapixel - o que é em linhas gerais, onde começou, onde é usado
 registro - áreas que usam registro, como ele é usado
@@ -31,6 +48,10 @@ registtro + gigapixel - o problema de desempenho, como resolver.
 
 %% ------------------------------------------------------------------------- %%
 \section{Objetivos}
+\label{sec:objetivo}
+
+%% ------------------------------------------------------------------------- %%
+\section{Trabalhos Relacionados}
 \label{sec:objetivo}
 
 %% ------------------------------------------------------------------------- %%
