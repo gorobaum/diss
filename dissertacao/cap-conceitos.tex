@@ -33,9 +33,10 @@ Cada algoritmo de registro utiliza um método diferente para encontrar a funçã
 podem realizar mais de um passo por vez. Os passos gerais são representados na imagem \ref{fig:regExplicacao}. 
 Vamos tratar brevemente dos passos nas seções abaixo, explicitando em alguns pontos onde os passos podem ser acelerados,
 principalmente pela paralelização de suas operações.
+
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{figuras/regSteps.jpg}
+    \includegraphics[width=1\textwidth]{figuras/regSteps.jpg}
     \caption{Na primeira linha estam a imagem referência e a alvo, respectivamente. Na segunda linha as características
 da imagem referência foram encontradas e suas correspondentes na imagem Alvo. A última linha mostra a estimação da 
 função e a sua reamostragem da imagem Alvo. \citep{zitova2003image}}
@@ -176,62 +177,76 @@ encontrados no passo anterior.
 %% ------------------------------------------------------------------------- %%
 \section{Computação de Alto Desempenho}\index{HPC,GPGPU}\label{GPGPU}
     
-    Computação de Alto Desempenho (\textit{High Performance Computing} - HPC) são sistemas de alta capacidade de processamento
-e armazenamento de dados montados para resolver grandes problemas cientificos, para os quais um computador pessoal não
-é o suficiente. Esses sistemas variam em tamanho, poder computacional e capacidade de armazenamento. Os mais famosos,
-conhecido como Supercomputadores, são máquinas montadas com a finalidade de resolver um único problema, ou um grupo
+    Computação de Alto Desempenho (\textit{High Performance Computing} - HPC) designa sistemas de alta capacidade de processamento
+e armazenamento de dados montados especificamente resolver grandes problemas cientificos, para os quais computadores pessoais não
+são o suficiente. Esses sistemas variam em tamanho, poder computacional e capacidade de armazenamento. Os mais famosos,
+conhecido como Supercomputadores, são máquinas montadas especialmente para resolver um único problema, ou um grupo
 especifico de problemas, e tem em sua composição milhares de processadores. Porém existem instâncias mais simples de 
-\textit{HPC}, onde um sistema é montado a partir de um \textit{Cluster} de computadores pessoais. Uma arquitetura \textit{HPC}
-pode ter como principal hardware de processamento as Unidades de Processamento Gráfico (\textit{Graphic Processing Units} - GPU).
+\textit{HPC}, onde um sistema é montado a partir de um \textit{Cluster} de computadores pessoais.
+
+    No inicio dos anos 2000, com o inicio do suporte de operações de ponto flutuante, ainda que emuladas por software, 
+e com o surgimento de um \textit{shaders} programável, as Unidades de Processamento Gráfico 
+(\textit{Graphic Processing Units} - GPU) começaram a ser usadas para executar código de natureza mais genérica.
+Chamamos a aplicação de GPUs na solução de problemas computacionais, fora da área de computação gráfica, 
+de \textit{General-purpose computing on graphics processing units}, ou GPGPU. Com o alto custo beneficio que as GPUs 
+trazem e seu alto poder de realizar processamento paralelo, arquiteturas de HPC começaram a aparecer utilizando não a 
+CPU, mas sim a GPU como principal carro chefe de processamento.
 
 \subsection{Unidade de Processamento Gráfico}
-    A GPU nasceu da necessidade dos antigos \"arcades\" de renderizar cenas complexas mantendo uma taxa de quadros por 
-segundo aceitavel para o jogador. Para cumprir com essa necessidade, um hardware foi desenvolvido para seguir uma
-sequência fixa de passos que levam os dados da cena até uma renderização dela na tela em questão de milisegundos.
-Essa sequência de passos é chamada de \textit{Pipeline}, e se assemelha a uma linha de montagem de fabricas, onde
-as peças são montadas uma a uma e em linha. Esse \textit{Pipeline} evoluiu com a criação de técnicas melhores e da criação
-de hardwares mais especificos. No inicio dos anos 2000, com o inicio do suporte de operações de ponto flutuante, ainda que
-elas fossem emuladas, e com o surgimento de um \textit{shaders} programável, a GPU começou a ser usada para resolver
-cálculos matemáticos. Chamamos a aplicação de GPUs na solução de problemas computacionais, fora da área de computação 
-gráfica, de \textit{General-purpose computing on graphics processing units}, ou GPGPU. 
+    A GPU nasceu da necessidade de renderizar cenas complexas, mantendo uma taxa de quadros por segundos
+aceitavel para o usuário, em tempo real. Ela foi projetada para executar uma sequência fixa de passos que transformam
+os dados da cena em objetos virtuais na tela. A sequência de passos se assemelha a uma linha de montagem de fabricas,
+onde objetos são montados parte por parte de forma sequêncial. Chamamos essa sequência de \textit{Pipeline} gŕafico 
+(ver figura \ref{fig:pipeline}), e a GPU é construida para que cada passo dele seja mapeado para uma ou mais partes do 
+seu hardware.
 
-\subsection{Arquitetura de uma GPU}
+    É comum cenas conterem objetos complexos, compostos de milhões de triângulos, que passarão, um por um, pelo
+\textit{Pipeline} gráfico. Para acelerar o processo de renderização, as GPUs seguem a arquitetura de Instrução Única,
+Multiplos Dados (\textit{Single Instruction, Multiple Data} - SIMD). Como o nome já diz, essa arquitetura permite que 
+a mesma instrução seja executada várias vezes em paralelo utilizando instâncias de dados diferentes. A figura 
+\ref{fig:simd} mostra a implementação do \textit{Pipeline} utilizando a arquitetura SIMD no hardware da GPU.
+    
+    Para implementar de maneira esse paradigma, a GPU é composta de vários hardwares especificos. Nela existe um 
+escalonador para threads implementado em hardware. Ele é responsável por escalonar as threads que serão
+executadas nos \textit{Streaming Multiprocessors} (SM). Um SM é um conjunto de vários processadores, um pequeno bloco de
+memória própria, um cache de instruções e 8 unidades de funções gráficas.
 
-    A GPU 
-A placa contém um escalonador para threads implementado em hardware. Ele é responsável por escalonar as threads que serão
-executadas nos streaming multiprocessors (SM). Um SM é um conjunto de 48 processadores, um pequeno bloco de memória própria,
-um cache de instruções e 8 unidades de funções gráficas. A Geforce GTX 760 tem 7 SMs, totalizando 336 processadores.
-
-O código que será executado em cada processador é chamado de \textbf{kernel}. Ao executar um kernel na GPU, o 
+    O código que será executado em cada processador é chamado de \textbf{kernel}. Ao executar um kernel na GPU, o 
 hardware criará threads, cada uma delas executando o mesmo código, mas com dados diferentes. Nas placas NVIDIA as threads 
 são agrupadas em blocos, e esses blocos são escalonados para cada SM. Depois, todas as threads dentro de um bloco são 
-divididas em pequenos grupos chamados de \textbf{warp}, e cada warp é executado paralelamente dentro do 
+divididas em pequenos grupos chamados de \textbf{warp}\cite{paulo}, e cada warp é executado paralelamente dentro do 
 mesmo SM para qual o bloco foi escalonado. Existe um limite para a quantidade de threads escalonadas para execução
 dentro de um SM, que é definida pelos recursos que cada thread consome. Por exemplo, não há como executar 10 threads
 que consomem 10 registradores cada em um SM com 90 registradores.
 
-Outra parte importante do hardware é a memória, que é limitada em relação à da CPU. GPUs tem, em média, 1GB
-de memória, enquanto CPUs tem 4GB. O acesso a um mesmo bloco de memória é concorrente, mas ao utilizar caches e leitura ou escritas em
-conjunto podemos minimizar a taxa com que leituras ou escritas conflitantes são feitas. Mas ainda sim é necessário atenção ao escrever um
-kernel. Dada a estrutura do hardware da GPU, é melhor deixar threads que façam operações sobre posições de memória próximas no mesmo
-SM, assim elas podem utilizar a memória compartilhada do mesmo, e elas podem requisitar em conjunto um mesmo bloco da memória principal,
-se necessário.
+    A memória da GPU é limitada em relação à da CPU. GPUs tem, em média, 2GB
+de memória, enquanto CPUs tem 8GB. O acesso a um mesmo bloco de memória é concorrente, mas ao utilizar caches e leitura 
+ou escritas em conjunto podemos minimizar a taxa com que leituras ou escritas conflitantes são feitas. Mas ainda sim é 
+necessário atenção ao escrever um kernel. Dada a estrutura do hardware da GPU, é melhor deixar threads que façam 
+operações sobre posições de memória próximas no mesmo SM, assim elas podem utilizar a memória compartilhada do mesmo, e 
+elas podem requisitar em conjunto um mesmo bloco da memória principal, se necessário.
 
-No caso da GTX 760 cada SM tem um bloco de memória de 64KB. Esse bloco pode ser configurado para 16KB de memória compartilhada e 48KB
-de cache L1 ou vice versa. A memória principal da placa é de 1024MB com conexões de 256 bits. A placa também tem um
-cache L2 de 512KB.
-
-Outro fator limitante é a transferência de dados da memória principal do computador para a memória 
+    Outro fator limitante é a transferência de dados da memória principal do computador para a memória 
 principal da GPU. A transmissão é feita por um barramento PCI Express, com velocidades de até 16GB/s ( dado que o
 barramento seja utilizado somente pela GPU ). Essa transmissão é a parte mais lenta de todo o
-processo de execução na GPU e dado isso, em alguns casos é mais viável executar na GPU um pedaço do seu programa que seria executado
-na CPU do que retornar os dados computados na GPU para a CPU, executar esse pedaço especifico, e passá-los de volta para a GPU 
-para mais operações e novamente retornar esses dados para a CPU no final, passando duas vezes a mais pelo PCI Express. 
+processo de execução na GPU e dado isso, em alguns casos é mais viável executar na GPU um pedaço do seu programa que 
+seria executado na CPU do que retornar os dados computados na GPU para a CPU, executar esse pedaço especifico, e 
+passá-los de volta para a GPU para mais operações e novamente retornar esses dados para a CPU no final, passando duas 
+vezes a mais pelo PCI Express. 
 
-Ao estudar como o código é executado nas GPUs NVIDIA descobrimos a existência de uma máquina virtual chamada de Parallel Thread Execution.
-Todo kernel é primeiro compilado para um arquivo .ptx que é executado na GPU através da máquina PTX. Ela é utilizada para garantir 
-a retrocompatibilidade de kernels em placas mais antigas.
-\subsection{Single Instruction Multiple Data}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figuras/pipeline.jpg}
+    \caption{\textit{Pipeline} do OpenGL 2.x, por \citep{pipeline}}
+    \label{fig:pipeline}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{figuras/simd.jpg}
+    \caption{Arquitetura da GPU SIMD, por \citep{blythe2008rise}}
+    \label{fig:simd}
+\end{figure}
 
 \subsection{CUDA}
 \textit{Compute Unified Device Architecture}, definida pela (CUDA) é uma arquitetura de programação para GPUs criada 
