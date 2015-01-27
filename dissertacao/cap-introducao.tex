@@ -2,40 +2,7 @@
 \chapter{Introdução}
 \label{cap:introducao}
 
-	Imagens de altissima resolução, chamadas de \textit{Gigapixel}, são imagens construidas utilizando milhares de 
-menores imagens. 
-
-	O registro de imagens é uma área bem firmada e amplamente utilizada para alinhar duas ou mais imagens. Os algoritmo 
-de registro são amplamente aplicados em várias áreas de pesquisa em visão computacional, como em imagens médicas, com o 
-objetivo de reverter as deformações naturais dos técidos moles entre tomadas de imagens de um paciente, ou em 
-reconhecimento de padrões, onde o registro é aplicado para construir um mapa a partir de várias imagens 
-obtidas, por exemplo, de um satélite.
-
-	O registro é
-
-	Com o crescimento da qualidade das imagens obtidas e a criação de técnicas mais sofisticadas de registro,
-o tempo de execução 
-
-
-
-Eu tenho que explicar que o registro é utilizado em várias áreas, e que ele leva uma quantidade de tempo
-rasoavel para ser executado, dado o tamanho das imagens e a complexidade intrinsica do processo.
-
-
-    Para criar a imagem \textit{Gigapixel} um algoritmo de registro é executado $(n_c-1)*(n_l-1)$ vezes no minimo, 
-onde $n_c$ e $n_l$ são o número de colunas e linhas de fotografias que compõem a imagem \textit{Gigapixel}, 
-respectivamente. Esse número é uma estimativa otimista, já que mais processos de registro são potencialmente executados
-entre fragmentos para melhorar a qualidade da imagem final. Uma das maiores imagens \textit{Gigapixel} até hoje, 
-o projeto \textit{Servilla 111 Gigapixels}, coordenado por \cite{sevilla111},  conta com 9,750 fotografias, dispostas
-em 65 linhas. Nesse projeto foram executados, no melhor dos casos, 9536 registros entre fotos de 22 \textit{Megapixels}
-, algo claramente custoso.
-
-    Podemos acelerar o processo de custura das imagens usando várias abordagens diferentes. A mais clássica seria
-paralelizar o algoritmo inteiro, utilizando a grande capacidade das \textit{CPUs} atuais em executar processos paralelos.
-Outra abordagem é atacar diretamente o passo do registro, construindo algoritmos menos custosos ou melhorar algoritmos
-existentes. A abordagem escolhida foi modificar o TPS, criando uma versão que segue a arquitetura 
-\textit{Single Instruction Multiple Data} (SIMD). A escolha foi feita pensando em uma implementação para 
-Unidades de Processamento Gráfico (\textit{Graphic Processing Units} (GPUs)).
+	
 
 
 
@@ -47,10 +14,6 @@ registtro + gigapixel - o problema de desempenho, como resolver.
 % \emph{Thesis are random access. Do NOT feel obliged to read a thesis from beginning to end.}
 
 %% ------------------------------------------------------------------------- %%
-\section{Objetivos}
-\label{sec:objetivo}
-
-%% ------------------------------------------------------------------------- %%
 \section{Trabalhos Relacionados}
 \label{sec:objetivo}
 
@@ -58,8 +21,6 @@ registtro + gigapixel - o problema de desempenho, como resolver.
 \section{Organização do Trabalho}
 \label{sec:organizacao_trabalho}
 
-No Capítulo~\ref{cap:conceitos}, apresentamos os conceitos ... Finalmente, no
-Capítulo~\ref{cap:conclusoes} discutimos algumas conclusões obtidas neste
-trabalho. Analisamos as vantagens e desvantagens do método proposto ... 
-
-As sequências testadas no trabalho estão disponíveis no Apêndice \ref{ape:sequencias}.
+No Capítulo~\ref{cap:conceitos}, apresentamos o que é Registro, Unidade de Processamento Gráfico, GPGPU e os algoritmos 
+de registro escolhidos. No Capítulo \ref{cap:resultados} os testes utilizados e os resultados dos dois algoritmos 
+escolhidos são apresentados. Finalmente, no Capítulo~\ref{cap:conclusoes} analisamos os resultados obtidos 

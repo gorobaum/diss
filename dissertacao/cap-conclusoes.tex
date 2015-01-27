@@ -1,22 +1,57 @@
 %% ------------------------------------------------------------------------- %%
-\chapter{Conclusões}
+\chapter{Conclusão}
 \label{cap:conclusoes}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto\footnote{Exemplo de referência para página
-Web: \url{www.vision.ime.usp.br/~jmena/stuff/tese-exemplo}}.
+	O aumento da qualidade de imagens proveniente da melhoria da tecnologia associada com cameras e afins, juntamente com
+a crescente facilidade de manter e utilizar grande quantidade de dados melhorou a condição para a realização de estudos
+envolvendo uma quantidade gigantesca de dados proveniente de imagens. Para acelerar o processamento dessa
+grande quantidade de dados estudamos algoritmos de registro que fossem facilmente paralelizaveis.
+
+	A escolha da GPU como plataforma utilizada para acelerar os algoritmos veem da velocidade com a qual a sua capacidade
+de processamento está aumentando. Se comparadas com placas de três anos atrás, GPUs de hoje em dia apresentam uma melhoria
+de, em torno, três a cinco vezes mais poder de processamento. Com esses requisitos em mente estudamos algoritmos de registro
+que se adaptam à arquitetura SIMD sem precisar de muitas modificações. Os dois escolhidos para passarem em testes de
+eficácia foram o \textit{Thin Plate Splines} e o \textit{Demons}.
+
+	Nossos testes apontam para a escolha do TPS como o algoritmo que será portado para a plataforma GPGPU. Seu algoritmo
+pode ser escrito fácilmente seguinto o SIMD e seus resultados para deformações mais gerais foram superiores ao 
+\textit{Demons}.
 
 %------------------------------------------------------
-\section{Considerações Finais} 
+\section{Próximos Passos} 
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto. 
+	Os próximos passos para completar o estudo são, em prioridade:
+\begin{itemize}
+	\item[\textbf{A}] Escolher e utilizar algum algoritmo para encontrar e corresponder as características nas imagens;
+	\item[\textbf{B}] Criar um arcabouço em torno do TPS para facilitar a sua execução com multiplas entradas;
+	\item[\textbf{C}] Criar uma versão GPGPU do TPS utilizando o CUDA;
+	\item[\textbf{D}] Estudar e implementar um método para acelerar para o algoritmo escolhido no passo 1;
+	\item[\textbf{E}] Escrever a dissertação.
+\end{itemize}
 
-%------------------------------------------------------
-\section{Sugestões para Pesquisas Futuras} 
+\section{Cronograma}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto.
+\begin{table}
+\begin{center}
+\begin{small}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} 
+\hline
+\emph{Tarefa} &
+Março & 
+Abril & 
+Maio &  
+Junho & 
+Julho &
+Agosto & 
+Setembro \\ \hline
+\textbf{A} & X & X & X & X & X & X & X \\ \hline 
+\textbf{B} & X & X & X & X & X & X & X \\ \hline 
+\textbf{C} & X & X & X & X & X & X & X \\ \hline 
+\textbf{D} & X & X & X & X & X & X & X \\ \hline 
+\textbf{E} & X & X & X & X & X & X & X \\ \hline 
+\end{tabular}
+\caption{Cronograma.}
+\label{tab:tab:F5}
+\end{small}
+\end{center}
+\end{table}

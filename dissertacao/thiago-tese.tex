@@ -18,6 +18,7 @@
 \usepackage{setspace}                   % espaçamento flexível
 \usepackage{indentfirst}                % indentação do primeiro parágrafo
 \usepackage{makeidx}                    % índice remissivo
+\usepackage{float}
 \usepackage[nottoc]{tocbibind}          % acrescentamos a bibliografia/indice/conteudo no Table of Contents
 \usepackage{courier}                    % usa o Adobe Courier no lugar de Computer Modern Typewriter
 \usepackage{type1cm}                    % fontes realmente escaláveis
@@ -29,6 +30,7 @@
 %\usepackage[bf,small,compact]{titlesec} % cabeçalhos dos títulos: menores e compactos
 \usepackage[fixlanguage]{babelbib}
 \usepackage[font=small,format=plain,labelfont=bf,up,textfont=it,up]{caption}
+\usepackage{subcaption}
 \usepackage[usenames,svgnames,dvipsnames]{xcolor}
 \usepackage[a4paper,top=2.54cm,bottom=2.0cm,left=2.0cm,right=2.54cm]{geometry} % margens
 %\usepackage[pdftex,plainpages=false,pdfpagelabels,pagebackref,colorlinks=true,citecolor=black,linkcolor=black,urlcolor=black,filecolor=black,bookmarksopen=true]{hyperref} % links em preto
@@ -62,7 +64,7 @@
 % Opções de listing usados para o código fonte
 % Ref: http://en.wikibooks.org/wiki/LaTeX/Packages/Listings
 \lstset{ %
-language=Java,                  % choose the language of the code
+language=C,                  % choose the language of the code
 basicstyle=\footnotesize,       % the size of the fonts that are used for the code
 numbers=left,                   % where to put the line-numbers
 numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
@@ -107,7 +109,7 @@ framexrightmargin=10pt
 \thispagestyle{empty}
 \begin{center}
     \vspace*{2.3cm}
-    \textbf{\Large{Aceleração de registro não-linear de imagens médicas em três dimensões}}\\
+    \textbf{\Large{Aceleração de registro não rigido de imagens}}\\
     
     \vspace*{1.2cm}
     \Large{Thiago de Gouveia Nunes}
@@ -219,17 +221,18 @@ framexrightmargin=10pt
 % Resumo
 \chapter*{Resumo}
 
-\noindent SOBRENOME, A. B. C. \textbf{Título do trabalho em português}. 
-2010. 120 f.
-Tese (Doutorado) - Instituto de Matemática e Estatística,
-Universidade de São Paulo, São Paulo, 2010.
+\noindent Nunes, T. G. - \textbf{Aceleração de registro não rigido de imagens}. 
+2015.
+Qualificação (Mestrado) - Instituto de Matemática e Estatística,
+Universidade de São Paulo, São Paulo, 2015.
 \\
-O registro de imagens em 3D é uma etapa essencial em várias aplicações na área médica
-que incluem desde análises populacionais até planejamentos cirúrgicos e de terapias.
-Como grande parte da constituição física humana é de tecidos moles, as deformações
-que ocorrem durante cirurgias ou mesmo na comparação da mesma estrutura
-entre diferentes indíviduos são de natureza não linear. Atualmente, estudos clínicos
-que envolvem milhares de indivíduos estão se tornando cada vez mais comuns, sugerindo
+
+O registro de imagens é uma etapa essencial em várias aplicações na área de processamento de imagens,
+que incluem desde análises populacionais na área médica até reconstrução de mapas utilizando 
+imagens de satélite. Deformações não rígidas representam melhor a ampla possibilidades de
+deformações que estão presentes em várias categorias de imagens que passam por algoritmos
+de registro. Atualmente, estudos
+que envolvem milhares de imagens estão se tornando cada vez mais comuns, sugerindo
 que técnicas de aceleração de registro sejam desenvolvidas de forma a minimizar o
 tempo de análise. Como as técnicas de registro não linear são tradicionalmente custosas
 computacionalmente, o uso de {\it graphic processing units} (GPUs) possibilita a
@@ -240,22 +243,21 @@ utilizadas na área médica, aplicadas à arquiteturas modernas de GPU, e a aval
 eficiência.
 \\
 
-\noindent \textbf{Palavras-chave:} registro, palavra-chave2, palavra-chave3.
+\noindent \textbf{Palavras-chave:} registro, tps, demons, gpgpu, gigapixel.
 
 % ---------------------------------------------------------------------------- %
 % Abstract
 \chapter*{Abstract}
-\noindent SOBRENOME, A. B. C. \textbf{Título do trabalho em inglês}. 
-2010. 120 f.
-Tese (Doutorado) - Instituto de Matemática e Estatística,
-Universidade de São Paulo, São Paulo, 2010.
+\noindent Nunes, T. G. - \textbf{Acceleration of Non Rigid Image Registrarion}. 
+2015.
+Qualificação (Mestrado) - Instituto de Matemática e Estatística,
+Universidade de São Paulo, São Paulo, 2015.
 \\
 
-The 3D image registration is an essential step in a great number of applications in medical
-image, that include from population studies to surgical and therapy planing. As a big part
-of the human body is compose of soft tissues, the deformations that take place over a medical
-procedure or even in the comparison of a same body structure of different patients have a non linear
-nature. Presently clinical studies that involve thousands of individuals are becoming very usual, 
+The image registration is an essential step in a great number of applications in image processing, 
+that include from population studies to map reconstruction based on satellite images. Non rigid deformations
+represent a big slice of all possible deformations that are present in images that go through the registration process. 
+Presently studies that involve thousands of images are becoming very usual, 
 suggesting that acceleration techniques be developed to decrease the analysis time. Registration techniques are usually
 very computational demanding, so the use of {\it graphic processing units} (GPUs) creates a possibility to
 speedup several steps of the registration process, like the extraction of features, determination of feature
@@ -264,7 +266,7 @@ non linear techniques that are largely used in medical imaging, apply then to an
 valuate theirs efficiency.
 \\
 
-\noindent \textbf{Keywords:} keyword1, keyword2, keyword3.
+\noindent \textbf{Keywords:} registration, tps, demons, gpgpu, gigapixel.
 
 % ---------------------------------------------------------------------------- %
 % Sumário
@@ -273,10 +275,10 @@ valuate theirs efficiency.
 % ---------------------------------------------------------------------------- %
 \chapter{Lista de Abreviaturas}
 \begin{tabular}{ll}
-         CFT         & Transformada contínua de Fourier (\emph{Continuous Fourier Transform})\\
-         DFT         & Transformada discreta de Fourier (\emph{Discrete Fourier Transform})\\
-        EIIP         & Potencial de interação elétron-íon (\emph{Electron-Ion Interaction Potentials})\\
-        STFT         & Tranformada de Fourier de tempo reduzido (\emph{Short-Time Fourier Transform})\\
+        TPS         & \textit{Thin Plate Splines}\\
+        GPU         & Unidades de Processamento Gráfico (\textit{Graphic Processing Units})\\
+        GPGPU       & Programação Genérica em GPUs (\textit{General-purpose computing on graphics processing units})\\
+        CUDA        & \textit{Compute Unified Device Architecture}\\
 \end{tabular}
 
 % ---------------------------------------------------------------------------- %
@@ -305,6 +307,7 @@ valuate theirs efficiency.
 
 \input{cap-introducao}        % associado ao arquivo: 'cap-introducao.tex'
 \input{cap-conceitos}         % associado ao arquivo: 'cap-conceitos.tex'
+\input{cap-resultados}        % associado ao arquivo: 'cap-resultados.tex'
 \input{cap-conclusoes}        % associado ao arquivo: 'cap-conclusoes.tex'
 
 % cabeçalho para os apêndices
@@ -312,20 +315,11 @@ valuate theirs efficiency.
 \fancyhead[RE,LO]{}
 \appendix
 
-\include{ape-conjuntos}      % associado ao arquivo: 'ape-conjuntos.tex'
 % ---------------------------------------------------------------------------- %
 % Bibliografia
 \backmatter \singlespacing   % espaçamento simples
 \bibliographystyle{plainnat-ime} % citação bibliográfica textual
 \bibliography{bibliografia}  % associado ao arquivo: 'bibliografia.bib'
-
-% ---------------------------------------------------------------------------- %
-% Índice remissivo
-\index{TBP|see{periodicidade região codificante}}
-\index{DSP|see{processamento digital de sinais}}
-\index{STFT|see{transformada de Fourier de tempo reduzido}}
-\index{DFT|see{transformada discreta de Fourier}}
-\index{Fourier!transformada|see{transformada de Fourier}}
 
 \printindex   % imprime o índice remissivo no documento 
 

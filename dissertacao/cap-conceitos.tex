@@ -20,7 +20,7 @@ Podemos definir o processo de registro com a seguinte equação, como \cite{brow
 \end{align}
     Representamos uma imagem como uma matriz de pixels e acessamos seus pixels utilizando a seguinte convenção $R(x,y)$ 
 que nos dá o pixel da imagem $R$ na posição $(x,y)$. $f(x,y) = (x',y')$ é uma função que representa o deslocamento do 
-campo vetorial encontrado pelo registro e $g$ é uma função que modifica a intensidade dos pixels, se for necessário. 
+campo vetorial encontrado pelo registro e $g$ é uma função que modifica a intensidade dos pixels, se for necessário.
 Cada algoritmo de registro utiliza um método diferente para encontrar a função de transformação $f$, mas os passos gerais são:
 \begin{enumerate}
     \item Pré-processamento;
@@ -28,19 +28,48 @@ Cada algoritmo de registro utiliza um método diferente para encontrar a funçã
     \item Correspondência de características;
     \item Estimativa da função de transformação;
     \item Reamostragem da imagem Alvo.
-\end{enumerate}
+\end{enumerate} % TODO: Colocar o diagrama aqui %
     É importante salientar que nem todos algoritmos de registro seguem essa lista a risca, e mesmo que sigam eles ainda
 podem realizar mais de um passo por vez. Os passos gerais são representados na imagem \ref{fig:regExplicacao}. 
 Vamos tratar brevemente dos passos nas seções a seguir, explicitando em alguns pontos onde os passos podem ser acelerados,
 principalmente pela paralelização de suas operações.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=1\textwidth]{figuras/regSteps.jpg}
-    \caption{Na primeira linha estão a imagem referência e a alvo, respectivamente. Na segunda linha as características
-da imagem referência foram encontradas e suas correspondentes na imagem Alvo. A última linha mostra a estimação da 
-função e a sua reamostragem da imagem Alvo. \citep{zitova2003image}}
-    \label{fig:regExplicacao}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \includegraphics[width=\textwidth]{figuras/static.png}
+      \subcaption*{(a)}
+      \label{fig:ref-image}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \includegraphics[width=\textwidth]{figuras/leiaMoving.png}
+      \subcaption*{(b)}
+      \label{fig:sin-image}
+    \end{subfigure} \\
+    \begin{subfigure}[t]{0.64\textwidth}
+      \includegraphics[width=\textwidth]{figuras/Features.png}
+      \subcaption*{(c)}
+      \label{fig:dist-image}
+    \end{subfigure} \\
+    \begin{subfigure}[t]{0.64\textwidth}
+      \includegraphics[width=\textwidth]{figuras/MatchedFeatures.png}
+      \subcaption*{(d)}
+      \label{fig:dist-image}
+    \end{subfigure} \\
+    \begin{subfigure}[t]{0.3\textwidth}
+      \includegraphics[width=\textwidth]{figuras/estimativa.png}
+      \subcaption*{(e)}
+      \label{fig:dist-image}
+    \end{subfigure} 
+    \begin{subfigure}[t]{0.3\textwidth}
+      \includegraphics[width=\textwidth]{figuras/leiaRegistrada.png}
+      \subcaption*{(f)}
+      \label{fig:dist-image}
+    \end{subfigure}
+    \caption{(a) imagem Referência. (b) imagem Alvo deformada pela função seno. 
+             (c) Detecção de características. (d) Correspondência de características.
+             (e) Estimativa da função de transformação. (f) Reamostragem da imagem Alvo.}
+    \label{fig:resultados}
 \end{figure}
 
 %% ------------------------------------------------------------------------- %%
@@ -48,27 +77,30 @@ função e a sua reamostragem da imagem Alvo. \citep{zitova2003image}}
     Essa é a etapa mais aberta dentre todas, já que sua aplicação é totalmente dependente do problema a ser resolvido. 
 Antes de iniciar o processo de registro, é possível que as imagens tenham que passar por algum processamento para 
 melhorar o resultado final do registro. O pré-processamento muda de acordo com as necessidades de cada caso. Caso as
-imagens tenham muito ruido, essa é a hora de aplicar filtros para melhorar sua qualidade, como um filtro Gaussiano ou 
-o de Medianas. Certos algoritmos de registro não trabalham com as imagens, e sim com segmentações delas ou somente com 
-suas bordas, então é necessário aplicar algoritmos como o \textit{Watershed} ou o \textit{Canny} para obter as 
-segmentações e bordas, respectivamente.
+imagens tenham muito ruído, essa é a hora de aplicar filtros para melhorar sua qualidade, como um filtro Passa Alta ou 
+o Passa Baixa. Certos algoritmos de registro não trabalham com as imagens, e sim com segmentações delas ou somente com 
+suas bordas, então é necessário aplicar algoritmos como o \textit{Watershed}, introduzido por \cite{vincent1991watersheds}
+ou o \textit{Canny}, desenvolvido por \cite{canny1986computational}, para obter as segmentações e bordas, respectivamente.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Detecção de características}\index{Detecção de características}
 \label{sec:dec_corr_carac}
 
-    Com as imagens já pré processadas, o primeiro passo para um algoritmo de registro é a localização de estruturas de 
-destaque dentro da cena ou objeto representado pelas imagens. Características devem ser facilmente identificadas, 
-independente de variações na aquisição das fotografias, como mudanças na angulação ou perspectiva. 
-Elas são separadas em 3 grupos, baseando-se nas suas propriedades:
+    Com as imagens já pré-processadas, o primeiro passo para um algoritmo de registro é a localização de estruturas de 
+destaque na cena ou objeto dentro das imagens. Essas estruturas são nomeadas de características, e são construidas a partir
+de um conjunto de pixels. Características devem ser facilmente identificadas, independente de variações na aquisição das 
+fotografias, como mudanças na angulação ou perspectiva. Elas são separadas em 3 grupos, baseando-se nas suas propriedades:
 
-\textbf{Características de Região} - São características encontradas utilizando a diferença de contraste entre elas e
-as regiões vizinhas. Lagos, florestas ou regiões urbanas são exemplos desse tipo de característica.
-Sua detecção é feita utilizando algoritmos de segmentação.
+\textbf{Características de Região} - As características de Região são áreas de uma imagem que apresentam uma diferença
+significativa de contraste em relação a áreas vizinhas. Lagos, florestas ou regiões urbanas são exemplos desse tipo de 
+característica. Elas são identificadas utilizando algoritmos de segmentação, e normalmente são representadas por um
+conjunto conexo de pixels ou utilizando um \textit{template} de formato retângular ou circular centrado no centro de 
+massa da Região.
 
-\textbf{Características de Retas} - Essas características são marcadas pelas suas bordas. Podem ser ruas, rios ou o 
-litoral. Métodos clássicos de detecção de bordas como o Canny ou o filtro laplaciano são usados para identificar essas 
-características.
+\textbf{Características de Retas} - Essas características são definidas como a interface entre duas regiões de uma imagem,
+comumente chamadas de bordas. Exemplos comuns de características de Reta são ruas, rios ou o litoral, onde podemos 
+claramente visualizar a diferença de intensidade, por exemplo, do mar e da areia. Métodos clássicos de detecção de bordas 
+como o Canny ou o filtro laplaciano são usados para identificar essas características.
 
 \textbf{Características de Ponto} - São pontos de intersecção entre linhas, representados por intersecções de ruas ou
 rios, ou pontos de máxima curvatura. Algoritmos para identificação de pontos utilizam técnicas mais avançadas, dada a 
@@ -78,13 +110,13 @@ centroides de regiões ou o máximo local de uma \textit{wavelet}.
     Dada a importância desse passo, vários algoritmos foram desenvolvidos com o passar dos anos para resolver de maneira
 rápida e eficiente a detecção de características. Alguns dos mais famosos, como o 
 \textit{Scale Invariant Feature Transform} (SIFT) , introduzido por \cite{lowe1999object}, transforma uma imagem em uma 
-coleção de vetores de características locais, que são usados para identificar as características. Outro algoritmo famoso,
+coleção de vetores de características locais, que são usados para identificá-las. Outro algoritmo famoso,
 desenvolvido por \cite{bay2006surf}, o \textit{Speeded Up Robust Features} (SURF) utiliza o determinante da matriz de
 Hessian para identificar regiões da imagem que tenham um valor diferenciado para alguma propriedade, como brilho, de 
 regiões vizinhas. Ao identificar uma região, ele calcula a característica dela utilizando a soma dos 
 \textit{Wavelets de Haar}.
 
-    A verificação de existencia de caracteristica em um pixel não interfere na verificação em quaisquer outro pixel da
+    A verificação de existência de característica em um pixel não interfere na verificação em quaisquer outro pixel da
 imagem, já que não precisamos modificar a imagem em nenhuma maneira. Uma simples paralelização do processamento já o
 acelera.
 
@@ -105,7 +137,7 @@ métricas em cada uma das janelas com a finalidade de calcular a relação entre
 esse cálculo para todas as combinações possíveis de janelas entre as duas imagens, e sempre que um máximo é encontrado
 o centro das janelas são usados para marcar a correspondência. Várias métricas podem ser utilizadas, como a 
 Correlação entre as intensidades das janelas, o estudo do espectro da transformada de \textit{Fourier} das janelas ou 
-o cálculo da informação mutua entre elas.
+o cálculo da informação mútua entre elas.
 
     A descoberta de correspondência entre \textbf{Características de Região} é feita utilizando, principalmente, duas 
 técnicas. A primeira, mais simples na sua ideia, é parear regiões da imagem Referência com a região da imagem Alvo a qual
@@ -117,15 +149,15 @@ exemplos de métodos usados para realizar a correspondência entre característi
 de Região, ou seja, devem conseguir realizar o pareamento de linhas que sofreram rotação, mudança de escala ou translação.
 O primeiro passo de um algoritmo é comparar as retas da imagem Referência com todas as possíveis rotações de todas as retas
 da imagem Alvo. Quando um possível par é encontrado, um valor de correspondência é calculado, utilizando um peso maior para
-a direção da reta, algo que não sofre tanta influência de ruido, e um peso menor para atributos como comprimento e largura,
-que são influenciados pelo ruido. O algoritmo ainda deve ser capaz de parear mais de duas retas por vez, dada a possibilidade
+a direção da reta, algo que não sofre tanta influência de ruído, e um peso menor para atributos como comprimento e largura,
+que são influenciados pelo ruído. O algoritmo ainda deve ser capaz de parear mais de duas retas por vez, dada a possibilidade
 de uma reta em uma das imagens ser representada por duas retas na outra imagem.
 
     Por fim, as correspondências entre \textbf{Características de Ponto} podem ser encontradas utilizando-se várias técnicas
 distintas. Como o número e o agrupamento de pontos geralmente não muda tanto com rotações e translações de imagens, métodos de 
 \textit{Clustering} são usados para parear pontos. Os \textit{Clusters} são montados com base na proximidade dos parâmetros
 de uma transformação que leve pontos da imagem Alvo para pontos da imagem Referência. Outro método define as características
-através de descritores invariantes que podem obedecer a 4 regras: \textbf{Invariancia}, características correspondentes 
+através de descritores invariantes que podem obedecer a 4 regras: \textbf{Invariância}, características correspondentes 
 devem ter os mesmos descritores; \textbf{Unicidade}, características diferentes devem ter descritores diferentes; 
 \textbf{Estabilidade}, os descritores devem deformar de maneira proporcional a deformação aplicada na imagem; e 
 \textbf{Independência}, se o descritor for representado por um vetor, seus componentes devem ser independentes. 
@@ -236,19 +268,20 @@ vezes a mais pelo PCI Express.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{figuras/pipeline.jpg}
-    \caption{\textit{Pipeline} do OpenGL 2.x, por \citep{pipeline}}
+    \includegraphics[width=1\textwidth]{figuras/pipeline.jpg}
+    \caption{\textit{Pipeline} do OpenGL 4.x, por \citep{pipeline}. Todos os passos marcados pela cor amarela podem
+    ser reprogramados para serem utilziados por aplicações GPGPU. (Modificada)}
     \label{fig:pipeline}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{figuras/simd.jpg}
-    \caption{Arquitetura da GPU SIMD, por \citep{blythe2008rise}}
+    \caption{Arquitetura da GPU SIMD, por \citep{blythe2008rise}.}
     \label{fig:simd}
 \end{figure}
 
-\subsection{CUDA}
+\subsection{CUDA}\index{CUDA}
 \textit{Compute Unified Device Architecture}, definida pela (CUDA) é uma arquitetura de programação para GPUs criada 
 pela ~\cite{nvidia2007compute}.
 Ele adiciona suas diretrizes para as linguagens C, C++, FORTRAN e Java, permitindo que elas usem a GPU.
@@ -361,7 +394,7 @@ GPUs com Compute Cabapility maior ou igual a 2.0 podem alocar memória dentro do
 Falaremos mais sobre eles abaixo.
 
 %% ------------------------------------------------------------------------- %%
-\subsection{\textit{Demons}}
+\subsection{\textit{Demons}}\index{Demons}
     O \textit{Demons} foi proposto por \cite{thirion1995fast}. Diferentemente de grande parte dos algoritmos de registro,
 ele não segue exatamente os passos descritos acima. Ele tem como base o modelo de atratores, que dado dois conjuntos de pontos
 em cada uma das imagens, os pontos da imagem Alvo são atraidos para seus pares na imagem Referência utilizando alguma métrica.
@@ -415,19 +448,19 @@ com as dimensões de A que contém uma aproximação da transformação aplicada
 Cada iteração realiza 3 passos:
 \begin{enumerate}
     \item Para cada \textit{Demon} em $A_i$, calculamos $\vec{v_i}$, criando um novo campo vetorial $V_i$
-    \item Aplicamos um filtro Gaussiano para retirar o ruido introduzido pelo processo em $V_i$
+    \item Aplicamos um filtro Gaussiano para retirar o ruído introduzido pelo processo em $V_i$
     \item Aplicamos $V_i$ em $A$ para obter $A_{i+1}$;
 \end{enumerate}
     Esse processo é feito até que $A_i$ convirja à $R$. É importante lembrar que é necessário a
 utilização de um algoritmo de interpolação, já que é extremamente provável que o vetor $\vec{v}$
 leve os pontos para posições não inteiras. A interpolação trilinear já é suficiente para tal.
 
-\subsubsection{\textit{Demons} Simétrico}
+\subsubsection{\textit{Demons} Simétrico}\index{Demons Simétrico}
     O método acima é conhecido como \textit{Demons} Assimétrico, pois ele só utiliza informações vindas
 da imagem referência. No mesmo artigo, Thirion propõe um outro método, conhecido como Simétrico.
 Nele a equação para o cálculo de $\vec{v}$ leva o gradiente das imagens $A_i$. Ele obtém resultados
 melhores ao custo do cálculo do gradiente de $A_i$ em toda iteração. Sua fórmula é dada por:
-\begin{align}
+\begin{align}\label{math:demons}
     \vec{v} = \frac{4(a - r)*\vec{\nabla}r|\vec{\nabla}r||\vec{\nabla}a|}
                     {(\vec{\nabla}r+\vec{\nabla}a)^2*(\vec{\nabla}r^2 + \vec{\nabla}a^2 + 2(a - r)^2)}
 \end{align}
@@ -441,8 +474,8 @@ Devemos tomar cuidado para garantir que os passos sejam executadas de forma sequ
 a execução do passo 2 antes que todos tenham executado o passo 1.
 
 %% ------------------------------------------------------------------------- %%
-\subsection{Thin Plate Splines}
-    O Thin Plate Splines (TPS) segue mais a risca os passos gerias de um algoritmo de registro. Ele utiliza
+\subsection{Thin Plate Splines}\index{TPS}
+    O Thin Plate Splines (TPS) segue mais à risca os passos gerais de um algoritmo de registro. Ele utiliza
 características para criar uma função de interpolação que é utilizada para criar a imagem registrada a partir
 da imagem referência. Vários algoritmos podem ser utilizados para adquirir as características que serão usadas
 pelo TPS, mas não abordaremos esse assunto pois ele foge do escopo do trabalho. Assumimos no inicio da sua
@@ -489,3 +522,5 @@ próximo passo para realizar a acelereção do TPS é criar dois vetores que gua
 e $(y-y^i)^2$. O uso desses vetores diminui o número de operações necessárias de $n_l*n_c$ para $n_l+n_c$. Da maneira
 original, a operação $(x-x^i)^2$ é repetida $n_c$ vezes para cada coluna, já com o uso dos vetores esse valor é calculado
 uma única vez e acessado toda vez que ele é necessário.
+
+% Colocar outros algoritmos de regitro %
