@@ -2,20 +2,38 @@
 \chapter{Introdução}
 \label{cap:introducao}
 
-	
-
-
-
-Falar sobre
-gigapixel - o que é em linhas gerais, onde começou, onde é usado
-registro - áreas que usam registro, como ele é usado
-registtro + gigapixel - o problema de desempenho, como resolver.
-
 % \emph{Thesis are random access. Do NOT feel obliged to read a thesis from beginning to end.}
 
 %% ------------------------------------------------------------------------- %%
 \section{Trabalhos Relacionados}
 \label{sec:objetivo}
+
+	Uma das primeira aplicações envolvendo o uso de GPUs no processamento de imagens foi feito por 
+\cite{fung2005openvidia}, que descreve o arcabouço de programação \textit{OpenVIDIA}, criado a partir do 
+\textit{OpenGL}, desenvolvido por \cite{opengl}. Antes do \textit{OpenVIDIA} o processamento de imagens em GPUs era
+feito utilizando o \textit{OpenGL}, uma linguagem para processamento gráfico, voltada para a renderização de cenas. Os
+algoritmos para processamento de imagem eram reescritos para utilizarem primitivas do \textit{OpenGL}. O 
+\textit{OpenVIDIA} criou um encapsulamento de chamadas do \textit{OpenGL} voltado para imagens, retirando a necessidade
+de traduzir os alçgoritmos e facilitando a utilização dos \textit{shaders} programáveis da GPU.
+
+	Com a introdução de linguagens próprias para programação em GPU, vários algoritmos de processamento de imagens foram
+traduzidos para a execução em GPUs. Na área de registro um dos primeiros artigos a tratar do assunto foi 
+\cite{strzodka2004image}, que apresenta uma implementação de um algoritmo de registro que utiliza uma técnica de redução
+de energia da diferença das imagens. \cite{kohn2006gpu} expandiu o trabalho anterior, criando uma versão do algoritmo
+para imagens em três dimensões e realizando um registro rigido antes do não-rigido. Ainda programando diretamente em
+\textit{OpenGL}, \cite{vetter2007non} propõem um algoritmo de registro multimodal para imagens médicas executando
+em uma GPU 7800 da \textit{NVIDIA}. O artigo leva em conta a organização da imagem na memória da GPU e o tempo de 
+transmissão dos dados da CPU para a GPU.
+
+	O trabalho de \cite{grossauer2008gpu} relata a criação de um algoritmo para registro que utiliza fluxo optico em 
+conjunto com métodos de \textit{Multi Grid}, usados para resolver equações diferenciais parciais. Ele descreve
+a aceleração do \textit{Multi Grid}, dada a sua afinidade com o \textit{Pipeline} gráfico. Em \cite{bui2009performance}
+o passo de interpolação de um algoritmo de registro multi modal entre imagens médicas é traduzido utilizando uma 
+linguagem para programação genérica em GPUs, o CUDA \cite{nvidia2007compute}. O estudo realiza uma comparação de eficiência
+entre o código em CPU e GPU de uma interpolação bilinear, apresentando como resultado uma aceleração de 60 vezes da GPU
+em relação a CPU.
+	
+
 
 %% ------------------------------------------------------------------------- %%
 \section{Organização do Trabalho}

@@ -69,7 +69,7 @@ principalmente pela paralelização de suas operações.
     \caption{(a) imagem Referência. (b) imagem Alvo deformada pela função seno. 
              (c) Detecção de características. (d) Correspondência de características.
              (e) Estimativa da função de transformação. (f) Reamostragem da imagem Alvo.}
-    \label{fig:resultados}
+    \label{fig:regExplicacao}
 \end{figure}
 
 %% ------------------------------------------------------------------------- %%
@@ -251,8 +251,8 @@ mesmo SM para qual o bloco foi escalonado. Existe um limite para a quantidade de
 dentro de um SM, que é definida pelos recursos que cada \textit{thread} consome. Por exemplo, não há como executar 10 \textit{threads}
 que consomem 10 registradores cada em um SM com 90 registradores.
 
-    A memória da GPU é limitada em relação à da CPU. GPUs tem, em média, 2GB
-de memória, enquanto CPUs tem 8GB. O acesso a um mesmo bloco de memória é concorrente, mas ao utilizar caches e leitura 
+    A memória da GPU é limitada em relação à da CPU. GPUs tem, em média, 4GB
+de memória, enquanto CPUs tem acesso a, no minimo, 8GB. O acesso a um mesmo bloco de memória é concorrente, mas ao utilizar caches e leitura 
 ou escritas em conjunto podemos minimizar a taxa com que leituras ou escritas conflitantes são feitas. Mas ainda sim é 
 necessário atenção ao escrever um kernel. Dada a estrutura do hardware da GPU, é melhor deixar \textit{threads} que façam 
 operações sobre posições de memória próximas no mesmo SM, assim elas podem utilizar a memória compartilhada do mesmo, e 
