@@ -1,5 +1,5 @@
 %% ------------------------------------------------------------------------- %%
-\chapter{Conclusão}
+\chapter{Trabalhos futuros}
 \label{cap:conclusoes}
 
 	O aumento da qualidade de imagens proveniente da melhoria da tecnologia associada com cameras e afins, juntamente com
@@ -12,22 +12,18 @@ de processamento está aumentando. Se comparadas com placas de três anos atrás
 de, em torno, três a cinco vezes mais poder de processamento. Com esses requisitos em mente estudamos algoritmos de registro
 que se adaptam à arquitetura SIMD sem precisar de muitas modificações. Os dois escolhidos para passarem em testes de
 eficácia foram o \textit{Thin Plate Splines} e o \textit{Demons}.
-
-	Nossos testes apontam para a escolha do TPS como o algoritmo que será portado para a plataforma GPGPU. Seu algoritmo
-pode ser escrito fácilmente seguinto o SIMD e seus resultados para deformações mais gerais foram superiores ao 
-\textit{Demons}.
-
 %------------------------------------------------------
 \section{Próximos Passos} 
 
 	Os próximos passos para completar o estudo são, em prioridade:
-\begin{itemize}
-	\item[\textbf{A}] Escolher e utilizar algum algoritmo para encontrar e corresponder as características nas imagens;
-	\item[\textbf{B}] Criar um arcabouço em torno do TPS para facilitar a sua execução com multiplas entradas;
-	\item[\textbf{C}] Criar uma versão GPGPU do TPS utilizando o CUDA;
-	\item[\textbf{D}] Estudar e implementar um método para acelerar para o algoritmo escolhido no passo 1;
-	\item[\textbf{E}] Escrever a dissertação.
-\end{itemize}
+\begin{enumerate}
+	\item Avaliar algoritmos utilizados na etapa 1 e 2 do registro para utilizá-los;
+	\item Criar um arcabouço em torno do TPS para facilitar a sua execução com multiplas entradas;
+	\item Criar uma versão GPGPU do TPS utilizando o CUDA;
+	\item Estudar e implementar um método para acelerar o algoritmo escolhido no passo 1;
+	\item Publicar um artigo;
+	\item Escrever a dissertação.
+\end{enumerate}
 
 \section{Cronograma}
 
@@ -44,11 +40,12 @@ Junho &
 Julho &
 Agosto & 
 Setembro \\ \hline
-\textbf{A} & X & X & X & X & X & X & X \\ \hline 
-\textbf{B} & X & X & X & X & X & X & X \\ \hline 
-\textbf{C} & X & X & X & X & X & X & X \\ \hline 
-\textbf{D} & X & X & X & X & X & X & X \\ \hline 
-\textbf{E} & X & X & X & X & X & X & X \\ \hline 
+\textbf{1} & X & X & X & X & X & X & X \\ \hline 
+\textbf{2} & X & X & X & X & X & X & X \\ \hline 
+\textbf{3} & X & X & X & X & X & X & X \\ \hline 
+\textbf{4} & X & X & X & X & X & X & X \\ \hline 
+\textbf{5} & X & X & X & X & X & X & X \\ \hline 
+\textbf{6} & X & X & X & X & X & X & X \\ \hline 
 \end{tabular}
 \caption{Cronograma.}
 \label{tab:tab:F5}
