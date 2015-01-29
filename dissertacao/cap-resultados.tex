@@ -1,8 +1,12 @@
 %% ------------------------------------------------------------------------- %%
 \chapter{Resultados Preliminares}
 \label{cap:resultados}
-	Para determinar qual algoritmo será escolhido para o estudo realizamos três testes, afim
-de descobrir a eficácia dos mesmos no registro de imagens. Os testes estão descritos abaixo.
+	A partir dos algoritmos estudados, escolhemos dois algoritmos para passarem em três testes para determinar sua 
+eficâcia. O primeiro escolhido foi o \textit{Demons}, dada a facilidade em adotar a arquitetura SIMD, sua popularidade 
+dentro da área de processamento de imagens médicas e seu poder em registrar pequenas deformações com baixo custo 
+computacional. O outro escolhido foi o TPS, que com seu método de registro que utiliza características, permite que ele
+seja aplicado a uma gama maior de tipo de imagens e os vários pontos em que ele pode ser acelerado. Os testes pelos 
+quais os algoritmos passaram estão descritos abaixo.
 
 %% ------------------------------------------------------------------------- %%
 %% ------------------------------------------------------------------------- %%
