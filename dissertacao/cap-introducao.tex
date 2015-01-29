@@ -7,6 +7,10 @@
 %% ------------------------------------------------------------------------- %%
 \section{Trabalhos Relacionados}
 \label{sec:objetivo}
+	Desde que as Unidades de Processamento Gráfico começaram a ser usadas em meados dos anos 2002 para execução de 
+código genérico, ou seja, sem a finalidade de renderizar uma cena, vários trabalhos traduziram algoritmos para a GPU.
+Algoritmos esses que são aplicados em várias áreas, como cálculo númerico, simulações cientificas e processamento de 
+imagens.
 
 	Uma das primeira aplicações envolvendo o uso de GPUs no processamento de imagens foi feito por 
 \cite{fung2005openvidia}, que descreve o arcabouço de programação \textit{OpenVIDIA}, criado a partir do 
@@ -18,12 +22,12 @@ de traduzir os alçgoritmos e facilitando a utilização dos \textit{shaders} pr
 
 	Com a introdução de linguagens próprias para programação em GPU, vários algoritmos de processamento de imagens foram
 traduzidos para a execução em GPUs. Na área de registro um dos primeiros artigos a tratar do assunto foi 
-\cite{strzodka2004image}, que apresenta uma implementação de um algoritmo de registro que utiliza uma técnica de redução
-de energia da diferença das imagens. \cite{kohn2006gpu} expandiu o trabalho anterior, criando uma versão do algoritmo
-para imagens em três dimensões e realizando um registro rigido antes do não-rigido. Ainda programando diretamente em
-\textit{OpenGL}, \cite{vetter2007non} propõem um algoritmo de registro multimodal para imagens médicas executando
-em uma GPU 7800 da \textit{NVIDIA}. O artigo leva em conta a organização da imagem na memória da GPU e o tempo de 
-transmissão dos dados da CPU para a GPU.
+\cite{strzodka2004image}, que apresenta uma implementação de um algoritmo de registro não rigido que utiliza uma técnica
+de redução de energia da diferença das imagens. \cite{kohn2006gpu} expandiu o trabalho anterior, criando uma versão do 
+algoritmo para imagens em três dimensões e realizando um registro rigido antes do não-rigido. Ainda programando 
+diretamente em \textit{OpenGL}, \cite{vetter2007non} propõem um algoritmo de registro multimodal para imagens médicas 
+executando em uma GPU 7800 da \textit{NVIDIA}. O artigo leva em conta a organização da imagem na memória da GPU e o 
+tempo de transmissão dos dados da CPU para a GPU.
 
 	O trabalho de \cite{grossauer2008gpu} relata a criação de um algoritmo para registro que utiliza fluxo optico em 
 conjunto com métodos de \textit{Multi Grid}, usados para resolver equações diferenciais parciais. Ele descreve

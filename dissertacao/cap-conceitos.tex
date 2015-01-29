@@ -465,6 +465,126 @@ melhores ao custo do cálculo do gradiente de $A_i$ em toda iteração. Sua fór
                     {(\vec{\nabla}r+\vec{\nabla}a)^2*(\vec{\nabla}r^2 + \vec{\nabla}a^2 + 2(a - r)^2)}
 \end{align}
 
+\subsubsection{Pseudo Algoritmo e Tempo Assintotico de Execução do \textit{Demons} Simétrico}
+
+  Abaixo temos a construção de um pseudo algoritmo do \textit{Demons} Simétrico, e de uma subfunção importante para sua 
+execução, a \textit{calcularCampoInstantaneo}, que calcula o deslocamento dos \textit{Demons} na iteração atual, 
+deslocamento esse que será somando ao campo de deslocamento total:
+
+\begin{lstlisting}[mathescape]
+demons(imagemReferencia, imagemAlvo, campoDeslocamento):
+  gradienteRef <- calcularGradienteDaImagem(imagemReferencia)
+  campoInstantaneo = 0
+  execute:
+    campoInstantaneoAntigo = campoInstantaneo
+    imagemEstimada <- aplicarCampoAImagem(campoDeslocamento, imagemAlvo)
+    campoInstantaneo <- calcularCampoInstantaneo(gradienteRef, imagemReferencia, imagemEstimada)
+    campoInstantaneo = filtroGaussiano(campoInstantaneo)
+    campoDeslocamento = campoDeslocamento + campoInstantaneo
+  enquanto (campoInstantaneo - campoInstantaneoAntigo) <= $\epsilon$:
+\end{lstlisting}
+
+\begin{lstlisting}[mathescape]
+calcularCampoInstantaneo(gradienteRef, imagemReferencia, imagemEstimada):
+  campoInstantaneo = 0
+  para x = 0, x menor que $n_l$ :
+    para y = 0, y menor que $n_c$ :
+      gradienteEstimado <- calcularGradienteDaImagem(imagemEstimada)
+      diff = imagemEstimada[x,y] - imagemReferencia[x,y]
+      vetorGradSimetrico = gradienteEstimado[x,y] + gradienteRef[x,y]
+      campoInstantaneo[x,y] = $\frac{2*vetorGradSimetrico*diff}{(diff^2+vetorGradSimetrico^2)}$
+  return campoInstantaneo
+\end{lstlisting}
+
+\begin{lstlisting}[mathescape]
+calcularGradienteDaImagem(imagem):
+  gradiente = 0
+  para x = 0, x menor que $n_l$ :
+    para y = 0, y menor que $n_c$ :
+      gradienteLinha = $\frac{imagem[x+1,y] - imagem[x-1,y]}{2}$
+      gradienteColuna = $\frac{imagem[x+1,y] - imagem[x-1,y]}{2}$
+      gradiente[x,y] = {gradienteLinha, gradienteColuna}
+  return gradiente
+\end{lstlisting}
+
+  As tabelas abaixo mostram o tempo de execução assintotico do \textit{Demons} Simétrico, totalizando 
+$\mathcal{O}(x*n_l^2*n_c^2)$:
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l|c}
+\hline
+Tempo de execução do algoritmo \textit{Demons} Simétrico \\
+\hline
+Linha&Tempo\\
+\hline
+2       &$\mathcal{O}(n_l*n_c)$ \\
+3       &$\mathcal{O}(1)$\\
+4       &$\mathcal{O}(1)$\\
+5       &$\mathcal{O}(1)$\\
+6       &$\mathcal{O}(n_l*n_c)$\\
+7       &$\mathcal{O}(n_l^2*n_c^2)$\\
+8       &$\mathcal{O}(n_l*n_c)$\\
+9       &$\mathcal{O}(1)$\\
+10       &$\mathcal{O}(x)$\\
+\hline
+Total   &$\mathcal{O}(x*n_l^2*n_c^2)$\\
+\hline
+\end{tabular}
+\caption{Tempo de execução do algoritmo \textit{Demons} Simétrico}
+\label{table:tps}
+\end{center}
+\end{table}
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l|c}
+\hline
+Tempo de execução do algoritmo \textit{calcularCampoInstantaneo} \\
+\hline
+Linha&Tempo\\
+\hline
+2       &$\mathcal{O}(1)$ \\
+3       &$\mathcal{O}(n_l)$ \\
+4       &$\mathcal{O}(n_c)$\\
+5       &$\mathcal{O}(n_l*n_c)$\\
+6       &$\mathcal{O}(1)$\\
+7       &$\mathcal{O}(1)$\\
+8       &$\mathcal{O}(1)$\\
+9       &$\mathcal{O}(1)$\\
+\hline
+Total   &$\mathcal{O}(n_l^2*n_c^2)$\\
+\hline
+\end{tabular}
+\caption{Tempo de execução do algoritmo \textit{calcularCampoInstantaneo}}
+\label{table:interpolar}
+\end{center}
+\end{table}
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l|c}
+\hline
+Tempo de execução do algoritmo \textit{calcularGradienteDaImagem} \\
+\hline
+Linha&Tempo\\
+\hline
+2       &$\mathcal{O}(1)$ \\
+3       &$\mathcal{O}(n_l)$ \\
+4       &$\mathcal{O}(n_c)$\\
+5       &$\mathcal{O}(1)$\\
+6       &$\mathcal{O}(1)$\\
+7       &$\mathcal{O}(1)$\\
+8       &$\mathcal{O}(1)$\\
+\hline
+Total   &$\mathcal{O}(n_l*n_c)$\\
+\hline
+\end{tabular}
+\caption{Tempo de execução do algoritmo \textit{calcularGradienteDaImagem}}
+\label{table:interpolar}
+\end{center}
+\end{table}
+
 \subsubsection{Aceleração do \textit{Demons}}
     O primeiro passo do algoritmo iterativo pode ser acelerado utilizando a arquitetura SIMD. O calculo de um dos vetores
 depende do gradiente $\vec{\nabla}r$ e da diferença entre as intensidades da imagem Alvo e Referência $(a - r)$, logo
@@ -514,13 +634,99 @@ ele não se mova. As equações $\sum_{i=1}^n F_ix = 0$ e $\sum_{i=1}^n F_iy = 0
     Esse sistema deve ser resolvido duas vezes, uma para $f(x,y) = X$ e outra para $g(x,y) = Y$. Com todas as variáveis
 encontradas, podemos aplicar as funções de interpolação para desenhar a imagem final.
 
+\subsubsection{Pseudo Algoritmo e Tempo Assintotico de Execução}
+
+  Abaixo temos a construção de um pseudo algoritmo do tps, e de uma subfunção importante para sua execução, a 
+\textit{interpolar}, que realiza a interpolação da imagem Alvo na construção da imagem registrada:
+
+\begin{lstlisting}[mathescape]
+tps(imagemReferencia, imagemAlvo, caracImagemRef, caracImagemAlvo):
+  solucaoDaEquLinearEmX <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  solucaoDaEquLinearEmY <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  para x = 0, x menor que $n_l$ :
+    para y = 0, y menor que $n_c$ :
+      novoPontoX <- interpolar(x,y, solucaoDaEquLinearEmX, caracImagemRef)
+      novoPontoY <- interpolar(x,y, solucaoDaEquLinearEmY, caracImagemRef)
+      novaImagem[x, y] = imagemAlvo[novoPontoX, novoPontoY]
+\end{lstlisting}
+
+\begin{lstlisting}[mathescape]
+interpolar(x, y, solucaoDaEquLinear, caracImagemRef):
+  v[0] = 1
+  v[1] = x
+  v[2] = y
+  para n = 0, n menor que $n_{cp}$ :
+    xi = caracImagemRef[n].x
+    yi = caracImagemRef[n].y
+    r = $\sqrt{(x-xi)^2 + (y-yi)^2}$
+    v[n+3] = $r*\log{r}$
+  return $v \cdot solucaoDaEquLinear$ 
+\end{lstlisting}
+
+  As tabelas abaixo mostram o tempo de execução assintotico do tps, totalizando 
+$\mathcal{O}(\frac{4}{3}n_{cp}^3+n_l*n_c*n_{cp})$:
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l|c}
+\hline
+Tempo de execução do algoritmo \textit{tps} \\
+\hline
+Linha&Tempo\\
+\hline
+2       &$\mathcal{O}(\frac{2}{3}n_{cp}^3)$\\
+3       &$\mathcal{O}(\frac{2}{3}n_{cp}^3)$\\
+4       &$\mathcal{O}(n_l)$\\
+5       &$\mathcal{O}(n_c)$\\
+6       &$\mathcal{O}(n_{cp})$\\
+7       &$\mathcal{O}(n_{cp})$\\
+8       &$\mathcal{O}(1)$\\
+\hline
+Total   &$\mathcal{O}(\frac{4}{3}n_{cp}^3+n_l*n_c*n_{cp})$\\
+\hline
+\end{tabular}
+\caption{Tempo de execução do algoritmo \textit{tps}}
+\label{table:tps}
+\end{center}
+\end{table}
+
+  O tempo de execução da resolução do sistema linear foi retirada do livro escrito por 
+\cite[Part~IV]{trefethen1997numerical}, assumindo uma fatoração LU da matriz.
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l|c}
+\hline
+Tempo de execução do algoritmo \textit{interpolar} \\
+\hline
+Linha&Tempo\\
+\hline
+2       &$\mathcal{O}(1)$ \\
+3       &$\mathcal{O}(1)$ \\
+4       &$\mathcal{O}(1)$\\
+5       &$\mathcal{O}(n_{cp})$\\
+6       &$\mathcal{O}(1)$\\
+7       &$\mathcal{O}(1)$\\
+8       &$\mathcal{O}(1)$\\
+9       &$\mathcal{O}(1)$\\
+10      &$\mathcal{O}(n_{cp}+3)$\\
+\hline
+Total   &$\mathcal{O}(n_{cp})$\\
+\hline
+\end{tabular}
+\caption{Tempo de execução do algoritmo \textit{interpolar}}
+\label{table:interpolar}
+\end{center}
+\end{table}
+
 \subsubsection{Aceleração do Thin Plate Splines}
 
     O primeiro passo para acelerar o TPS é utilizar algoritmos para resolver o sistema linear diretamente na GPU, o que
 não é dificil dado que a matriz que representa o sistema sempre é simetrica com uma diagonal de zeros por construção. O
 próximo passo para realizar a acelereção do TPS é criar dois vetores que guardam todos os valores possíveis de $(x-x^i)^2$
-e $(y-y^i)^2$. O uso desses vetores diminui o número de operações necessárias de $n_l*n_c$ para $n_l+n_c$. Da maneira
-original, a operação $(x-x^i)^2$ é repetida $n_c$ vezes para cada coluna, já com o uso dos vetores esse valor é calculado
-uma única vez e acessado toda vez que ele é necessário.
+e $(y-y^i)^2$. O uso desses vetores diminui o número de operações necessárias de $n_l*n_c*n_{cp}$ para $(n_l+n_c)*n_{cp}$.
+Da maneira original, a operação $(x-x^i)^2$ é repetida $n_c$ vezes para cada coluna, já com o uso dos vetores esse valor
+é calculado uma única vez e acessado toda vez que ele é necessário.
+
 
 % Colocar outros algoritmos de regitro %
