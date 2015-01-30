@@ -79,17 +79,19 @@ Antes de iniciar o processo de registro, é possível que as imagens tenham que 
 melhorar o resultado final do registro. O pré-processamento muda de acordo com as necessidades de cada caso. Caso as
 imagens tenham muito ruído, essa é a hora de aplicar filtros para melhorar sua qualidade, como um filtro Passa Alta ou 
 o Passa Baixa. Certos algoritmos de registro não trabalham com as imagens, e sim com segmentações delas ou somente com 
-suas bordas, então é necessário aplicar algoritmos como o \textit{Watershed}, introduzido por \cite{vincent1991watersheds}
-ou o \textit{Canny}, desenvolvido por \cite{canny1986computational}, para obter as segmentações e bordas, respectivamente.
+suas bordas, então é necessário aplicar algoritmos como o \textit{Watershed}, introduzido por 
+\cite{vincent1991watersheds} ou o \textit{Canny}, desenvolvido por \cite{canny1986computational}, para obter as 
+segmentações e bordas, respectivamente.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Detecção de características}\index{Detecção de características}
 \label{sec:dec_corr_carac}
 
     Com as imagens já pré-processadas, o primeiro passo para um algoritmo de registro é a localização de estruturas de 
-destaque na cena ou objeto dentro das imagens. Essas estruturas são nomeadas de características, e são construidas a partir
-de um conjunto de pixels. Características devem ser facilmente identificadas, independente de variações na aquisição das 
-fotografias, como mudanças na angulação ou perspectiva. Elas são separadas em 3 grupos, baseando-se nas suas propriedades:
+destaque na cena ou objeto dentro das imagens. Essas estruturas são nomeadas de características, e são construidas a 
+partir de um conjunto de pixels. Características devem ser facilmente identificadas, independente de variações na 
+aquisição das fotografias, como mudanças na angulação ou perspectiva. Elas são separadas em 3 grupos, baseando-se nas 
+suas propriedades:
 
 \textbf{Características de Região} - As características de Região são áreas de uma imagem que apresentam uma diferença
 significativa de contraste em relação a áreas vizinhas. Lagos, florestas ou regiões urbanas são exemplos desse tipo de 
@@ -97,28 +99,22 @@ característica. Elas são identificadas utilizando algoritmos de segmentação,
 conjunto conexo de pixels ou utilizando um \textit{template} de formato retângular ou circular centrado no centro de 
 massa da Região.
 
-\textbf{Características de Retas} - Essas características são definidas como a interface entre duas regiões de uma imagem,
-comumente chamadas de bordas. Exemplos comuns de características de Reta são ruas, rios ou o litoral, onde podemos 
-claramente visualizar a diferença de intensidade, por exemplo, do mar e da areia. Métodos clássicos de detecção de bordas 
-como o Canny ou o filtro laplaciano são usados para identificar essas características.
+\textbf{Características de Retas} - Essas características são definidas como a interface entre duas regiões de uma 
+imagem, comumente chamadas de bordas. Exemplos comuns de características de Reta são ruas, rios ou o litoral, onde 
+podemos claramente visualizar a diferença de intensidade, por exemplo, do mar e da areia. Métodos clássicos de detecção 
+de bordas como o Canny ou o filtro laplaciano são usados para identificar essas características.
 
 \textbf{Características de Ponto} - São pontos de intersecção entre linhas, representados por intersecções de ruas ou
 rios, ou pontos de máxima curvatura. Algoritmos para identificação de pontos utilizam técnicas mais avançadas, dada a 
 dificuldade de encontrá-los. Os mais básicos encontram as intersecções de linhas enquanto os mais avançados buscam
 centroides de regiões ou o máximo local de uma \textit{wavelet}.
 
-    Dada a importância desse passo, vários algoritmos foram desenvolvidos com o passar dos anos para resolver de maneira
-rápida e eficiente a detecção de características. Alguns dos mais famosos, como o 
-\textit{Scale Invariant Feature Transform} (SIFT) , introduzido por \cite{lowe1999object}, transforma uma imagem em uma 
-coleção de vetores de características locais, que são usados para identificá-las. Outro algoritmo famoso,
-desenvolvido por \cite{bay2006surf}, o \textit{Speeded Up Robust Features} (SURF) utiliza o determinante da matriz de
-Hessian para identificar regiões da imagem que tenham um valor diferenciado para alguma propriedade, como brilho, de 
-regiões vizinhas. Ao identificar uma região, ele calcula a característica dela utilizando a soma dos 
-\textit{Wavelets de Haar}.
-
-    A verificação de existência de característica em um pixel não interfere na verificação em quaisquer outro pixel da
-imagem, já que não precisamos modificar a imagem em nenhuma maneira. Uma simples paralelização do processamento já o
-acelera.
+  Encontrar características em imagens é um passo não só de registro de imagens, mas em aprendizagem computacional, por
+exemplo reconhecimento de padrões. Dada essa importância, vários algoritmos foram desenvolvidos com o passar dos anos 
+para resolver de maneira rápida e eficiente a detecção de características. Falaremos sobre dois métodos firmados 
+no meio científico, o \textit{Scale Invariant Feature Transform} (SIFT) , introduzido por \cite{lowe1999object}, e o 
+\textit{Speeded Up Robust Features} (SURF), desenvolvido por \cite{bay2006surf}. Como esse métodos fazem tanto a captura
+das característica quanto a correspondência entre elas falamos sobre eles na próxima seção.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Correspondência de características}\index{Correspondência de características}
@@ -140,37 +136,38 @@ Correlação entre as intensidades das janelas, o estudo do espectro da transfor
 o cálculo da informação mútua entre elas.
 
     A descoberta de correspondência entre \textbf{Características de Região} é feita utilizando, principalmente, duas 
-técnicas. A primeira, mais simples na sua ideia, é parear regiões da imagem Referência com a região da imagem Alvo a qual
-tenha o contorno mais parecido possível. Os métodos que fazem esse pareamento devem ser capazes de encontrar os pares mesmo
-que eles tenham sofrido rotações ou mudança de escala. Descritores de Fourier e representações matriciais das regiões são
-exemplos de métodos usados para realizar a correspondência entre características de região.
+técnicas. A primeira, mais simples na sua ideia, é parear regiões da imagem Referência com a região da imagem Alvo a 
+qual tenha o contorno mais parecido possível. Os métodos que fazem esse pareamento devem ser capazes de encontrar os 
+pares mesmo que eles tenham sofrido rotações ou mudança de escala. Descritores de Fourier e representações matriciais 
+das regiões são exemplos de métodos usados para realizar a correspondência entre características de região.
 
     Os métodos para encontrar correspondências entre \textbf{Características de Retas} tem as mesmas restrições que os
-de Região, ou seja, devem conseguir realizar o pareamento de linhas que sofreram rotação, mudança de escala ou translação.
-O primeiro passo de um algoritmo é comparar as retas da imagem Referência com todas as possíveis rotações de todas as retas
-da imagem Alvo. Quando um possível par é encontrado, um valor de correspondência é calculado, utilizando um peso maior para
-a direção da reta, algo que não sofre tanta influência de ruído, e um peso menor para atributos como comprimento e largura,
-que são influenciados pelo ruído. O algoritmo ainda deve ser capaz de parear mais de duas retas por vez, dada a possibilidade
-de uma reta em uma das imagens ser representada por duas retas na outra imagem.
+de Região, ou seja, devem conseguir realizar o pareamento de linhas que sofreram rotação, mudança de escala ou 
+translação. O primeiro passo de um algoritmo é comparar as retas da imagem Referência com todas as possíveis rotações 
+de todas as retas da imagem Alvo. Quando um possível par é encontrado, um valor de correspondência é calculado, 
+utilizando um peso maior para a direção da reta, algo que não sofre tanta influência de ruído, e um peso menor para 
+atributos como comprimento e largura, que são influenciados pelo ruído. O algoritmo ainda deve ser capaz de parear mais 
+de duas retas por vez, dada a possibilidade de uma reta em uma das imagens ser representada por duas retas na outra 
+imagem.
 
-    Por fim, as correspondências entre \textbf{Características de Ponto} podem ser encontradas utilizando-se várias técnicas
-distintas. Como o número e o agrupamento de pontos geralmente não muda tanto com rotações e translações de imagens, métodos de 
-\textit{Clustering} são usados para parear pontos. Os \textit{Clusters} são montados com base na proximidade dos parâmetros
-de uma transformação que leve pontos da imagem Alvo para pontos da imagem Referência. Outro método define as características
-através de descritores invariantes que podem obedecer a 4 regras: \textbf{Invariância}, características correspondentes 
-devem ter os mesmos descritores; \textbf{Unicidade}, características diferentes devem ter descritores diferentes; 
-\textbf{Estabilidade}, os descritores devem deformar de maneira proporcional a deformação aplicada na imagem; e 
-\textbf{Independência}, se o descritor for representado por um vetor, seus componentes devem ser independentes. 
-O que define um descritor deve ser decidido caso a caso. O modelo mais simples usado é a propria intensidade do pixel, 
-e a intensidade de seus vizinhos. Outros descritores válidos são ângulos entre correspondências vizinhas ou a distribuição
-espacial dos vizinhos.
+    Por fim, as correspondências entre \textbf{Características de Ponto} podem ser encontradas utilizando-se várias 
+técnicas distintas. Como o número e o agrupamento de pontos geralmente não muda tanto com rotações e translações de 
+imagens, métodos de \textit{Clustering} são usados para parear pontos. Os \textit{Clusters} são montados com base na 
+proximidade dos parâmetros de uma transformação que leve pontos da imagem Alvo para pontos da imagem Referência. Outro 
+método define as características através de descritores invariantes que podem obedecer a 4 regras: \textbf{Invariância}, 
+características correspondentes devem ter os mesmos descritores; \textbf{Unicidade}, características diferentes devem 
+ter descritores diferentes; \textbf{Estabilidade}, os descritores devem deformar de maneira proporcional a deformação
+aplicada na imagem; e \textbf{Independência}, se o descritor for representado por um vetor, seus componentes devem ser 
+independentes. O que define um descritor deve ser decidido caso a caso. O modelo mais simples usado é a propria 
+intensidade do pixel, e a intensidade de seus vizinhos. Outros descritores válidos são ângulos entre correspondências 
+vizinhas ou a distribuição espacial dos vizinhos.
 
     Podemos separar os algoritmos de correspondências em dois tipos com base no estilo com que eles fazem a busca de 
 correspondências. O primeiro tipo escolhe uma correspondência na imagem Referência e realiza uma busca em largura por
 todas as correspondências da imagem Alvo, buscando aquela com maior relação com a da imagem Referência. Esse processo
-pode ser facilmente acelerado utilizando uma paralelização com todas as correspondências da imagem Referência. Já o outro
-tipo realiza uma busca entre as relações das características e encontra os pares de maneira iterativa. A aceleração
-desse passo depende totalmente da sua implementação.
+pode ser facilmente acelerado utilizando uma paralelização com todas as correspondências da imagem Referência. Já o 
+outro tipo realiza uma busca entre as relações das características e encontra os pares de maneira iterativa. A 
+aceleração desse passo depende totalmente da sua implementação.
 
     O modelo \textit{MapReduce} apresenta uma outra alternativa para acelerar esse passo e o anterior. Ele foi 
 desenvolvido por \cite{dean2008mapreduce} e pela Google. O modelo \textit{MapReduce} foi desenvolvido para realizar 
@@ -180,6 +177,41 @@ recebe um par de dados e retorna um par de valor/chave. Um passo intermediário 
 a lista resultante é enviada para o próximo passo, o \textit{Reduce}, onde a lista é processada. O nosso \textit{Map} 
 recebe uma imagem Alvo e Referência, e encontra as características delas, enquanto o processo de agrupamento encontra as
 suas correspondências. O \textit{Reduce} fica com qualquer etapa de pós-processamento, se necessário.
+
+  Abaixo falamos sobre o \textit{Scale Invariant Feature Transform} e o \textit{Speeded Up Robust Features}, que são
+métodos que fazem tanto a captura quanto a correspondência de características.
+
+\subsubsection{Scale Invariant Feature Transform (SIFT)}
+  O SIFT cria, para cada característica, um vetor de propriedades inváriaveis com rotações, mudanças de escala e 
+rotações, e parcialmente inváriaveis com mudanças de projeção e iluminação. O primeiro passo do algoritmo é encontrar
+posições, que ele chama de \textbf{chave}, que obedeçam as propriedades acima. Para isso ele faz uma busca no espaço
+de escala de uma imagem, procurando pelo máximo ou minimo da diferença de Gaussianas nesse espaço.
+
+  O espaço de escala de uma imagem é criado construindo uma piramide de reamostragens de uma imagem. Na base temos a 
+imagem original e em cada andar da piramide se encontra uma versão reamostrada da imagem. Antes de reamostrar a próxima 
+imagem da piramide, o SIFT aplica 2 vezes um filtro Gaussiano com desvio padrão $\sigma = \sqrt{2}$ a imagem atual, 
+criando mais duas imagens, que chamaremos de $A$ e $B$, respectivamente. A reamostragem para criar o próximo patamar da 
+piramide é criado aplicando uma interpolação bilinear com espaçamento de $1.5$ pixels a imagem $B$ do patamar atual.
+ 
+  A busca pelos minimos ou máximos da diferença de Gaussianas é feita de uma maneira não direta, com fim de otimizar
+o cálculo. Primeiro, cada pixel da imagem é comparado com seus 8 vizinhos. Se ele é um minimo ou máximo então cálculamos
+sua projeção na imagem abaixo, lembrando da reamostragem de $1.5$ pixels. Se ele continua sendo menor ou maior que sua 
+projeção e os 8 vizinhos da projeção, o processo é repetido para a imagem acima. Os pixels que passarem por essas 
+etapas são os pixels \textbf{chave}.
+
+  Com os pontos \textbf{chave} encontrados, o algoritmo agora encontra uma orientação e magnitude para eles. Elas são
+obtidas cálculando o gradiente da imagem $A$ em cada nível da piramide e obtendo a orientação e magnitude deles. Para
+tornar a magnitude parcialmente inváriavel em relação a mudanças de iluminação ela é limiarizada em $0.1$ vezes o valor
+da maior magnitude em um nível. A orientação é determinada utilizando um histograma criado a partir de uma Gaussiana
+com desvio padrão três vezes maior que o usado no filtro da imagem $A$. Após um processo de suavização no histograma,
+seu máximo é escolhido como orientação para o pixel \textbf{chave}. Para tornar o método mais robusto, o processo é
+repitido para várias rotações do sistema de orientação original, para representar possíveis rotações ou deformações não
+rigidas das imagens.
+
+  Todas essas propriedades obtidas dos pontos \textbf{chave} são utilizadas para construir vetores, que serão utilizados
+para realizar comparações entre características de imagens diferentes afim de encontrar as correspondências. A busca de
+correspondência é feita usando uma k-d-árvore, populando ela com as características de uma das imagens.
+
 %% ------------------------------------------------------------------------- %%
 \subsection{Estimativa da função de transformação}\index{Estimativa da função de transformação}
     
