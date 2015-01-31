@@ -109,12 +109,12 @@ rios, ou pontos de máxima curvatura. Algoritmos para identificação de pontos 
 dificuldade de encontrá-los. Os mais básicos encontram as intersecções de linhas enquanto os mais avançados buscam
 centroides de regiões ou o máximo local de uma \textit{wavelet}.
 
-  Encontrar características em imagens é um passo não só de registro de imagens, mas em aprendizagem computacional, por
-exemplo reconhecimento de padrões. Dada essa importância, vários algoritmos foram desenvolvidos com o passar dos anos 
-para resolver de maneira rápida e eficiente a detecção de características. Falaremos sobre dois métodos firmados 
-no meio científico, o \textit{Scale Invariant Feature Transform} (SIFT) , introduzido por \cite{lowe1999object}, e o 
-\textit{Speeded Up Robust Features} (SURF), desenvolvido por \cite{bay2006surf}. Como esse métodos fazem tanto a captura
-das característica quanto a correspondência entre elas falamos sobre eles na próxima seção.
+  Encontrar características em imagens é um passo não só de registro de imagens, mas em reconhecimento de padrões, 
+reconstrução de modelos 3D e outras áreas. Dada essa importância, vários algoritmos foram desenvolvidos com o passar dos
+anos para resolver de maneira rápida e eficiente a detecção de características. Falaremos sobre dois métodos firmados 
+no meio científico, o \textit{Scale Invariant Feature Transform} (SIFT) , introduzido por \cite{lowe2004distinctive}, e 
+o \textit{Speeded Up Robust Features} (SURF), desenvolvido por \cite{bay2006surf}. Como esse métodos fazem tanto a 
+captura das característica quanto a correspondência entre elas falamos sobre eles na próxima seção.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Correspondência de características}\index{Correspondência de características}
@@ -183,7 +183,7 @@ métodos que fazem tanto a captura quanto a correspondência de características
 
 \subsubsection{Scale Invariant Feature Transform (SIFT)}
   O SIFT cria, para cada característica, um vetor de propriedades inváriaveis com rotações, mudanças de escala e 
-rotações, e parcialmente inváriaveis com mudanças de projeção e iluminação. O primeiro passo do algoritmo é encontrar
+translações, e parcialmente inváriaveis com mudanças de projeção e iluminação. O primeiro passo do algoritmo é encontrar
 posições, que ele chama de \textbf{chave}, que obedeçam as propriedades acima. Para isso ele faz uma busca no espaço
 de escala de uma imagem, procurando pelo máximo ou minimo da diferença de Gaussianas nesse espaço.
 
@@ -204,13 +204,60 @@ obtidas cálculando o gradiente da imagem $A$ em cada nível da piramide e obten
 tornar a magnitude parcialmente inváriavel em relação a mudanças de iluminação ela é limiarizada em $0.1$ vezes o valor
 da maior magnitude em um nível. A orientação é determinada utilizando um histograma criado a partir de uma Gaussiana
 com desvio padrão três vezes maior que o usado no filtro da imagem $A$. Após um processo de suavização no histograma,
-seu máximo é escolhido como orientação para o pixel \textbf{chave}. Para tornar o método mais robusto, o processo é
-repitido para várias rotações do sistema de orientação original, para representar possíveis rotações ou deformações não
-rigidas das imagens.
+seu máximo é escolhido como orientação para o pixel \textbf{chave}. 
 
-  Todas essas propriedades obtidas dos pontos \textbf{chave} são utilizadas para construir vetores, que serão utilizados
-para realizar comparações entre características de imagens diferentes afim de encontrar as correspondências. A busca de
-correspondência é feita usando uma k-d-árvore, populando ela com as características de uma das imagens.
+  Agora o agoritmo irá determinar o vetor descritor para cada ponto \textbf{chave}. Para tal, o algoritmo observa todos
+os pixels em uma vizinhança 16x16 ao redor de cada \textbf{chave}, separando essa vizinhança em 8 menores de 4x4 pixels.
+Para cada vizinhança um histograma de 8 posições de orientações é criada e preenchida utilizando como base uma Gaussiana
+com devio padrão $1.5$ vezes maior que o desvio padrão utilizado para criar a imagem atual. Então, cada uma das 16
+vizinhanças irão contribuir com seu histograma de 8 posições, criando um vetor de 128 posições que será utilizado
+para descrever o ponto \textbf{chave} em questão. 
+
+  A busca de correspondência pode ser feita usando uma busca exaustiva entre todas as características das duas imagens,
+porém o autor utiliza uma árvore binária multidimensional de busca (\textit{k-d tree}), populando ela com as 
+características de uma das imagens e utilizando ela para buscar a característica mais próxima dentre todas as possíveis.
+
+\subsubsection{Speeded Up Robust Features (SURF)}
+
+  O SURF diminui o número de invariáveis que o SIFT utiliza, garantindo somente a invariância em rotações e mudanças de 
+escala. Ele é separado em três passos: No primeiro, pontos de interesse na imagem são encontrados, normalmente são cantos,
+borrões ou junções em T; Depois, um vetor é construido para representar a vizinhança desse ponto; Por fim, a 
+correspondência de pontos de diferentes imagens é feita.
+
+  Para detectar se um ponto $\mathtt{x} = (x, y)$ é um ponto de destaque o algoritmo se baseia na matriz Hessiana, 
+descrita pela equação abaixo, usando o determinante da matriz para definir o local e escala das características.
+
+\begin{align}\label{eq:hessian}
+    \mathcal{H}(\mathtt{x}, \sigma) = 
+      \begin{bmatrix} 
+        L_{xx}(\mathtt{x}, \sigma) & L_{xy}(\mathtt{x}, \sigma) \\
+        L_{xy}(\mathtt{x}, \sigma) & L_{yy}(\mathtt{x}, \sigma)
+      \end{bmatrix}
+\end{align}
+
+  Onde $L_{xx}(\mathtt{x}, \sigma)$ é a convolução da Gaussiana de segundo grau no ponto $\mathtt{x}$, e  
+$L_{xy}(\mathtt{x}, \sigma), L_{yy}(\mathtt{x}, \sigma)$ são semelhantes. Porém a aplicação de filtros Gaussianos em
+imagens pode criar novas estruturas na imagem, se o nivel de subamostragem for pequeno o suficiente. Então os autores 
+propõem a utilização de uma aproximação aos filtros Gaussianos de segunda ordem, utilizando filtros em formato de caixa,
+como mostra a figura \ref{fig:surf}. Utilizando esse método, a construção da piramide utilizada para representar o 
+espaço de escalas pode ser feita aumentando o tamanho do filtro caixa, ao invés de diminuir a amostragem da imagem.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.3\textwidth}
+      \includegraphics[width=\textwidth]{figuras/surfLyy.png}
+      \subcaption*{(a)}
+      \label{fig:surfyy}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+      \includegraphics[width=\textwidth]{figuras/surfLxy.png}
+      \subcaption*{(b)}
+      \label{fig:surfxy}
+    \end{subfigure} 
+    \caption{(a) aproximação de $L_{yy}(\mathtt{x}, \sigma)$ \cite{surfYuan} modificado. \\
+             (b) aproximação de $L_{xy}(\mathtt{x}, \sigma)$.}
+    \label{fig:surf}
+\end{figure}
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Estimativa da função de transformação}\index{Estimativa da função de transformação}
