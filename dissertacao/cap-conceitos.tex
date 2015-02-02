@@ -42,7 +42,7 @@ principalmente pela paralelização de suas operações.
       \label{fig:ref-image}
     \end{subfigure}
     \begin{subfigure}[t]{0.3\textwidth}
-      \includegraphics[width=\textwidth]{figuras/leiaMoving.png}
+      \includegraphics[width=\textwidth]{figuras/lenaMoving.png}
       \subcaption*{(b)}
       \label{fig:sin-image}
     \end{subfigure} \\
@@ -54,17 +54,17 @@ principalmente pela paralelização de suas operações.
     \begin{subfigure}[t]{0.64\textwidth}
       \includegraphics[width=\textwidth]{figuras/MatchedFeatures.png}
       \subcaption*{(d)}
-      \label{fig:dist-image}
+      \label{fig:MatchedFeatures}
     \end{subfigure} \\
     \begin{subfigure}[t]{0.3\textwidth}
       \includegraphics[width=\textwidth]{figuras/estimativa.png}
       \subcaption*{(e)}
-      \label{fig:dist-image}
+      \label{fig:estimativa}
     \end{subfigure} 
     \begin{subfigure}[t]{0.3\textwidth}
-      \includegraphics[width=\textwidth]{figuras/leiaRegistrada.png}
+      \includegraphics[width=\textwidth]{figuras/lenaRegistrada.png}
       \subcaption*{(f)}
-      \label{fig:dist-image}
+      \label{fig:lenaRegistrada}
     \end{subfigure}
     \caption{(a) imagem Referência. (b) imagem Alvo deformada pela função seno. 
              (c) Detecção de características. (d) Correspondência de características.
@@ -113,7 +113,7 @@ centroides de regiões ou o máximo local de uma \textit{wavelet}.
 reconstrução de modelos 3D e outras áreas. Dada essa importância, vários algoritmos foram desenvolvidos com o passar dos
 anos para resolver de maneira rápida e eficiente a detecção de características. Falaremos sobre dois métodos firmados 
 no meio científico, o \textit{Scale Invariant Feature Transform} (SIFT) , introduzido por \cite{lowe2004distinctive}, e 
-o \textit{Speeded Up Robust Features} (SURF), desenvolvido por \cite{bay2006surf}. Como esse métodos fazem tanto a 
+o \textit{Speeded Up Robust Features} (SURF), desenvolvido por \cite{bay2008speeded}. Como esse métodos fazem tanto a 
 captura das característica quanto a correspondência entre elas falamos sobre eles na próxima seção.
 
 %% ------------------------------------------------------------------------- %%
@@ -220,12 +220,12 @@ características de uma das imagens e utilizando ela para buscar a característi
 \subsubsection{Speeded Up Robust Features (SURF)}
 
   O SURF diminui o número de invariáveis que o SIFT utiliza, garantindo somente a invariância em rotações e mudanças de 
-escala. Ele é separado em três passos: No primeiro, pontos de interesse na imagem são encontrados, normalmente são cantos,
-borrões ou junções em T; Depois, um vetor é construido para representar a vizinhança desse ponto; Por fim, a 
+escala. Ele é separado em três passos: No primeiro, pontos de interesse na imagem são encontrados, normalmente são 
+cantos, borrões ou junções em T; Depois, um vetor é construido para representar a vizinhança desse ponto; Por fim, a 
 correspondência de pontos de diferentes imagens é feita.
 
-  Para detectar se um ponto $\mathtt{x} = (x, y)$ é um ponto de destaque o algoritmo se baseia na matriz Hessiana, 
-descrita pela equação abaixo, usando o determinante da matriz para definir o local e escala das características.
+  O SURF utiliza o determinante da matriz Hessiana para detectar se um ponto $\mathtt{x} = (x, y)$ é um ponto de 
+interesse:
 
 \begin{align}\label{eq:hessian}
     \mathcal{H}(\mathtt{x}, \sigma) = 
@@ -235,29 +235,41 @@ descrita pela equação abaixo, usando o determinante da matriz para definir o l
       \end{bmatrix}
 \end{align}
 
-  Onde $L_{xx}(\mathtt{x}, \sigma)$ é a convolução da Gaussiana de segundo grau no ponto $\mathtt{x}$, e  
-$L_{xy}(\mathtt{x}, \sigma), L_{yy}(\mathtt{x}, \sigma)$ são semelhantes. Porém a aplicação de filtros Gaussianos em
-imagens pode criar novas estruturas na imagem, se o nivel de subamostragem for pequeno o suficiente. Então os autores 
-propõem a utilização de uma aproximação aos filtros Gaussianos de segunda ordem, utilizando filtros em formato de caixa,
-como mostra a figura \ref{fig:surf}. Utilizando esse método, a construção da piramide utilizada para representar o 
-espaço de escalas pode ser feita aumentando o tamanho do filtro caixa, ao invés de diminuir a amostragem da imagem.
+  Onde $L_{xx}(\mathtt{x}, \sigma)$ é a convolução da Gaussiana de segundo grau ($ \frac{\delta^2}{\delta x^2} g(\sigma) $) 
+no ponto $\mathtt{x}$, e $L_{xy}(\mathtt{x}, \sigma), L_{yy}(\mathtt{x}, \sigma)$ nas outras direções possíveis. Para 
+cada ponto o determinante da matriz da equação \ref{eq:hessian} é calculada, e uma nova imagem é montada com o resultado.
+Porem a utiilização das deviradas Gaussiana de segunda ordem leva a perda de repetibilidade, ou seja, encontrar a mesma 
+característica em imagens com diferença de rotação ou escala. Os autores, então, obtam pela utilização de uma aproximação 
+de uma Gaussiana, chamada de filtro caixa, descrito na imagem \ref{fig:box}. 
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \begin{subfigure}[t]{0.3\textwidth}
-      \includegraphics[width=\textwidth]{figuras/surfLyy.png}
-      \subcaption*{(a)}
-      \label{fig:surfyy}
-    \end{subfigure}
-    \begin{subfigure}[t]{0.3\textwidth}
-      \includegraphics[width=\textwidth]{figuras/surfLxy.png}
-      \subcaption*{(b)}
-      \label{fig:surfxy}
-    \end{subfigure} 
-    \caption{(a) aproximação de $L_{yy}(\mathtt{x}, \sigma)$ \cite{surfYuan} modificado. \\
-             (b) aproximação de $L_{xy}(\mathtt{x}, \sigma)$.}
-    \label{fig:surf}
+    \includegraphics[width=1\textwidth]{figuras/boxFilter.png}
+    \caption{As duas primeiras imagens mostram a aplicação da primeira e segunda derivada de uma Gaussiana, 
+             respectivamente. As duas últimas imagens mostram o filtro caixa. \cite{surfHolroyd}.}
+    \label{fig:box}
 \end{figure}
+  
+  A utilização do filtro caixa em conjunto com as imagens integrais, que representam em cada um de seus pontos a soma
+dos pixels do retângulo que vai da origem até o ponto em questão, torna a construção das piramides que representam o
+espaço de escala trivial. Ao invés de reamostrar a imagem a cada passo da piramide, basta aumentar o tamanho do filtro
+caixa e aplicá-lo diretamente na imagem integral para obter todos os niveis da piramide. Com a piramide de imagens
+Hessianas construida, o algoritmo busca numa vizinhança $3x3x3$ os máximos locais para encontrar os pontos de interesse.
+
+  Para encontrar a orientação dos pontos de interesse, o SURF define uma vizinhança circular de tamanho variado, com
+relação ao nível em que a imagem se encontra na piramide. Para cada dimensão da imagem as \textit{wavelets de Haar} são
+calculadas, afim de determinar a direção preferêncial. Todos os resultados são colocados em um plano $xXy$, e todos os 
+valores dentro de todaas as janelas de tamanho $\frac{\pi}{3}$ são somados. A direção correspondende a maior janela é 
+escolhida. Para construir o vetor de descritores uma vizinhança quadrada de tamanho proporcional a escala é utilizada,
+sendo subdividida em janelas de tamanho $4x4$. Para cada subjanela uma \textit{wavelets de Haar} é calculada, e um vetor
+de 4 dimensões é montado. As duas primeiras dimensões do vetor são construidas usando a soma de todos os 
+\textit{wavelets de Haar} nas duas dimensões. As duas últimas dimensões são construidas utilizando a soma do valor 
+absoluto dos \textit{wavelets de Haar}, trazendo informações sobre a polaridade da mudança de contraste.
+
+  Com os descritores construidos, o SURF utiliza um método parecido com o SIFT para realizar a correspondência de 
+caracteristicas, utilizando uma árvore binária multidimensional de busca (\textit{k-d tree}), adicionando uma dimensão a 
+mais quando comparado ao SIFT. O SURF utiliza o traço da matriz Hessiana, que contém informção sobre o contraste da 
+característica em relação ao fundo no qual ela se encontra.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Estimativa da função de transformação}\index{Estimativa da função de transformação}
