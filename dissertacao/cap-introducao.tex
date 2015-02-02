@@ -35,7 +35,25 @@ a aceleração do \textit{Multi Grid}, dada a sua afinidade com o \textit{Pipeli
 o passo de interpolação de um algoritmo de registro multi modal entre imagens médicas é traduzido utilizando uma 
 linguagem para programação genérica em GPUs, o CUDA \cite{nvidia2007compute}. O estudo realiza uma comparação de 
 eficiência entre o código em CPU e GPU de uma interpolação bilinear, apresentando como resultado uma aceleração de 60 
-vezes da GPU em relação a CPU.
+vezes da GPU em relação a CPU. O algoritmo de registro porposto por \cite{han2009gpu} utiliza Informação Mutua para
+realizar um registro não rigido entre imagens de ressonancia magnetica entre cerebros de individuos e um atlas com a 
+finalidade de segmentar regiões de interresse no individuo. O estudo utiliza uma GPU \textit{NVIDIA} em conjunto com a 
+linguagem CUDA para registrar as imagens, apresentando uma aceleração de 25 vezes em relação a CPU. Esse estudo, 
+juntamente com o anterior, se preocupa com a organização dos dados na memória da GPU, algo que era de dificil controle 
+antes do surgimento de linguagens voltadas para GPGPU.
+
+	Em 2010, o artigo de \cite{modat2010fast} define um algoritmo de registro não rigido chamado de \textit{Free-Form 
+Deformation}, desenvolvido para registrar imagens T1 de ressonancia. Diferente de outros algoritmos, ele foi desenvolvido
+para executar em GPUs diretamente. Para tal, os autores utilizam uma interpolação B-Spline cúbica e uma modificação da
+informação mutua como métrica para o registro. Ele separa cara passo em vários \textit{kerneis} diferentes, fazendo
+com que cada \textit{kernel} utilize o máximo de memória possível e então espalhando o processamento para um maior número
+de processadores na GPU, melhorando o desempenho do algoritmo. 
+
+	O estudo de \cite{membarth2011frameworks} realiza uma comparação entre vários arcabouços de programação para GPU,
+entre eles o CUDA e o OpenCL utilizando como caso de comparação o registro de imagens 2D/3D, ou seja, o registro de
+imagens em três dimensões de tomografia computadorizada para imagens de raio-X. O artigo então segue primeiro com uma
+comparação conceitual entre os vários arcabouços e depois com uma comparação de desempenho. Foram feitas comparações 
+com a execução sequêncial, em paralelo e em GPU do algoritmo. 
 	
 %% ------------------------------------------------------------------------- %%
 \section{Motivações}
