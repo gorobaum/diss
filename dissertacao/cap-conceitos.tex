@@ -87,8 +87,8 @@ segmentações e bordas, respectivamente.
 \subsection{Detecção de características}\index{Detecção de características}
 \label{sec:dec_corr_carac}
 
-    Com as imagens já pré-processadas, o primeiro passo para um algoritmo de registro é a localização de estruturas de 
-destaque na cena ou objeto dentro das imagens. Essas estruturas são nomeadas de características, e são construidas a 
+    Com as imagens já preprocessadas, o primeiro passo para um algoritmo de registro é a localização de estruturas de 
+destaque na cena ou objeto dentro das imagens. Essas estruturas são nomeadas de características, e são construídas a 
 partir de um conjunto de pixels. Características devem ser facilmente identificadas, independente de variações na 
 aquisição das fotografias, como mudanças na angulação ou perspectiva. Elas são separadas em 3 grupos, baseando-se nas 
 suas propriedades:
@@ -96,7 +96,7 @@ suas propriedades:
 \textbf{Características de Região} - As características de Região são áreas de uma imagem que apresentam uma diferença
 significativa de contraste em relação a áreas vizinhas. Lagos, florestas ou regiões urbanas são exemplos desse tipo de 
 característica. Elas são identificadas utilizando algoritmos de segmentação, e normalmente são representadas por um
-conjunto conexo de pixels ou utilizando um \textit{template} de formato retângular ou circular centrado no centro de 
+conjunto conexo de pixels ou utilizando um \textit{template} de formato retangular ou circular centrado no centro de 
 massa da Região.
 
 \textbf{Características de Retas} - Essas características são definidas como a interface entre duas regiões de uma 
@@ -158,7 +158,7 @@ método define as características através de descritores invariantes que podem
 características correspondentes devem ter os mesmos descritores; \textbf{Unicidade}, características diferentes devem 
 ter descritores diferentes; \textbf{Estabilidade}, os descritores devem deformar de maneira proporcional a deformação
 aplicada na imagem; e \textbf{Independência}, se o descritor for representado por um vetor, seus componentes devem ser 
-independentes. O que define um descritor deve ser decidido caso a caso. O modelo mais simples usado é a propria 
+independentes. O que define um descritor deve ser decidido caso a caso. O modelo mais simples usado é a própria 
 intensidade do pixel, e a intensidade de seus vizinhos. Outros descritores válidos são ângulos entre correspondências 
 vizinhas ou a distribuição espacial dos vizinhos.
 
@@ -182,8 +182,8 @@ suas correspondências. O \textit{Reduce} fica com qualquer etapa de pós-proces
 métodos que fazem tanto a captura quanto a correspondência de características.
 
 \subsubsection{Scale Invariant Feature Transform (SIFT)}
-  O SIFT cria, para cada característica, um vetor de propriedades inváriaveis com rotações, mudanças de escala e 
-translações, e parcialmente inváriaveis com mudanças de projeção e iluminação. O primeiro passo do algoritmo é encontrar
+  O SIFT cria, para cada característica, um vetor de propriedades invariáveis com rotações, mudanças de escala e 
+translações, e parcialmente invariáveis com mudanças de projeção e iluminação. O primeiro passo do algoritmo é encontrar
 posições, que ele chama de \textbf{chave}, que obedeçam as propriedades acima. Para isso ele faz uma busca no espaço
 de escala de uma imagem, procurando pelo máximo ou minimo da diferença de Gaussianas nesse espaço.
 
@@ -193,23 +193,23 @@ imagem da piramide, o SIFT aplica 2 vezes um filtro Gaussiano com desvio padrão
 criando mais duas imagens, que chamaremos de $A$ e $B$, respectivamente. A reamostragem para criar o próximo patamar da 
 piramide é criado aplicando uma interpolação bilinear com espaçamento de $1.5$ pixels a imagem $B$ do patamar atual.
  
-  A busca pelos minimos ou máximos da diferença de Gaussianas é feita de uma maneira não direta, com fim de otimizar
-o cálculo. Primeiro, cada pixel da imagem é comparado com seus 8 vizinhos. Se ele é um minimo ou máximo então cálculamos
+  A busca pelos mínimos ou máximos da diferença de Gaussianas é feita de uma maneira não direta, com fim de otimizar
+o cálculo. Primeiro, cada pixel da imagem é comparado com seus 8 vizinhos. Se ele é um minimo ou máximo então calculamos
 sua projeção na imagem abaixo, lembrando da reamostragem de $1.5$ pixels. Se ele continua sendo menor ou maior que sua 
 projeção e os 8 vizinhos da projeção, o processo é repetido para a imagem acima. Os pixels que passarem por essas 
 etapas são os pixels \textbf{chave}.
 
   Com os pontos \textbf{chave} encontrados, o algoritmo agora encontra uma orientação e magnitude para eles. Elas são
-obtidas cálculando o gradiente da imagem $A$ em cada nível da piramide e obtendo a orientação e magnitude deles. Para
-tornar a magnitude parcialmente inváriavel em relação a mudanças de iluminação ela é limiarizada em $0.1$ vezes o valor
+obtidas calculando o gradiente da imagem $A$ em cada nível da piramide e obtendo a orientação e magnitude deles. Para
+tornar a magnitude parcialmente invariável em relação a mudanças de iluminação ela é limiarizada em $0.1$ vezes o valor
 da maior magnitude em um nível. A orientação é determinada utilizando um histograma criado a partir de uma Gaussiana
 com desvio padrão três vezes maior que o usado no filtro da imagem $A$. Após um processo de suavização no histograma,
 seu máximo é escolhido como orientação para o pixel \textbf{chave}. 
 
-  Agora o agoritmo irá determinar o vetor descritor para cada ponto \textbf{chave}. Para tal, o algoritmo observa todos
+  Agora o algoritmo irá determinar o vetor descritor para cada ponto \textbf{chave}. Para tal, o algoritmo observa todos
 os pixels em uma vizinhança 16x16 ao redor de cada \textbf{chave}, separando essa vizinhança em 8 menores de 4x4 pixels.
 Para cada vizinhança um histograma de 8 posições de orientações é criada e preenchida utilizando como base uma Gaussiana
-com devio padrão $1.5$ vezes maior que o desvio padrão utilizado para criar a imagem atual. Então, cada uma das 16
+com desvio padrão $1.5$ vezes maior que o desvio padrão utilizado para criar a imagem atual. Então, cada uma das 16
 vizinhanças irão contribuir com seu histograma de 8 posições, criando um vetor de 128 posições que será utilizado
 para descrever o ponto \textbf{chave} em questão. 
 
@@ -221,7 +221,7 @@ características de uma das imagens e utilizando ela para buscar a característi
 
   O SURF diminui o número de invariáveis que o SIFT utiliza, garantindo somente a invariância em rotações e mudanças de 
 escala. Ele é separado em três passos: No primeiro, pontos de interesse na imagem são encontrados, normalmente são 
-cantos, borrões ou junções em T; Depois, um vetor é construido para representar a vizinhança desse ponto; Por fim, a 
+cantos, borrões ou junções em T; Depois, um vetor é construído para representar a vizinhança desse ponto; Por fim, a 
 correspondência de pontos de diferentes imagens é feita.
 
   O SURF utiliza o determinante da matriz Hessiana para detectar se um ponto $\mathtt{x} = (x, y)$ é um ponto de 
@@ -238,8 +238,8 @@ interesse:
   Onde $L_{xx}(\mathtt{x}, \sigma)$ é a convolução da Gaussiana de segundo grau ($ \frac{\delta^2}{\delta x^2} g(\sigma) $) 
 no ponto $\mathtt{x}$, e $L_{xy}(\mathtt{x}, \sigma), L_{yy}(\mathtt{x}, \sigma)$ nas outras direções possíveis. Para 
 cada ponto o determinante da matriz da equação \ref{eq:hessian} é calculada, e uma nova imagem é montada com o resultado.
-Porem a utiilização das deviradas Gaussiana de segunda ordem leva a perda de repetibilidade, ou seja, encontrar a mesma 
-característica em imagens com diferença de rotação ou escala. Os autores, então, obtam pela utilização de uma aproximação 
+Porem a utilização das derivadas Gaussiana de segunda ordem leva a perda de repetibilidade, ou seja, encontrar a mesma 
+característica em imagens com diferença de rotação ou escala. Os autores, então, optam pela utilização de uma aproximação 
 de uma Gaussiana, chamada de filtro caixa, descrito na imagem \ref{fig:box}. 
 
 \begin{figure}[h]
@@ -253,22 +253,22 @@ de uma Gaussiana, chamada de filtro caixa, descrito na imagem \ref{fig:box}.
   A utilização do filtro caixa em conjunto com as imagens integrais, que representam em cada um de seus pontos a soma
 dos pixels do retângulo que vai da origem até o ponto em questão, torna a construção das piramides que representam o
 espaço de escala trivial. Ao invés de reamostrar a imagem a cada passo da piramide, basta aumentar o tamanho do filtro
-caixa e aplicá-lo diretamente na imagem integral para obter todos os niveis da piramide. Com a piramide de imagens
-Hessianas construida, o algoritmo busca numa vizinhança $3x3x3$ os máximos locais para encontrar os pontos de interesse.
+caixa e aplicá-lo diretamente na imagem integral para obter todos os níveis da piramide. Com a piramide de imagens
+Hessianas construída, o algoritmo busca numa vizinhança $3x3x3$ os máximos locais para encontrar os pontos de interesse.
 
   Para encontrar a orientação dos pontos de interesse, o SURF define uma vizinhança circular de tamanho variado, com
 relação ao nível em que a imagem se encontra na piramide. Para cada dimensão da imagem as \textit{wavelets de Haar} são
-calculadas, afim de determinar a direção preferêncial. Todos os resultados são colocados em um plano $xXy$, e todos os 
-valores dentro de todaas as janelas de tamanho $\frac{\pi}{3}$ são somados. A direção correspondende a maior janela é 
+calculadas, afim de determinar a direção preferencial. Todos os resultados são colocados em um plano $xXy$, e todos os 
+valores dentro de todas as janelas de tamanho $\frac{\pi}{3}$ são somados. A direção correspondente a maior janela é 
 escolhida. Para construir o vetor de descritores uma vizinhança quadrada de tamanho proporcional a escala é utilizada,
 sendo subdividida em janelas de tamanho $4x4$. Para cada subjanela uma \textit{wavelets de Haar} é calculada, e um vetor
-de 4 dimensões é montado. As duas primeiras dimensões do vetor são construidas usando a soma de todos os 
-\textit{wavelets de Haar} nas duas dimensões. As duas últimas dimensões são construidas utilizando a soma do valor 
+de 4 dimensões é montado. As duas primeiras dimensões do vetor são construídas usando a soma de todos os 
+\textit{wavelets de Haar} nas duas dimensões. As duas últimas dimensões são construídas utilizando a soma do valor 
 absoluto dos \textit{wavelets de Haar}, trazendo informações sobre a polaridade da mudança de contraste.
 
-  Com os descritores construidos, o SURF utiliza um método parecido com o SIFT para realizar a correspondência de 
-caracteristicas, utilizando uma árvore binária multidimensional de busca (\textit{k-d tree}), adicionando uma dimensão a 
-mais quando comparado ao SIFT. O SURF utiliza o traço da matriz Hessiana, que contém informção sobre o contraste da 
+  Com os descritores construídos, o SURF utiliza um método parecido com o SIFT para realizar a correspondência de 
+características, utilizando uma árvore binária multidimensional de busca (\textit{k-d tree}), adicionando uma dimensão a 
+mais quando comparado ao SIFT. O SURF utiliza o traço da matriz Hessiana, que contém informação sobre o contraste da 
 característica em relação ao fundo no qual ela se encontra.
 
 %% ------------------------------------------------------------------------- %%
@@ -334,7 +334,7 @@ escalonador para \textit{threads} implementado em hardware. Ele é responsável 
 executadas nos \textit{Streaming Multiprocessors} (SM). Um SM é um conjunto de vários processadores, um pequeno bloco de
 memória própria, um cache de instruções e 8 unidades de funções gráficas.
 
-    O código que será executado em cada processador é chamado de \textbf{kernel}. Ao executar um kernel na GPU, o 
+    O código que será executado em cada processador é chamado de \textbf{kernel}. Ao executar um \textbf{kernel} na GPU, o 
 hardware criará \textit{threads}, cada uma delas executando o mesmo código, mas com dados diferentes. Nas placas NVIDIA as \textit{threads} 
 são agrupadas em blocos, e esses blocos são escalonados para cada SM. Depois, todas as \textit{threads} dentro de um bloco são 
 divididas em pequenos grupos chamados de \textbf{warp}, e cada warp é executado paralelamente dentro do 
@@ -437,8 +437,8 @@ número máximo de \textit{threads} por blocos. Cada bloco é lançado para exec
 grids, que tem seu tamanho configurado na chamada o kernel, bem como o tamanho de cada bloco. No nosso exemplo acima, na linha
 \verb#VecAdd<<<1,M>>>(a,b,c)#, o 1 determina o número de blocos e o M o número de \textit{threads} por bloco.
 
-O CUDA supõem que todos os blocos podem ser executados de maneira independende, ou seja, eles podem executar tanto paralelamente
-quanto sequencialmente. Com isso, é possivel que o desempenho do código aumente em GPUs com mais processadores, sem que o programador
+O CUDA supõem que todos os blocos podem ser executados de maneira independente, ou seja, eles podem executar tanto paralelamente
+quanto sequencialmente. Com isso, é possível que o desempenho do código aumente em GPUs com mais processadores, sem que o programador
 tenha que modificar o código.
 
 O CUDA sabe qual instruções ele pode executar dentro de um \textit{device} baseando-se no seu Compute Capability 
@@ -458,16 +458,16 @@ No CUDA, a memoria é separada logicamente em 4 locais:
   \item Memória Compartilhada - Cada bloco de \textit{threads} tem uma memória compartilhada. A memória compartilhada é separada em
           pequenos blocos independentes. Se uma requisição de leitura tem n endereços em n blocos diferentes, o tempo de leitura
           desses n endereços é igual ao tempo de leitura de 1 endereço. Caso duas leituras caiam no mesmo bloco, elas serão
-          serializadas. A memória compartilhada fica em chips dentro dos SMs, logo seu acesso é mais rápido do que o acesso a
+          feitas sequencialmente. A memória compartilhada fica em chips dentro dos SMs, logo seu acesso é mais rápido do que o acesso a
           memória global.
-  \item Memória Global - A memória global é acessivel por qualquer bloco em execução em um \textit{device}. A memoria global não é
+  \item Memória Global - A memória global é acessível por qualquer bloco em execução em um \textit{device}. A memoria global não é
           apagada após a execução de um kernel, então chamadas subsequentes de um mesmo kernel simplesmente leem os resultados
           da memória global. Existe um pedaço da memória global reservada para valores constantes do programa.
 \end{itemize}
 
 Por padrão, o compilador do CUDA cuida do gerenciamento da memória, ou seja, ele é o responsável por distribuir os dados 
 entre os locais diferentes de memória. O programador pode dar dicas para o compilador usando qualificadores indicando o local
-que ele quer que aquele elemento fique na memória. Os possiveis qualificadores são:
+que ele quer que aquele elemento fique na memória. Os possíveis qualificadores são:
 \begin{itemize}
   \item \verb#__device__# Fica na memória global.
   \item \verb#__constant__#   Fica na area constante da memória global.
@@ -488,7 +488,7 @@ Falaremos mais sobre eles abaixo.
 \subsection{\textit{Demons}}\index{Demons}
     O \textit{Demons} foi proposto por \cite{thirion1995fast}. Diferentemente de grande parte dos algoritmos de registro,
 ele não segue exatamente os passos descritos acima. Ele tem como base o modelo de atratores, que dado dois conjuntos de pontos
-em cada uma das imagens, os pontos da imagem Alvo são atraidos para seus pares na imagem Referência utilizando alguma métrica.
+em cada uma das imagens, os pontos da imagem Alvo são atraídos para seus pares na imagem Referência utilizando alguma métrica.
 A métrica mais básica de atração é a de vizinhos próximos, que leva cada ponto ao ponto mais próximo da imagem de 
 referência, mas técnicas mais elaboradas como a similaridade de curvatura ou intensidade podem ser utilizadas para 
 aumentar a acurácia. Os pontos da imagem alvo então movimentam a imagem até que eles encontrem algum ponto da imagem
@@ -532,7 +532,7 @@ conta a diferença dos pixeis de R e A para normalizar a equação (4), obtendo 
 \end{equation}
 
 \subsubsection{Implementação}
-    Como a formula (5) é degenerada, ou seja, não é possivel encontrar uma solução analiticamente para ela,
+    Como a formula (5) é degenerada, ou seja, não é possível encontrar uma solução analiticamente para ela,
 não podemos calcular o valor de $\vec{v}$ sem utilizar algum artificio. Para tal,
 utilizaremos um algoritmo iterativo. Esse algoritmo recebe como entrada as imagens R e A e um campo vetorial
 com as dimensões de A que contém uma aproximação da transformação aplicada, esse campo pode ser zero. 
@@ -556,7 +556,7 @@ melhores ao custo do cálculo do gradiente de $A_i$ em toda iteração. Sua fór
                     {(\vec{\nabla}r+\vec{\nabla}a)^2*(\vec{\nabla}r^2 + \vec{\nabla}a^2 + 2(a - r)^2)}
 \end{align}
 
-\subsubsection{Pseudo Algoritmo e Tempo Assintotico de Execução do \textit{Demons} Simétrico}
+\subsubsection{Pseudo Algoritmo e Tempo Assintótico de Execução do \textit{Demons} Simétrico}
 
   Abaixo temos a construção de um pseudo algoritmo do \textit{Demons} Simétrico, e de uma subfunção importante para sua 
 execução, a \textit{calcularCampoInstantaneo}, que calcula o deslocamento dos \textit{Demons} na iteração atual, 
@@ -598,7 +598,7 @@ calcularGradienteDaImagem(imagem):
   return gradiente
 \end{lstlisting}
 
-  As tabelas abaixo mostram o tempo de execução assintotico do \textit{Demons} Simétrico, totalizando 
+  As tabelas abaixo mostram o tempo de execução assintótico do \textit{Demons} Simétrico, totalizando 
 $\mathcal{O}(x*n_l^2*n_c^2)$:
 
 \begin{table}[H]
@@ -680,7 +680,7 @@ Total   &$\mathcal{O}(n_l*n_c)$\\
     O primeiro passo do algoritmo iterativo pode ser acelerado utilizando a arquitetura SIMD. O calculo de um dos vetores
 depende do gradiente $\vec{\nabla}r$ e da diferença entre as intensidades da imagem Alvo e Referência $(a - r)$, logo
 todos os passos podem ser realizados em paralelo sem perda de desempenho. Tanto a aplicação do filtro gaussiano como
-a aplicação do campot vetorial $V$ também podem ser adaptados para a SIMD, pelo mesmo motivo apresentado anteriormente.
+a aplicação do campo vetorial $V$ também podem ser adaptados para a SIMD, pelo mesmo motivo apresentado anteriormente.
 Devemos tomar cuidado para garantir que os passos sejam executadas de forma sequencial, ou seja, nenhum pixel deve começar
 a execução do passo 2 antes que todos tenham executado o passo 1.
 
@@ -725,7 +725,7 @@ ele não se mova. As equações $\sum_{i=1}^n F_ix = 0$ e $\sum_{i=1}^n F_iy = 0
     Esse sistema deve ser resolvido duas vezes, uma para $f(x,y) = X$ e outra para $g(x,y) = Y$. Com todas as variáveis
 encontradas, podemos aplicar as funções de interpolação para desenhar a imagem final.
 
-\subsubsection{Pseudo Algoritmo e Tempo Assintotico de Execução}
+\subsubsection{Pseudo Algoritmo e Tempo Assintótico de Execução}
 
   Abaixo temos a construção de um pseudo algoritmo do tps, e de uma subfunção importante para sua execução, a 
 \textit{interpolar}, que realiza a interpolação da imagem Alvo na construção da imagem registrada:
@@ -754,7 +754,7 @@ interpolar(x, y, solucaoDaEquLinear, caracImagemRef):
   return $v \cdot solucaoDaEquLinear$ 
 \end{lstlisting}
 
-  As tabelas abaixo mostram o tempo de execução assintotico do tps, totalizando 
+  As tabelas abaixo mostram o tempo de execução assintótico do tps, totalizando 
 $\mathcal{O}(\frac{4}{3}n_{cp}^3+n_l*n_c*n_{cp})$:
 
 \begin{table}[H]
@@ -813,11 +813,8 @@ Total   &$\mathcal{O}(n_{cp})$\\
 \subsubsection{Aceleração do Thin Plate Splines}
 
     O primeiro passo para acelerar o TPS é utilizar algoritmos para resolver o sistema linear diretamente na GPU, o que
-não é dificil dado que a matriz que representa o sistema sempre é simetrica com uma diagonal de zeros por construção. O
-próximo passo para realizar a acelereção do TPS é criar dois vetores que guardam todos os valores possíveis de $(x-x^i)^2$
+não é difícil dado que a matriz que representa o sistema sempre é simétrica com uma diagonal de zeros por construção. O
+próximo passo para realizar a aceleração do TPS é criar dois vetores que guardam todos os valores possíveis de $(x-x^i)^2$
 e $(y-y^i)^2$. O uso desses vetores diminui o número de operações necessárias de $n_l*n_c*n_{cp}$ para $(n_l+n_c)*n_{cp}$.
 Da maneira original, a operação $(x-x^i)^2$ é repetida $n_c$ vezes para cada coluna, já com o uso dos vetores esse valor
 é calculado uma única vez e acessado toda vez que ele é necessário.
-
-
-% Colocar outros algoritmos de regitro %

@@ -2,7 +2,7 @@
 \chapter{Resultados Preliminares}
 \label{cap:resultados}
 	A partir dos algoritmos estudados, escolhemos dois algoritmos para passarem em três testes para determinar sua 
-eficâcia. O primeiro escolhido foi o \textit{Demons}, dada a facilidade em adotar a arquitetura SIMD, sua popularidade 
+eficacia. O primeiro escolhido foi o \textit{Demons}, dada a facilidade em adotar a arquitetura SIMD, sua popularidade 
 dentro da área de processamento de imagens médicas e seu poder em registrar pequenas deformações com baixo custo 
 computacional. O outro escolhido foi o TPS, que com seu método de registro que utiliza características, permite que ele
 seja aplicado a uma gama maior de tipo de imagens e os vários pontos em que ele pode ser acelerado. Os testes pelos 
@@ -37,7 +37,7 @@ ação de uma deformação global, ou seja, ela é totalmente uniforme sob toda 
 \end{align}
 
 Onde $x_m$ e $y_m$ são o número de linhas e colunas, respectivamente, divididos por 2 e $r = \sqrt{(x-x_m)^2 + (y-y_m)^2}$
-define uma circunferrência centrada no centro da imagem. Essa deformação testa a capacidade dos algoritmos de registrar
+define uma circunferência centrada no centro da imagem. Essa deformação testa a capacidade dos algoritmos de registrar
 deformações locais, que agem de maneira não uniforme em toda a imagem.
 
 	A última deformação é uma combinação das duas já apresentadas:
@@ -79,8 +79,8 @@ Exemplos das três deformações estão na figura \ref{fig:deformacoes}.
 
 	As imagens criadas pelos métodos descritos já são o suficiente para os testes com o \textit{Demons}, mas o TPS
 necessita de características e de suas correspondências. As características necessárias para a execução do TPS foram 
-criadas utilizando uma grade oito por oito de pontos uniformemente distribuidos para a imagem Referência. As suas 
-correspondentes nas imagens alvo foram calculadas aplicando as deformações adequadas as caracteristicas da imagem 
+criadas utilizando uma grade oito por oito de pontos uniformemente distribuídos para a imagem Referência. As suas 
+correspondentes nas imagens alvo foram calculadas aplicando as deformações adequadas as características da imagem 
 Referência.
 
 %% ------------------------------------------------------------------------- %%
@@ -149,22 +149,22 @@ Referência.
 	Os resultados dos testes podem ser observados na figura \ref{fig:resultados}.
 Os dois algoritmos tiveram um resultado satisfatório registrando o primeiro teste, enquanto somente um deles conseguiu
 registra os dois últimos testes com um resultado aceitável, dada a natureza não uniforme da distorção utilizada. 
-No primeiro teste, com a deformação sinoidal \ref{math:sin}, o resultado obtido pelos dois algoritmos foi satisfatório.
+No primeiro teste, com a deformação senoidal \ref{math:sin}, o resultado obtido pelos dois algoritmos foi satisfatório.
 A diferença entre os métodos de registro são claramente vistos observando as imagens resultado de cada método. Podemos
 notar a maior suavidade da imagem gerada pelo \textit{Demons} em comparação ao registro pelo TPS, pela utilização do
-filtro Gaussiano do \textit{Demons}. O TPS foi capaz de manter a estrutura anatômica do cerebro, enquanto o 
+filtro Gaussiano do \textit{Demons}. O TPS foi capaz de manter a estrutura anatômica do cérebro, enquanto o 
 \textit{Demons} não foi capaz de tal feito dada a natureza difeomorfica do seu algoritmo. Por final, nenhum dos 
-algoritmos conseguiu registrarb com eficácia a borda, já que a deformação faz com que alguns pixels caiam fora da 
+algoritmos conseguiu registrar com eficácia a borda, já que a deformação faz com que alguns pixels caiam fora da 
 imagem, mas isso é esperado.
 
   Já no segundo e no terceiro teste, a deformação aplicada ao centro foi muito intensa, logo era esperado a baixa 
 eficácia dos algoritmos nessa região. O TPS se mostrou melhor ao \textit{Demons} nas regiões entorno do centro, 
 conseguindo registrar a imagem com algum sucesso. A medida que a força da distorção diminui, os resultados do TPS 
 melhoram. As bordas da imagem ficaram com uma qualidade ruim dado o método de geração das características. Quando a 
-grade uniforme de características passa pela deformação, várias característcas ficam aglomeradas nas bordas da imagem, 
+grade uniforme de características passa pela deformação, várias características ficam aglomeradas nas bordas da imagem, 
 o que compromete o resultado nesse caso.
 
-	Já o \textit{Demons} obteve um resultado com uma qualidade inferior pois a fórmula usada para cálcular o campo 
+	Já o \textit{Demons} obteve um resultado com uma qualidade inferior pois a fórmula usada para calcular o campo 
 vetorial \ref{math:demons} utiliza o gradiente das duas imagens para calcular a direção da transformação do registro. 
 Como a distorção usada nesse teste foi caótica, a transformação obtida fez com que pontos próximos fossem mapeados para 
 pontos distantes na imagem Referência, levando ao resultado obtido.
