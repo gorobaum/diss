@@ -57,10 +57,25 @@ com a execução sequêncial, em paralelo e em GPU do algoritmo.
 	
 %% ------------------------------------------------------------------------- %%
 \section{Motivações}
-
+	Vários trabalhos na última década levaram o registro para o mundo GPGPU. Alguns deles implementaram um pedaço do 
+algoritmo em GPU, enquanto outros traduziram todo o algoritmo. Porém o registro é composto de vários passos auxiliares
+feitos antes do algoritmo principal, como etapas de pré-processamento, descoberta de características e correspondencia
+das mesmas. Falaremos mais sobre isso no Capitulo \ref{cap:conceitos}. E ainda, a tradução deles é feita pensando em 
+uma única execução da etapa de registro, não pensando em execuções continuas, com várias entradas diferentes, onde 
+podemos aproveitar a transferência de dados de uma etapa para a outra.
+	
+	Nossa motivação nesse tabalho é, então, suprir essa lacuna, criando um algoritmo de registro não rigido em GPU que
+cuide de todas as etapas no registro de várias imagens.
 %% ------------------------------------------------------------------------- %%
 \section{Objetivos}
+	O primeiro objetivo do trabalho é identificar, entre os algoritmos mais utilizados para registrar imagens com 
+deformações não rigidas, o melhor candidato para ser traduzido no ambiente GPGPU. Isso deve levar em conta todos os 
+passos de um algoritmo de registro, desde o pré-processamento até a construção da imagem registrada. Nosso algoritmo deve,
+ainda, ser capaz de lidar com problemas que necessitem do registro de várias imagens, como um estudo clinico sobre 
+populações, onde vários pacientes são registrados para um paciente artificial.
 
+	Logo, nosso algoritmo deve ser capaz de otimizar a utilização dos recursos da GPU, minimizando a transferência de dados
+entre a CPU e a GPU enquanto maximiza a utilização dos recursos de processamento da GPU.
 %% ------------------------------------------------------------------------- %%
 \section{Organização do Trabalho}
 \label{sec:organizacao_trabalho}
