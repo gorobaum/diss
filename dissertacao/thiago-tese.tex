@@ -73,9 +73,9 @@ numbersep=5pt,                  % how far the line-numbers are from the code
 showspaces=false,               % show spaces adding particular underscores
 showstringspaces=false,         % underline spaces within strings
 showtabs=false,                 % show tabs within strings adding particular underscores
-frame=single,	                % adds a frame around the code
+frame=single,                   % adds a frame around the code
 framerule=0.6pt,
-tabsize=2,	                    % sets default tabsize to 2 spaces
+tabsize=2,                      % sets default tabsize to 2 spaces
 captionpos=b,                   % sets the caption-position to bottom
 breaklines=true,                % sets automatic line breaking
 breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
@@ -130,7 +130,7 @@ framexrightmargin=10pt
     Programa: Ciência da Computação\\
     Orientador: Prof. Dr. Marcel Parolin Jackowski
 
-   	\vskip 1cm
+    \vskip 1cm
     \normalsize{Durante o desenvolvimento deste trabalho o autor recebeu auxílio
     financeiro da CAPES}
     
@@ -160,9 +160,9 @@ framexrightmargin=10pt
 %     \vskip 2cm
 
 %     \begin{flushright}
-% 	Esta é a versão original da dissertação/tese elaborada pelo\\
-% 	candidato (Nome Completo do Aluno), tal como \\
-% 	submetida à Comissão Julgadora.
+%   Esta é a versão original da dissertação/tese elaborada pelo\\
+%   candidato (Nome Completo do Aluno), tal como \\
+%   submetida à Comissão Julgadora.
 %     \end{flushright}
 
 % \pagebreak
@@ -193,10 +193,10 @@ framexrightmargin=10pt
 %     \vskip 2cm
 
 %     \begin{flushright}
-% 	Esta versão da dissertação/tese contém as correções e alterações sugeridas\\
-% 	pela Comissão Julgadora durante a defesa da versão original do trabalho,\\
-% 	realizada em 14/12/2010. Uma cópia da versão original está disponível no\\
-% 	Instituto de Matemática e Estatística da Universidade de São Paulo.
+%   Esta versão da dissertação/tese contém as correções e alterações sugeridas\\
+%   pela Comissão Julgadora durante a defesa da versão original do trabalho,\\
+%   realizada em 14/12/2010. Uma cópia da versão original está disponível no\\
+%   Instituto de Matemática e Estatística da Universidade de São Paulo.
 
 %     \vskip 2cm
 
@@ -207,9 +207,9 @@ framexrightmargin=10pt
 %     \noindent Comissão Julgadora:
     
 %     \begin{itemize}
-% 		\item Profª. Drª. Nome Completo (orientadora) - IME-USP [sem ponto final]
-% 		\item Prof. Dr. Nome Completo - IME-USP [sem ponto final]
-% 		\item Prof. Dr. Nome Completo - IMPA [sem ponto final]
+%       \item Profª. Drª. Nome Completo (orientadora) - IME-USP [sem ponto final]
+%       \item Prof. Dr. Nome Completo - IME-USP [sem ponto final]
+%       \item Prof. Dr. Nome Completo - IMPA [sem ponto final]
 %     \end{itemize}
       
 %     \end{quote}
@@ -227,18 +227,18 @@ Qualificação (Mestrado) - Instituto de Matemática e Estatística,
 Universidade de São Paulo, São Paulo, 2015.
 \\
 
-O registro de imagens é uma etapa essencial em várias aplicações na área de processamento de imagens,
-que incluem desde análises populacionais na área médica até reconstrução de mapas utilizando 
-imagens de satélite. Deformações não rígidas representam melhor a ampla gama de possíveis 
-deformações presentes nas várias categorias de imagens que são registradas. Atualmente, estudos
-que envolvem milhares de imagens estão se tornando cada vez mais comuns, sugerindo
-que técnicas de aceleração de registro sejam desenvolvidas de forma a minimizar o
-tempo de análise e processamento. Como as técnicas de registro não linear são tradicionalmente custosas
+O alinhamento geométrico, comumente conhecido como registro de imagens, é uma etapa essencial em várias 
+aplicações na área de processamento de imagens, que incluem desde análises populacionais na área 
+médica até reconstrução de mapas utilizando imagens de satélite. Deformações não rígidas representam 
+uma ampla gama das possíveis deformações presentes nas várias categorias de imagens que são registradas. 
+Atualmente, estudos que envolvem milhares de imagens estão se tornando cada vez mais comuns, sugerindo
+que técnicas de aceleração sejam desenvolvidas de forma a minimizar o
+tempo de análise e processamento. Como as técnicas de registro não-rígido são tradicionalmente custosas
 computacionalmente, o uso de \textit{graphic processing units} (GPUs) possibilita a
-aceleração das diversas etapas do processo registro via hardware, tais como a extração de características,
+aceleração das diversas etapas do processo via hardware, tais como a extração de características,
 determinação de correspondências e cálculo das funções de deformação. Este trabalho
-tem como objetivo o estudo e a paralelização de técnicas de registro não linear aplicadas à arquiteturas modernas de 
-GPU, e avaliar de sua eficiência.
+tem como objetivo a paralelização de técnicas de registro não-rígido aplicadas à arquiteturas modernas de 
+GPU, e avaliação de sua eficiência. 
 \\
 
 \noindent \textbf{Palavras-chave:} Registro de Imagens, Thin Plate Splines, Demons, \textit{Graphic Processing Units}.
@@ -246,22 +246,21 @@ GPU, e avaliar de sua eficiência.
 % ---------------------------------------------------------------------------- %
 % Abstract
 \chapter*{Abstract}
-\noindent Nunes, T. G. - \textbf{Acceleration of Non Rigid Image Registration in GPU}. 
+\noindent Nunes, T. G. - \textbf{Acceleration of Non-Rigid Image Registration in GPU}. 
 2015.
 Qualificação (Mestrado) - Instituto de Matemática e Estatística,
 Universidade de São Paulo, São Paulo, 2015.
 \\
-
-Image registration is an essential step in a number of applications in image processing, 
-from populational studies from medical imaging to map reconstruction based on satellite images. Non rigid deformations
-represent a big slice of all possible deformations in images that go through the registration process. 
-Presently studies that involve thousands of images are becoming very usual, 
-suggesting that acceleration techniques should be developed to decrease the analysis or processing time. 
-Registration techniques are usually very computational demanding, so the use of \textit{graphic processing units} (GPUs) 
-creates a possibility to speedup several stages of the registration process, like the extraction of features, 
-determination of feature correlation and the calculate of the deformation function. This project has the objective of 
-studding and parallelizing non linear techniques applying then to an modern GPU architecture and evaluate theirs 
-efficiency.
+Geometrical image alignment, commonly known as image registration, is an essential step in a number of image processing applications, 
+ranging from populational studies in medical imaging to map reconstruction based on satellite images. Non-rigid deformations
+represent a big slice of all possible deformations in images that need to be registered. 
+Presently, studies that involve thousands of images are becoming commonplace, 
+suggesting that acceleration techniques should be developed to diminish the analysis or processing time. 
+Registration techniques are usually very computational demanding, hence the use of \textit{graphic processing units} (GPUs) 
+creates a possibility to speedup several stages of the registration process, such as extraction of features, 
+determination of feature correlation and calculaton of the deformation function. This project targets the
+parallelization of non-rigid registration techniques in modern GPU architecture and evaluate their 
+efficiency. 
 \\
 
 \noindent \textbf{Keywords:} Image Registration, Thin Plate Splines, Demons, Graphic Processing Units.

@@ -1,47 +1,45 @@
 %% ------------------------------------------------------------------------- %%
 \chapter{Introdução}
 \label{cap:introducao}
-	O alinhamento de imagens entre duas ou mais imagens é um problema clássico dentro de visão computacional. O alinhamento
-leva pontos de uma imagem para pontos de outra imagem, criando uma função de correspondência entre elas. Alguns exemplos
-do que esse alinhamento é capaz: podemos criar imagens a partir de imagens menores, chamado de Costura 
-(\textit{Stitching ou Mosaicking}); realizar a junção de imagens diferentes da mesma cena em uma única imagem, chamado 
-de Fusão (\textit{Image Fusion}); é possível retirar deformações de uma imagem dada uma imagem base, como é feito no
-processamento de imagens médicas, onde o alinhamento de uma imagem nova de um paciente com uma antiga é capaz de
-retirar possíveis diferenças entre elas. Existem ainda várias outras aplicações para o alinhamento de imagens.
+	O alinhamento espacial ou geométrico entre duas ou mais imagens é um problema clássico dentro de visão computacional. 
+Ele leva pontos de uma imagem para pontos de outra imagem, criando uma função de correspondência entre imagens. Uma vez
+alinhadas, uma série de aplicações distintas podem ser beneficiadas, dependendo do contexto do problema. 
+A partir  dessa função podemos criar imagens maiores costurando imagens menores uma nas outras, processo esse chamado de 
+\textit{stitching ou mosaicking}, utilizá-la para realizar a junção de imagens diferentes da mesma cena em uma única 
+imagem, chamado de fusão (\textit{image fusion}), ou ainda extrair diferenças anatômicas a partir de imagens médicas.
 
-	Chamamos o processo de alinhamento de imagens de Registro. os algoritmos de registro podem ser em dois grupos, 
-baseando-se na natureza da transformação que é usada para alinhar as imagens. O primeiro grupo, o registro rígido, 
-alinha as imagens utilizando transformações afins, ou seja, ele é capaz de aplicar operações simples ao alinhar imagens,
-como rotações, translações e mudanças de escala. Isso não é o suficiente para resolver a maioria dos problemas de registro.
-Em um dos exemplos dados acima, o registro é capaz de retirar diferenças entre imagens médicas. As diferenças mais 
-encontradas são causadas por movimentações do tecido mole, criando deformações não uniformes, que não podem ser representadas
-por transformações afins. Para realizar o registro desses casos, o segundo grupo de algoritmos é usado, o registro não-rígido, que utiliza várias transformações complexas para realizar o alinhamento das imagens. Fluxo óptico ou aproximação
-para fluidos são exemplos de instancias para essas transformações.
+	Chamamos o processo de alinhamento de imagens de registro de imagens. Os algoritmos de registro são categorizados 
+baseando-se na natureza da transformação usada para alinhar as imagens. O primeiro grupo, o registro rígido, 
+alinha as imagens aplicando transformações simples às imagens, como rotações e translações. Ele é pode
+ser usado para corrigir movimentações simples, como a movimentação da cabeça de um paciente entre captura de imagens. Porém
+essas transformações não são suficientes para corrigir movimentações fisiológicas mais complexas, como os batimentos do coração
+ou o movimento respiratório. O registro desses casos é então realizado pelos algoritmos de registro não-rígido, 
+que utilizam transformações não lineares para representar as deformações presentes nas imagens. O fluxo óptico ou a 
+utilização de equações de dinâmica de fluidos para aproximar a transformação são exemplos de soluções para esses casos.
 
-	O registro é altamente custoso computacionalmente, por dois motivos. O primeiro é o número de etapas que devem ser
+	O registro é altamente custoso computacionalmente por dois motivos. O primeiro é o número de etapas que devem ser
 realizadas antes do algoritmo de registro em si. Dependendo da qualidade das imagens ou do algoritmo usado, todas as 
 imagens devem passar por um pré-processamento. Depois, características são encontradas em cada imagem, e correspondências
-são feitas entre características de imagens diferentes. Com tudo isso feito, o algoritmo de registro é executado para
+são feitas entre características de imagens diferentes. O algoritmo de registro é então executado para
 encontrar, dentro do espaço de parâmetros da transformação escolhida, o melhor conjunto que quando aplicado a transformação
-nos de o alinhamento das imagens. A transformação escolhida depende da área de aplicação, logo não podemos escolher uma 
-transformação que seja computacionalmente rápida se ela não irá nos dar os resultados esperados.
+nos dê o alinhamento espacial das imagens.
 
-	Outro motivo para o grande tempo de execução do registro é a crescente quantidade de dados. Um exemplo dessa crescente
-quantidade de dados são as imagens \textit{Gigapixel}, imagens compostas por milhões de pixels. Elas são criadas para 
-representar com a maior quantidade de detalhes possíveis imagens de cidades, do espaço e até de micro estruturas, em 
-estudos biológicos. Em 2010 o projeto criado por \cite{sevilla111}, que mantinha o recorde mundial com uma imagem de 111 
-\textit{Gigapixels}, foi composto usando 9,750 imagens. Em apenas dois anos o projeto de \cite{london320} criou uma foto
-esférica de Londres com 320 \textit{Gigapixels}, criada a partir de 48,640 imagens. Todas as outras áreas em processamento
-de imagens são capazes do mesmo feito, dada a facilidade na transmissão e manutenção de dados, estudos que antigamente
-usavam centenas de imagens podem facilmente utilizar milhares.
+	O outro motivo que eleva o custo do registro é a grande quantidade de dados à disposição de pesquisadores atualmente,
+dada a crescente facilidade em se manter e distribuir dados com os avanços na pesquisa com computação em nuvem, por exemplo.
+Um destes exemplos são as imagens \textit{Gigapixel} \cite{cossairt2011gigapixel} compostas por milhões de pixels, criadas para 
+representar, com a maior quantidade de detalhes possíveis, panoramas de cidades e até de microestruturas em 
+estudos biológicos. Em 2010, o projeto criado por \cite{sevilla111}, que mantinha o recorde mundial com uma imagem de 111 
+\textit{Gigapixels}, foi composto usando 9.750 imagens. Em apenas dois anos o projeto de \cite{london320} criou uma foto
+esférica de Londres com 320 \textit{Gigapixels}, criada a partir de 48.640 imagens. Essa quantidade de imagens pode ser
+facilmente encontrada em estudos dessa década em outras áreas de processamento de imagens.
 
-	Logo o registro tem que sofrer algum tipo de aceleração. Nossa abordagem nesse trabalho é traduzir o registro para o 
-ambiente de Programação Genérica em Unidades de Processamento Gráfico (GPGPU). A motivação para utilizar as Unidades de 
-Processamento Gráfico (GPU) como hardware para a execução do processo de registro vem da velocidade com que a sua 
-capacidade de processamento aumenta, atrelado ao baixo custo por poder de processamento dessas placas. Ao escolher o 
-algoritmo de registro que será utilizado temos que tomar o cuidado para que ele se adapte ao paradigma de programação em 
-GPU a ponto de ganhar um aumento de velocidade considerável e que ainda sim seja capaz de registrar uma gama grande de 
-imagens.
+	Logo o registro se beneficia de algum tipo de aceleração. O principal objetivo do trabalho é traduzir o registro de 
+imagens para o modelo de execução \textit{Single Instruction, Multiple Data} \cite{patterson2013computer}, que é adotado 
+nas Unidades de Processamento Gráfico (GPU). A escolha das GPUs como hardware para a execução do processo de registro vem da 
+velocidade com que a sua capacidade de processamento aumenta, atrelado ao baixo custo de processamento dessas placas. Ao
+escolher o algoritmo de registro que será utilizado temos que tomar o cuidado para que ele se adapte ao paradigma de 
+programação em GPU a ponto de ganhar um aumento de velocidade considerável e que ainda sim seja capaz de registrar uma 
+gama grande de imagens.
 
 %% ------------------------------------------------------------------------- %%
 \section{Trabalhos Relacionados}
@@ -82,10 +80,10 @@ juntamente com o anterior, se preocupa com a organização dos dados na memória
 antes do surgimento de linguagens voltadas para GPGPU.
 
 	Em 2010, o artigo de \cite{modat2010fast} define um algoritmo de registro não-rígido chamado de \textit{Free-Form 
-Deformation}, desenvolvido para registrar imagens T1 de ressonância. Diferente de outros algoritmos, ele foi desenvolvido
-para executar em GPUs diretamente. Para tal, os autores utilizam uma interpolação B-Spline cúbica e uma modificação da
-informação mutua como métrica para o registro. Ele separa cara passo em vários \textit{kerneis} diferentes, fazendo
-com que cada \textit{kernel} utilize o máximo de memória possível e então espalhando o processamento para um maior número
+Deformation}, desenvolvido para registrar imagens de ressonância magnética pesadas em T1. Diferente de outros algoritmos, 
+ele foi desenvolvido para executar em GPUs diretamente. Para tal, os autores utilizam uma interpolação B-Spline cúbica e 
+uma modificação da informação mutua como métrica para o registro. Ele separa cara passo em vários \textit{kernels} diferentes, fazendo
+com que cada \textit{kernel} utilize o máximo de memória possível e então espalha o processamento para um maior número
 de processadores na GPU, melhorando o desempenho do algoritmo. 
 
 	O estudo de \cite{membarth2011frameworks} realiza uma comparação entre vários arcabouços de programação para GPU,
@@ -95,30 +93,30 @@ comparação conceitual entre os vários arcabouços e depois com uma comparaç�
 com a execução sequencial, em paralelo e em GPU do algoritmo. 
 	
 %% ------------------------------------------------------------------------- %%
-\section{Motivações}
-	Vários trabalhos na última década levaram o registro para o mundo GPGPU. Alguns deles implementaram um pedaço do 
-algoritmo em GPU, enquanto outros traduziram todo o algoritmo. Porém o registro é composto de vários passos auxiliares
-feitos antes do algoritmo principal, como etapas de pré-processamento, descoberta de características e correspondência
-das mesmas. Falaremos mais sobre isso no Capitulo \ref{cap:conceitos}. E ainda, a tradução deles é feita pensando em 
-uma única execução da etapa de registro, não pensando em execuções continuas, com várias entradas diferentes, onde 
-podemos aproveitar a transferência de dados de uma etapa para a outra.
-	
-	Nossa motivação nesse trabalho é, então, suprir essa lacuna, criando um algoritmo de registro não-rígido em GPU que
-cuide de todas as etapas no registro de várias imagens.
-%% ------------------------------------------------------------------------- %%
 \section{Objetivos}
-	O primeiro objetivo do trabalho é identificar, entre os algoritmos mais utilizados para registrar imagens com 
-deformações não-rígidas, o melhor candidato para ser traduzido no ambiente GPGPU. Isso deve levar em conta todos os 
-passos de um algoritmo de registro, desde o pré-processamento até a construção da imagem registrada. Nosso algoritmo deve,
-ainda, ser capaz de lidar com problemas que necessitem do registro de várias imagens, como um estudo clinico sobre 
-populações, onde vários pacientes são registrados para um paciente artificial.
+	Vários trabalhos na última década levaram o registro de imagens para o mundo GPGPU. Alguns deles implementam somente
+algumas operações especificas do algoritmo em GPU, enquanto outros traduzem todo o processo do algoritmo. Porém o registro é composto de 
+várias etapas auxiliares feitas antes do algoritmo principal, como etapas de pré-processamento, descoberta de 
+características e correspondência das mesmas. Falaremos mais sobre isso no Capitulo \ref{cap:conceitos}. Ainda, a tradução 
+proposta por eles não leva em conta a execução do mesmo algoritmo de registro repetidas vezes na GPU, ponto que pode ser
+explorado para incrementar a velocidade do registro entre várias imagens.
+	
+	O objetivo principal do trabalho é identificar, entre os algoritmos mais utilizados para registrar imagens com 
+deformações não-rígidas, o melhor candidato para ser portado para execução em GPUs. Os objetivos específicos deste
+trabalho são:
 
-	Logo, nosso algoritmo deve ser capaz de otimizar a utilização dos recursos da GPU, minimizando a transferência de dados
-entre a CPU e a GPU enquanto maximiza a utilização dos recursos de processamento da GPU.
+\begin{enumerate}
+	\item Identificar os algoritmos de registro não-rídidos mais comuns e implementá-los em GPU
+	\item Otimizar a ocupação dos recursos da GPU, preferencialmente entre as etapas do registro, com a finalidade de 
+				minimizar a transferência de dados entre a CPU e a GPU
+	\item Lidar com o registro de mais de duas imagens por vez
+	\item Avaliar a eficiência quando comparados à implementações em CPU
+\end{enumerate}
+
 %% ------------------------------------------------------------------------- %%
 \section{Organização do Trabalho}
 \label{sec:organizacao_trabalho}
 
 No Capítulo~\ref{cap:conceitos}, apresentamos o que é Registro, Unidade de Processamento Gráfico, GPGPU e os algoritmos 
-de registro escolhidos. No Capítulo \ref{cap:resultados} os testes utilizados e os resultados dos dois algoritmos 
-escolhidos são apresentados. Finalmente, no Capítulo~\ref{cap:conclusoes} analisamos os resultados obtidos 
+de registro estudados. No Capítulo \ref{cap:resultados} resultados preliminares da implementação de dois algoritmos
+de registro em CPU são apresentados. Finalmente, no Capítulo~\ref{cap:conclusoes} analisamos os resultados obtidos. 

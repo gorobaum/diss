@@ -1,8 +1,8 @@
 %% ------------------------------------------------------------------------- %%
 \chapter{Resultados Preliminares}
 \label{cap:resultados}
-	A partir dos algoritmos estudados, escolhemos dois algoritmos para passarem em três testes para determinar sua 
-eficacia. O primeiro escolhido foi o \textit{Demons}, dada a facilidade em adotar a arquitetura SIMD, sua popularidade 
+	Dois dos algoritmos mais representativos foram selecionados para serem avaliados. 
+O primeiro escolhido foi o \textit{Demons}, dada a facilidade em adotar a arquitetura SIMD, sua popularidade 
 dentro da área de processamento de imagens médicas e seu poder em registrar pequenas deformações com baixo custo 
 computacional. O outro escolhido foi o TPS, que com seu método de registro que utiliza características, permite que ele
 seja aplicado a uma gama maior de tipo de imagens e os vários pontos em que ele pode ser acelerado. Os testes pelos 
@@ -87,7 +87,7 @@ Referência.
 %% ------------------------------------------------------------------------- %%
 \section{Avaliação dos testes}
 
-\begin{figure}[h]
+\begin{figure}[H]
 	\centering
 	\begin{subfigure}[t]{0.23\textwidth}
 	  \includegraphics[width=\textwidth]{figuras/screen.png}
@@ -146,6 +146,7 @@ Referência.
 			Registrada entre (a) e (d) pelo Demons.}
 	\label{fig:resultados}
 \end{figure}
+
 	Os resultados dos testes podem ser observados na figura \ref{fig:resultados}.
 Os dois algoritmos tiveram um resultado satisfatório registrando o primeiro teste, enquanto somente um deles conseguiu
 registra os dois últimos testes com um resultado aceitável, dada a natureza não uniforme da distorção utilizada. 
@@ -168,3 +169,23 @@ o que compromete o resultado nesse caso.
 vetorial \ref{math:demons} utiliza o gradiente das duas imagens para calcular a direção da transformação do registro. 
 Como a distorção usada nesse teste foi caótica, a transformação obtida fez com que pontos próximos fossem mapeados para 
 pontos distantes na imagem Referência, levando ao resultado obtido.
+
+\subsection{Tempo de execução dos testes}
+	Os testes foram executados em um computador com processador Intel i5-3337U 1.80GHz e 6GB de memória. Cada teste foi
+executado 10 vezes e foram implementados em python 2.7.6. A tabela a seguir mostra os resultados em segundos:
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+Algoritmo & Tempo médio & desvio padrão & máximo & minimo \\
+\hline
+\textit{Demons} & 686.42 & 27.71 & 740.21 & 632.90 \\
+\hline
+TPS & 329.19 & 44.57 & 432.75 & 289.43 \\
+\hline
+\end{tabular}
+\caption{Tempo de execução dos testes}
+\label{table:tps}
+\end{center}
+\end{table}

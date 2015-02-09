@@ -6,7 +6,7 @@
 \section{Registro}\index{Registro}
 \label{sec:fundamentos}
 
-    O registro de imagens tem como objetivo encontrar um alinhamento entre duas imagens diferentes. Dada duas imagens, 
+    O registro de imagens tem como objetivo encontrar um alinhamento geométrico entre duas imagens. Dada duas imagens, 
 a imagem Referência (R) e a imagem Alvo (A), os algoritmos de registro encontram um campo
 vetorial de deslocamento que é aplicado a imagem Alvo, movendo seus pixels para um estado no qual ela esteja alinhada
 com a imagem Referência. Para encontrar um alinhamento, supomos que a imagem Alvo sofreu algum tipo de deformação,
@@ -29,12 +29,12 @@ Cada algoritmo de registro utiliza um método diferente para encontrar a funçã
     \item Estimativa da função de transformação;
     \item Reamostragem da imagem Alvo.
 \end{enumerate} % TODO: Colocar o diagrama aqui %
-    É importante salientar que nem todos algoritmos de registro seguem essa lista a risca, e mesmo que sigam eles ainda
+    É importante salientar que nem todos algoritmos de registro seguem essa lista rigorosamente, e mesmo que sigam eles ainda
 podem realizar mais de um passo por vez. Os passos gerais são representados na imagem \ref{fig:regExplicacao}. 
 Vamos tratar brevemente dos passos nas seções a seguir, explicitando em alguns pontos onde os passos podem ser acelerados,
 principalmente pela paralelização de suas operações.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \begin{subfigure}[t]{0.3\textwidth}
       \includegraphics[width=\textwidth]{figuras/static.png}
@@ -66,7 +66,7 @@ principalmente pela paralelização de suas operações.
       \subcaption*{(f)}
       \label{fig:lenaRegistrada}
     \end{subfigure}
-    \caption{(a) imagem Referência. (b) imagem Alvo deformada pela função seno. 
+    \caption{(a) Imagem Referência. (b) Imagem Alvo deformada pela função seno. 
              (c) Detecção de características. (d) Correspondência de características.
              (e) Estimativa da função de transformação. (f) Reamostragem da imagem Alvo.}
     \label{fig:regExplicacao}
@@ -74,14 +74,13 @@ principalmente pela paralelização de suas operações.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Pré-processamento}
-    Essa é a etapa mais aberta dentre todas, já que sua aplicação é totalmente dependente do problema a ser resolvido. 
+    Essa é a etapa mais flexível dentre todas, já que sua aplicação é totalmente dependente do problema a ser resolvido. 
 Antes de iniciar o processo de registro, é possível que as imagens tenham que passar por algum processamento para 
-melhorar o resultado final do registro. O pré-processamento muda de acordo com as necessidades de cada caso. Caso as
-imagens tenham muito ruído, essa é a hora de aplicar filtros para melhorar sua qualidade, como um filtro Passa Alta ou 
-o Passa Baixa. Certos algoritmos de registro não trabalham com as imagens, e sim com segmentações delas ou somente com 
-suas bordas, então é necessário aplicar algoritmos como o \textit{Watershed}, introduzido por 
-\cite{vincent1991watersheds} ou o \textit{Canny}, desenvolvido por \cite{canny1986computational}, para obter as 
-segmentações e bordas, respectivamente.
+melhorar o resultado final do registro, como a suavização, para remoção de ruído. Filtros passa alta ou 
+passa baixa são operações comuns no pré-processamento. Certos algoritmos de registro não utilizam as imagens
+originais, porém segmentações ou até suas bordas unicamente. Assim algoritmos como o \textit{Watershed}, introduzido por 
+\cite{vincent1991watersheds} ou o \textit{Canny}, desenvolvido por \cite{canny1986computational}, são populares
+para obter segmentações e bordas, respectivamente.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Detecção de características}\index{Detecção de características}
@@ -90,24 +89,24 @@ segmentações e bordas, respectivamente.
     Com as imagens já preprocessadas, o primeiro passo para um algoritmo de registro é a localização de estruturas de 
 destaque na cena ou objeto dentro das imagens. Essas estruturas são nomeadas de características, e são construídas a 
 partir de um conjunto de pixels. Características devem ser facilmente identificadas, independente de variações na 
-aquisição das fotografias, como mudanças na angulação ou perspectiva. Elas são separadas em 3 grupos, baseando-se nas 
-suas propriedades:
+aquisição das fotografias, como mudanças na angulação ou perspectiva. Elas são separadas em 3 grupos, a seguir:
 
-\textbf{Características de Região} - As características de Região são áreas de uma imagem que apresentam uma diferença
-significativa de contraste em relação a áreas vizinhas. Lagos, florestas ou regiões urbanas são exemplos desse tipo de 
-característica. Elas são identificadas utilizando algoritmos de segmentação, e normalmente são representadas por um
+\textbf{Baseadas em Região} - As características de Região são áreas de uma imagem que apresentam uma diferença
+significativa de contraste em relação a áreas vizinhas. Normalmente são representadas por um
 conjunto conexo de pixels ou utilizando um \textit{template} de formato retangular ou circular centrado no centro de 
-massa da Região.
+massa da Região. Lagos, florestas ou regiões urbanas são exemplos desse tipo de 
+característica.
 
-\textbf{Características de Retas} - Essas características são definidas como a interface entre duas regiões de uma 
-imagem, comumente chamadas de bordas. Exemplos comuns de características de Reta são ruas, rios ou o litoral, onde 
+\textbf{Baseadas em Retas} - Essas características são definidas como a interface entre duas regiões de uma 
+imagem, comumente chamadas de bordas. Exemplos comuns são ruas, rios ou o litoral, onde 
 podemos claramente visualizar a diferença de intensidade, por exemplo, do mar e da areia. Métodos clássicos de detecção 
-de bordas como o Canny ou o filtro laplaciano são usados para identificar essas características.
+de bordas como o Canny ou o filtro Laplaciano são usados para identificar essas características.
 
-\textbf{Características de Ponto} - São pontos de intersecção entre linhas, representados por intersecções de ruas ou
-rios, ou pontos de máxima curvatura. Algoritmos para identificação de pontos utilizam técnicas mais avançadas, dada a 
-dificuldade de encontrá-los. Os mais básicos encontram as intersecções de linhas enquanto os mais avançados buscam
-centroides de regiões ou o máximo local de uma \textit{wavelet}.
+\textbf{Baseadas em Ponto} - São pontos que conseguem representar a região na qual se encontram atráves de alguma 
+propriedade invariável a mudanças na cena, como intersecções de linhas ou pontos de máxima curvatura. Algoritmos para 
+identificação de pontos utilizam técnicas mais avançadas, dada a dificuldade de encontrá-los. Os mais básicos encontram 
+as intersecções de linhas enquanto os mais avançados buscam centroides de regiões ou o máximo local de uma 
+\textit{wavelet}.
 
   Encontrar características em imagens é um passo não só de registro de imagens, mas em reconhecimento de padrões, 
 reconstrução de modelos 3D e outras áreas. Dada essa importância, vários algoritmos foram desenvolvidos com o passar dos
@@ -127,7 +126,7 @@ correspondentes entre as duas imagens. É importante que esse passo consiga iden
 em cada par de características, para que uma primeira estimativa dos parâmetros da função de transformação possa ser 
 utilizada como ponto de partida para o próximo passo.
 
-    A primeira solução a ser apresentada, a \textbf{Correspondência por Área}, mescla o passo de Detecção com o de 
+    A primeira solução a ser apresentada, a \textbf{Baseada em Área}, mescla o passo de Detecção com o de 
 Correspondência. Esse método utiliza duas janelas, uma em cada imagem, com formato retangular ou circular, aplicando
 métricas em cada uma das janelas com a finalidade de calcular a relação entre as janelas. O algoritmo segue realizando
 esse cálculo para todas as combinações possíveis de janelas entre as duas imagens, e sempre que um máximo é encontrado
@@ -135,13 +134,13 @@ o centro das janelas são usados para marcar a correspondência. Várias métric
 Correlação entre as intensidades das janelas, o estudo do espectro da transformada de \textit{Fourier} das janelas ou 
 o cálculo da informação mútua entre elas.
 
-    A descoberta de correspondência entre \textbf{Características de Região} é feita utilizando, principalmente, duas 
+    A descoberta de correspondência entre características \textbf{Baseadas em Região} é feita utilizando, principalmente, duas 
 técnicas. A primeira, mais simples na sua ideia, é parear regiões da imagem Referência com a região da imagem Alvo a 
 qual tenha o contorno mais parecido possível. Os métodos que fazem esse pareamento devem ser capazes de encontrar os 
 pares mesmo que eles tenham sofrido rotações ou mudança de escala. Descritores de Fourier e representações matriciais 
 das regiões são exemplos de métodos usados para realizar a correspondência entre características de região.
 
-    Os métodos para encontrar correspondências entre \textbf{Características de Retas} tem as mesmas restrições que os
+    Os métodos para encontrar correspondências entre \textbf{Baseada em Retas} tem as mesmas restrições que os
 de Região, ou seja, devem conseguir realizar o pareamento de linhas que sofreram rotação, mudança de escala ou 
 translação. O primeiro passo de um algoritmo é comparar as retas da imagem Referência com todas as possíveis rotações 
 de todas as retas da imagem Alvo. Quando um possível par é encontrado, um valor de correspondência é calculado, 
@@ -161,22 +160,6 @@ aplicada na imagem; e \textbf{Independência}, se o descritor for representado p
 independentes. O que define um descritor deve ser decidido caso a caso. O modelo mais simples usado é a própria 
 intensidade do pixel, e a intensidade de seus vizinhos. Outros descritores válidos são ângulos entre correspondências 
 vizinhas ou a distribuição espacial dos vizinhos.
-
-    Podemos separar os algoritmos de correspondências em dois tipos com base no estilo com que eles fazem a busca de 
-correspondências. O primeiro tipo escolhe uma correspondência na imagem Referência e realiza uma busca em largura por
-todas as correspondências da imagem Alvo, buscando aquela com maior relação com a da imagem Referência. Esse processo
-pode ser facilmente acelerado utilizando uma paralelização com todas as correspondências da imagem Referência. Já o 
-outro tipo realiza uma busca entre as relações das características e encontra os pares de maneira iterativa. A 
-aceleração desse passo depende totalmente da sua implementação.
-
-    O modelo \textit{MapReduce} apresenta uma outra alternativa para acelerar esse passo e o anterior. Ele foi 
-desenvolvido por \cite{dean2008mapreduce} e pela Google. O modelo \textit{MapReduce} foi desenvolvido para realizar 
-processamento em lote de um número gigantesco de dados, o popular \textit{Big Data}, dado que não exista muita diferença 
-em como os dados devem ser processados. Seu modelo de programação contém duas etapas principais, o \textit{Map}, que 
-recebe um par de dados e retorna um par de valor/chave. Um passo intermediário agrupa todos os valores com mesma chave e
-a lista resultante é enviada para o próximo passo, o \textit{Reduce}, onde a lista é processada. O nosso \textit{Map} 
-recebe uma imagem Alvo e Referência, e encontra as características delas, enquanto o processo de agrupamento encontra as
-suas correspondências. O \textit{Reduce} fica com qualquer etapa de pós-processamento, se necessário.
 
   Abaixo falamos sobre o \textit{Scale Invariant Feature Transform} e o \textit{Speeded Up Robust Features}, que são
 métodos que fazem tanto a captura quanto a correspondência de características.
@@ -207,7 +190,7 @@ com desvio padrão três vezes maior que o usado no filtro da imagem $A$. Após 
 seu máximo é escolhido como orientação para o pixel \textbf{chave}. 
 
   Agora o algoritmo irá determinar o vetor descritor para cada ponto \textbf{chave}. Para tal, o algoritmo observa todos
-os pixels em uma vizinhança 16x16 ao redor de cada \textbf{chave}, separando essa vizinhança em 8 menores de 4x4 pixels.
+os pixels em uma vizinhança $16 \times 16$ ao redor de cada \textbf{chave}, separando essa vizinhança em 8 menores de $4 \times 4$ pixels.
 Para cada vizinhança um histograma de 8 posições de orientações é criada e preenchida utilizando como base uma Gaussiana
 com desvio padrão $1.5$ vezes maior que o desvio padrão utilizado para criar a imagem atual. Então, cada uma das 16
 vizinhanças irão contribuir com seu histograma de 8 posições, criando um vetor de 128 posições que será utilizado
@@ -238,11 +221,11 @@ interesse:
   Onde $L_{xx}(\mathtt{x}, \sigma)$ é a convolução da Gaussiana de segundo grau ($ \frac{\delta^2}{\delta x^2} g(\sigma) $) 
 no ponto $\mathtt{x}$, e $L_{xy}(\mathtt{x}, \sigma), L_{yy}(\mathtt{x}, \sigma)$ nas outras direções possíveis. Para 
 cada ponto o determinante da matriz da equação \ref{eq:hessian} é calculada, e uma nova imagem é montada com o resultado.
-Porem a utilização das derivadas Gaussiana de segunda ordem leva a perda de repetibilidade, ou seja, encontrar a mesma 
+Porém a utilização das derivadas Gaussiana de segunda ordem leva a perda de repetibilidade, ou seja, encontrar a mesma 
 característica em imagens com diferença de rotação ou escala. Os autores, então, optam pela utilização de uma aproximação 
 de uma Gaussiana, chamada de filtro caixa, descrito na imagem \ref{fig:box}. 
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{figuras/boxFilter.png}
     \caption{As duas primeiras imagens mostram a aplicação da primeira e segunda derivada de uma Gaussiana, 
@@ -254,22 +237,41 @@ de uma Gaussiana, chamada de filtro caixa, descrito na imagem \ref{fig:box}.
 dos pixels do retângulo que vai da origem até o ponto em questão, torna a construção das piramides que representam o
 espaço de escala trivial. Ao invés de reamostrar a imagem a cada passo da piramide, basta aumentar o tamanho do filtro
 caixa e aplicá-lo diretamente na imagem integral para obter todos os níveis da piramide. Com a piramide de imagens
-Hessianas construída, o algoritmo busca numa vizinhança $3x3x3$ os máximos locais para encontrar os pontos de interesse.
+Hessianas construída, o algoritmo busca numa vizinhança $3 \times 3 \times 3$ os máximos locais para encontrar os 
+pontos de interesse.
 
   Para encontrar a orientação dos pontos de interesse, o SURF define uma vizinhança circular de tamanho variado, com
 relação ao nível em que a imagem se encontra na piramide. Para cada dimensão da imagem as \textit{wavelets de Haar} são
-calculadas, afim de determinar a direção preferencial. Todos os resultados são colocados em um plano $xXy$, e todos os 
-valores dentro de todas as janelas de tamanho $\frac{\pi}{3}$ são somados. A direção correspondente a maior janela é 
-escolhida. Para construir o vetor de descritores uma vizinhança quadrada de tamanho proporcional a escala é utilizada,
-sendo subdividida em janelas de tamanho $4x4$. Para cada subjanela uma \textit{wavelets de Haar} é calculada, e um vetor
-de 4 dimensões é montado. As duas primeiras dimensões do vetor são construídas usando a soma de todos os 
-\textit{wavelets de Haar} nas duas dimensões. As duas últimas dimensões são construídas utilizando a soma do valor 
-absoluto dos \textit{wavelets de Haar}, trazendo informações sobre a polaridade da mudança de contraste.
+calculadas, afim de determinar a direção preferencial. Todos os resultados são colocados em um plano $x \times y$, e 
+todos os valores dentro de todas as janelas de tamanho $\frac{\pi}{3}$ são somados. A direção correspondente a maior 
+janela é escolhida. Para construir o vetor de descritores uma vizinhança quadrada de tamanho proporcional a escala é 
+utilizada, sendo subdividida em janelas de tamanho $4 \times 4$. Para cada subjanela uma \textit{wavelets de Haar} é 
+calculada, e um vetor de 4 dimensões é montado. As duas primeiras dimensões do vetor são construídas usando a soma de 
+todos os \textit{wavelets de Haar} nas duas dimensões. As duas últimas dimensões são construídas utilizando a soma do 
+valor absoluto dos \textit{wavelets de Haar}, trazendo informações sobre a polaridade da mudança de contraste.
 
   Com os descritores construídos, o SURF utiliza um método parecido com o SIFT para realizar a correspondência de 
 características, utilizando uma árvore binária multidimensional de busca (\textit{k-d tree}), adicionando uma dimensão a 
 mais quando comparado ao SIFT. O SURF utiliza o traço da matriz Hessiana, que contém informação sobre o contraste da 
 característica em relação ao fundo no qual ela se encontra.
+
+\subsubsection{Aceleração na Correspondência de Características}
+
+    Podemos separar os algoritmos de correspondências em dois tipos com base no estilo com que eles fazem a busca de 
+correspondências. O primeiro tipo escolhe uma correspondência na imagem Referência e realiza uma busca em largura por
+todas as correspondências da imagem Alvo, buscando aquela com maior relação com a da imagem Referência. Esse processo
+pode ser facilmente acelerado utilizando uma paralelização com todas as correspondências da imagem Referência. Já o 
+outro tipo realiza uma busca entre as relações das características e encontra os pares de maneira iterativa. A 
+aceleração desse passo depende totalmente da sua implementação.
+
+    O modelo \textit{MapReduce} apresenta uma outra alternativa para acelerar esse passo e o anterior. Ele foi 
+desenvolvido por \cite{dean2008mapreduce} e pela Google. O modelo \textit{MapReduce} foi desenvolvido para realizar 
+processamento em lote de um número gigantesco de dados, o popular \textit{Big Data}, dado que não exista muita diferença 
+em como os dados devem ser processados. Seu modelo de programação contém duas etapas principais, o \textit{Map}, que 
+recebe um par de dados e retorna um par de valor/chave. Um passo intermediário agrupa todos os valores com mesma chave e
+a lista resultante é enviada para o próximo passo, o \textit{Reduce}, onde a lista é processada. O nosso \textit{Map} 
+recebe uma imagem Alvo e Referência, e encontra as características delas, enquanto o processo de agrupamento encontra as
+suas correspondências. O \textit{Reduce} fica com qualquer etapa de pós-processamento, se necessário.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Estimativa da função de transformação}\index{Estimativa da função de transformação}
@@ -441,9 +443,9 @@ O CUDA supõem que todos os blocos podem ser executados de maneira independente,
 quanto sequencialmente. Com isso, é possível que o desempenho do código aumente em GPUs com mais processadores, sem que o programador
 tenha que modificar o código.
 
-O CUDA sabe qual instruções ele pode executar dentro de um \textit{device} baseando-se no seu Compute Capability 
-(Capacidade Computacional). A Compute Capability de um \textit{device} são dois números, um que representa a arquitetura do 
-\textit{device}, e outro que representa melhorias numa arquitetura.
+O CUDA utiliza o Compute Capability (Capacidade Computacional) do \textit{device} no qual ele irá executar o \textit{kernel}
+para identificar quais instruções ele pode utilizar. A Compute Capability de um \textit{device} é um número de dois digitos,
+um que representa a arquitetura do \textit{device}, e outro que representa melhorias numa arquitetura.
 A arquitetura \textit{Tesla}, a primeira da NVIDIA a dar suporte a GPGPU, tem Compute Capability 1.x, a seguinte, a \textit{Tesla},
 tem 2.x e a atual, a \textit{Kepler}, tem 3.x. Dentro de cada arquitetura, podem existir melhorias nas instruções, que são
 refletidas no número após o ponto, ou seja, uma placa com Compute Capability 2.1 tem instruções que uma 2.0 não tem.
@@ -686,7 +688,7 @@ a execução do passo 2 antes que todos tenham executado o passo 1.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Thin Plate Splines}\index{TPS}
-    O Thin Plate Splines (TPS) segue mais à risca os passos gerais de um algoritmo de registro. Ele utiliza
+    O Thin Plate Splines (TPS) segue mais rigorosamente os passos gerais de um algoritmo de registro. Ele utiliza
 características para criar uma função de interpolação que é utilizada para criar a imagem registrada a partir
 da imagem referência. Vários algoritmos podem ser utilizados para adquirir as características que serão usadas
 pelo TPS, mas não abordaremos esse assunto pois ele foge do escopo do trabalho. Assumimos no inicio da sua
@@ -818,3 +820,43 @@ próximo passo para realizar a aceleração do TPS é criar dois vetores que gua
 e $(y-y^i)^2$. O uso desses vetores diminui o número de operações necessárias de $n_l*n_c*n_{cp}$ para $(n_l+n_c)*n_{cp}$.
 Da maneira original, a operação $(x-x^i)^2$ é repetida $n_c$ vezes para cada coluna, já com o uso dos vetores esse valor
 é calculado uma única vez e acessado toda vez que ele é necessário.
+
+\section{Outros algoritmos de registro estudados}
+
+\subsection{Multiquadrática}
+  A função utilizada por esse método de registro pertence a mesma familia do TPS, as funções de interpolação radial.
+Elas podem ser definidas, basicamente, pela seguinte fórmula:
+
+\begin{align}\label{math:multiquadric}
+    f(x,y) = \sum_{i=0}^n F_i R_i(x,y)
+\end{align}
+
+  Quando $R_i(x,y) = \sqrt{(x-x_i)^2 + (y-y_i)^2 + d^2}$, a função é chamada de multiquadrática. Todos os outros passos
+para o registro nesse caso seguem o TPS, desde a solução do sistema linear utilizando a correspondência entre as
+características para encontrar os $F_i$ até a interpolação realizada para registrar a imagem Alvo. Como reportado
+no livro escrito por \cite{goshtasby2005} o TPS é mais eficiente que as multiquadráticas quando existe um termo linear
+no registro, algo bastante comum em registro. 
+%Logo esse método não foi estudado mais a fundo.
+
+\subsection{Média Ponderada}
+  Esse grupo de funções não realiza uma interpolação exata das características com suas correspondências como o TPS e
+a Multiquadrática fazem. Essas transformações aproximam as características utilizando pesos para cada uma delas em 
+cada pixel da imagem. A função que a define é:
+
+\begin{align}\label{math:multiquadric}
+    f(x,y) = \sum_{i=0}^n f_i b_i(x,y) \\
+    b_i(x,y) = \frac{R_i(x,y)}{\sum_{i=0}^n R_i(x,y)}
+\end{align}
+
+  Onde $R_i$ é uma função radial descrecente. Quando $R_i$ é uma Gaussiana temos:
+
+\begin{align}\label{math:multiquadric}
+    R_i(x,y) = \exp{-\frac{(x-x_i)^2 + (y - y_i)^2}{2\sigma_i^2}}
+\end{align}
+
+  Neste caso, o registro por Média Ponderada é chamado de Registro por Gaussiana Racional (RaGs). Novamente os estudos
+realizados por \cite{goshtasby2005} mostram que os resultados obtidos pelas RaGs são superiores aos comparados com
+o TPS e a Multiquadrática quando todas as características tem correspondências e quando nenhuma característica se encontra
+fora da imagem. Quando qualquer uma dessas propriedades se perde, o TPS e a multiquadrática obtém resultados superiores.
+%Como os métodos de correspondências não garantem $100\%$ de pareamento, esse método não foi escolhido para passar pelos
+%testes abaixo.
