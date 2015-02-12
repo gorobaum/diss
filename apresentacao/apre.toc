@@ -1,0 +1,15 @@
+\beamer@endinputifotherversion {3.24pt}
+\select@language {brazil}
+\beamer@sectionintoc {1}{Introdu\IeC {\c c}\IeC {\~a}o}{2}{0}{1}
+\beamer@subsectionintoc {1}{1}{Introdu\IeC {\c c}\IeC {\~a}o}{2}{0}{1}
+\beamer@subsectionintoc {1}{2}{Motiva\IeC {\c c}\IeC {\~a}o e Objetivos}{8}{0}{1}
+\beamer@sectionintoc {2}{Conceitos}{10}{0}{2}
+\beamer@subsectionintoc {2}{1}{Registro}{10}{0}{2}
+\beamer@subsectionintoc {2}{2}{GPGPU}{22}{0}{2}
+\beamer@subsectionintoc {2}{3}{Algoritmos}{26}{0}{2}
+\beamer@sectionintoc {3}{Experimentos}{32}{0}{3}
+\beamer@subsectionintoc {3}{1}{Experimentos}{32}{0}{3}
+\beamer@subsectionintoc {3}{2}{Resultados}{36}{0}{3}
+\beamer@sectionintoc {4}{Proposta}{44}{0}{4}
+\beamer@subsectionintoc {4}{1}{Proposta}{44}{0}{4}
+\beamer@sectionintoc {5}{Bibliografia}{45}{0}{5}

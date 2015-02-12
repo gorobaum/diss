@@ -1,0 +1,98 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{BETVG08}
+
+\bibitem[BETVG08]{bay2008speeded}
+Herbert Bay, Andreas Ess, Tinne Tuytelaars e Luc Van~Gool.
+\newblock Speeded-up robust features (surf).
+\newblock {\em Computer vision and image understanding}, 110(3):346--359, 2008.
+
+\bibitem[Boo89]{bookstein1989principal}
+Fred~L. Bookstein.
+\newblock Principal warps: Thin-plate splines and the decomposition of
+  deformations.
+\newblock {\em IEEE Transactions on pattern analysis and machine intelligence},
+  11(6):567--585, 1989.
+
+\bibitem[Can86]{canny1986computational}
+John Canny.
+\newblock A computational approach to edge detection.
+\newblock {\em Pattern Analysis and Machine Intelligence, IEEE Transactions
+  on}, (6):679--698, 1986.
+
+\bibitem[Gos05]{goshtasby2005}
+A.~Ardeshir Goshtasby.
+\newblock {\em 2DD and 3-D Image Registration: For Medical, Remote Sensing, and
+  Industrial Applications}.
+\newblock Wiley-Interscience, 2005.
+
+\bibitem[GT08]{grossauer2008gpu}
+Harald Grossauer e Peter Thoman.
+\newblock Gpu-based multigrid: Real-time performance in high resolution
+  nonlinear image processing.
+\newblock Em {\em Computer Vision Systems}, p\'{a}ginas 141--150. Springer,
+  2008.
+
+\bibitem[HHW09]{han2009gpu}
+Xiao Han, Lyndon~S Hibbard e Virgil Willcut.
+\newblock Gpu-accelerated, gradient-free mi deformable registration for
+  atlas-based mr brain image segmentation.
+\newblock Em {\em Computer Vision and Pattern Recognition Workshops, 2009. CVPR
+  Workshops 2009. IEEE Computer Society Conference on}, p\'{a}ginas 141--148.
+  IEEE, 2009.
+
+\bibitem[KDR{\etalchar{+}}06]{kohn2006gpu}
+Alexander K{\"o}hn, Johann Drexl, Felix Ritter, Matthias K{\"o}nig e Heinz-Otto
+  Peitgen.
+\newblock Gpu accelerated image registration in two and three dimensions.
+\newblock Em {\em Bildverarbeitung f{\"u}r die Medizin 2006}, p\'{a}ginas
+  261--265. Springer, 2006.
+
+\bibitem[Low04]{lowe2004distinctive}
+David~G Lowe.
+\newblock Distinctive image features from scale-invariant keypoints.
+\newblock {\em International journal of computer vision}, 60(2):91--110, 2004.
+
+\bibitem[MRT{\etalchar{+}}10]{modat2010fast}
+Marc Modat, Gerard~R Ridgway, Zeike~A Taylor, Manja Lehmann, Josephine Barnes,
+  David~J Hawkes, Nick~C Fox e S{\'e}bastien Ourselin.
+\newblock Fast free-form deformation using graphics processing units.
+\newblock {\em Computer methods and programs in biomedicine}, 98(3):278--284,
+  2010.
+
+\bibitem[PH13]{patterson2013computer}
+David~A Patterson e John~L Hennessy.
+\newblock {\em Computer organization and design: the hardware/software
+  interface}.
+\newblock Newnes, 2013.
+
+\bibitem[PJR{\etalchar{+}}05]{papademetris2005bioimage}
+Xenophon Papademetris, Marcel Jackowski, Nallakkandi Rajeevan, R~Todd Constable
+  e LH~Staib.
+\newblock Bioimage suite: An integrated medical image analysis suite.
+\newblock {\em The Insight Journal}, 1:3, 2005.
+
+\bibitem[SDR04]{strzodka2004image}
+Robert Strzodka, Marc Droske e Martin Rumpf.
+\newblock Image registration by a regularized gradient flow. a streaming
+  implementation in dx9 graphics hardware.
+\newblock {\em Computing}, 73(4):373--389, 2004.
+
+\bibitem[Thi95]{thirion1995fast}
+Jean-Philippe Thirion.
+\newblock Fast non-rigid matching of 3d medical images.
+\newblock 1995.
+
+\bibitem[VS91]{vincent1991watersheds}
+Luc Vincent e Pierre Soille.
+\newblock Watersheds in digital spaces: an efficient algorithm based on
+  immersion simulations.
+\newblock {\em IEEE transactions on pattern analysis and machine intelligence},
+  13(6):583--598, 1991.
+
+\bibitem[ZG06]{zagorchev2006comparative}
+Lyubomir Zagorchev e Ardeshir Goshtasby.
+\newblock A comparative study of transformation functions for nonrigid image
+  registration.
+\newblock {\em Image Processing, IEEE Transactions on}, 15(3):529--538, 2006.
+
+\end{thebibliography}
