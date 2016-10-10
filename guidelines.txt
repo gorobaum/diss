@@ -1,0 +1,69 @@
+Introdução
+    * Qual a importancia do trabalho?
+    * Quais as melhorias propostas pelo trabalho?
+    * Quais áreas da computação são estudadas?
+  - Trabalhos Relacionados
+    - GPGPU
+      * Passar pelos papers importantes de GPGPU
+      * Focar nos avanços atuais em aplicações GPGPU voltadas para visão computacional
+    - Registro de Imagens
+      * Passar pelos papers importantes de Registro
+      * Focar nos avanços atuais no tratamento de imagens médicas e no TPS
+    * Falar sobre os trabalhos focando GPGPU e TPS
+  - Objetivos
+    * Quais os objetivos do trabalho?
+  - Organização do Trabalho
+    * Onde achar o que na dissertação
+
+Conceitos
+  - Visão Computacional
+    * O que é visão computacional?
+    * Como
+    - Imagens Médicas
+      * O que é uma imagem médica?
+    - Registro
+      - Pré-processamento
+      - Detecção e Correspondência de características
+      - Função de Transformação
+      - Reamostragem
+      * O que é registro?
+      * Onde ele é aplicado?
+      * Qual é seu custo computacional?
+      * Quais métodos foram estudados?
+    - Algoritmos de Registro
+      - Demons
+      - Multiquadrática
+      - Média Ponderada
+  - GPGPU
+    * O que é GPGPU?
+    * O que é uma GPU?
+    * Como usar GPGPU?
+    * Qual a utilidade de GPGPU?
+    - Hardware
+    - CUDA
+      * O que é CUDA?
+      * Por que CUDA?
+
+Trabalho (?)
+  - Thin Plate Splines
+    * O que é o TPS?
+    * Por que o TPS foi escolhido?
+    * Quais os principais passos do algoritmo
+    * Como mapear os passos para GPGPU
+    * Qual é o fator limitante ao se modelar o TPS para GPGPU, memória? Processamento?
+  - Otimizações estudadas
+    * Quais otimizações são pertimentes?
+    * Por que elas são pertimentes ao estudo?
+    - Otimizações aplicadas à memória
+    - Otimizações aplicadas à processamento
+    - Otimizações para o registro de mais de um par de imagens
+
+Resultados
+  - Resultados CPU x GPU
+  - Comparar e justificar os resultados CPU x GPU
+  - Resultados das diferentes otimizações
+  - Comparar e justificar os resultados das diferentes otimizações
+
+Conclusão
+  * Qual o principal resultado do trabalho?
+  * Quais são os resultados secundários?
