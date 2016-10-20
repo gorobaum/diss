@@ -1,0 +1,52 @@
+%% ------------------------------------------------------------------------- %%
+\chapter{Proposta}
+\label{cap:conclusoes}
+
+	O aumento da qualidade de imagens proveniente da melhoria da tecnologia associada com câmeras e afins, juntamente com
+a crescente facilidade de manter e utilizar grande quantidade de dados melhorou a condição para a realização de estudos
+envolvendo uma quantidade gigantesca de dados proveniente de imagens. Para acelerar o processamento dessa
+grande quantidade de dados estudamos algoritmos de registro que fossem facilmente paralelizáveis.
+
+	A escolha da GPU como plataforma utilizada para acelerar os algoritmos se deve a velocidade com a qual a sua capacidade
+de processamento está aumentando. Se comparadas com arquiteturas de três anos atrás, GPUs de hoje em dia apresentam uma melhoria
+de, em torno, três a cinco vezes mais poder de processamento. Com esses requisitos em mente estudaremos os algoritmos 
+clássicos de registro não-rígido que se adaptam à arquitetura SIMD, entre eles o 
+\textit{Thin Plate Splines} e o \textit{Demons}.
+%------------------------------------------------------
+\section{Próximos Passos} 
+
+	Os próximos passos para completar o estudo são, em prioridade:
+\begin{enumerate}
+	\item Avaliar algoritmos utilizados na etapa 1 e 2 do registro para utilizá-los;
+	\item Possibilitar a execução com múltiplas entradas (imagens);
+	\item Criar uma versão GPGPU dos algoritmos utilizando a linguagem CUDA;
+	\item Escrever um artigo científico;
+	\item Escrever a dissertação.
+\end{enumerate}
+
+\section{Cronograma}
+
+\begin{table}
+\begin{center}
+\begin{small}
+\begin{tabular}{|c|c|c|c|c|c|c|c|} 
+\hline
+\emph{Tarefa} &
+Março & 
+Abril & 
+Maio &  
+Junho & 
+Julho &
+Agosto & 
+Setembro \\ \hline
+\textbf{1} & X &  &  &  &  &  &  \\ \hline 
+\textbf{2} & X & X &  &  &  &  &  \\ \hline 
+\textbf{3} &  &  & X & X & X &  &  \\ \hline 
+\textbf{4} & X & X & X &  &  &  &  \\ \hline 
+\textbf{5} &  &  & X & X & X & X & X \\ \hline 
+\end{tabular}
+\caption{Cronograma.}
+\label{tab:tab:F5}
+\end{small}
+\end{center}
+\end{table}

@@ -1,7 +1,13 @@
 Introdução
     * Qual a importancia do trabalho?
+    * Registro rigido e nao rigido
+    * Por que o TPS foi escolhido dentre os outros
+    * Estudos com TPS
+    * Motivo do estudo (o custo computacional do registro)
+    * Quais áreas da computação são estudadas (tecnologias normalmente adotadas)?
     * Quais as melhorias propostas pelo trabalho?
-    * Quais áreas da computação são estudadas?
+    * Qual o meu diferencial?
+    * registro nao rigido e o mais custoso e tem uso critico dentro de imagens medicas
   - Trabalhos Relacionados
     - GPGPU
       * Passar pelos papers importantes de GPGPU
@@ -12,28 +18,38 @@ Introdução
     * Falar sobre os trabalhos focando GPGPU e TPS
   - Objetivos
     * Quais os objetivos do trabalho?
+    * Paralelizar o TPS usando gpgpu
+    * Desenvolver uma solucao do tps em gpgpu
+    * Solucao composta de pedacos
+    * Estudar o ganho de entre GPU e CPU
+    * Estudo de metodologia de aumento de desempenho
+    * Estudo comparativo entre as metodologias
   - Organização do Trabalho
     * Onde achar o que na dissertação
 
 Conceitos
-  - Visão Computacional
-    * O que é visão computacional?
-    * Como
-    - Imagens Médicas
-      * O que é uma imagem médica?
-    - Registro
-      - Pré-processamento
-      - Detecção e Correspondência de características
-      - Função de Transformação
-      - Reamostragem
-      * O que é registro?
-      * Onde ele é aplicado?
-      * Qual é seu custo computacional?
-      * Quais métodos foram estudados?
-    - Algoritmos de Registro
-      - Demons
-      - Multiquadrática
-      - Média Ponderada
+  - Imagem Digital
+    * Definições matemáticas de imagem
+      * Dimensões
+      * Como ela fica disposta na memória
+    * 3D, 3D variando com o tempo
+  - Imagens Médicas
+    * O que é uma imagem médica?
+  - Registro de imagens
+    - Pré-processamento
+    - Detecção e Correspondência de características
+    - Função de Transformação
+    - Reamostragem
+    * O que é registro?
+    * Onde ele é aplicado?
+    * Apresentar um exemplo básico
+    * Quais métodos foram estudados?
+  - Thin Plate Splines
+    * O que é o TPS?
+    * Por que o TPS foi escolhido?
+    * Quais os principais passos do algoritmo
+    * Como mapear os passos para GPGPU
+    * Qual é o fator limitante ao se modelar o TPS para GPGPU, memória? Processamento?
   - GPGPU
     * O que é GPGPU?
     * O que é uma GPU?
@@ -42,15 +58,11 @@ Conceitos
     - Hardware
     - CUDA
       * O que é CUDA?
-      * Por que CUDA?
+      * Por que CUDA (procurar um trabalho)?
 
-Trabalho (?)
-  - Thin Plate Splines
-    * O que é o TPS?
-    * Por que o TPS foi escolhido?
-    * Quais os principais passos do algoritmo
-    * Como mapear os passos para GPGPU
-    * Qual é o fator limitante ao se modelar o TPS para GPGPU, memória? Processamento?
+Metodologia
+  * Etapa de preparacao (gerenciamento de memoria)
+  * Separar as estrategias por passos do TPS
   - Otimizações estudadas
     * Quais otimizações são pertimentes?
     * Por que elas são pertimentes ao estudo?
@@ -59,11 +71,17 @@ Trabalho (?)
     - Otimizações para o registro de mais de um par de imagens
 
 Resultados
+  - Experimentos
+    * Hardware
+    * Quais são os Experimentos?
+    * Como os testes estão organizados?
   - Resultados CPU x GPU
   - Comparar e justificar os resultados CPU x GPU
   - Resultados das diferentes otimizações
   - Comparar e justificar os resultados das diferentes otimizações
 
 Conclusão
+  * Ir direto ao ponto do trabalho
+  * Vantagens e desvantagens
   * Qual o principal resultado do trabalho?
   * Quais são os resultados secundários?
