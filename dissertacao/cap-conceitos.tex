@@ -2,16 +2,10 @@
 \chapter{Conceitos}
 \label{cap:conceitos}
 
-%% ------------------------------------------------------------------------- %%
-\section{Imagem Digital}\index{Imagem Digital}
-\label{sec:imagemDigital}
-
-  Uma imagem digitial 3D I é representada por um vetor tridimensional, onde cada
-posição, chamada de \textit{voxel}, é acessada pela função
-\begin{align}\label{eq:defImagem}
-    I(x,y,z) = i
-\end{align}
-  para $x, y, z \in \mathbb{N}$.
+  Esse capítulo contém os conceitos utilizados pelo trabalho. Primeiramente o
+registro de imagens é explicado, com uma seção para o \textit{Thin plate splines}.
+Após, \textit{General-purpose GPGPU} é descrita na seção seguinte, com foco
+no ambiente \textbf{CUDA}.
 
 %% ------------------------------------------------------------------------- %%
 \section{Registro}\index{Registro}
@@ -23,11 +17,10 @@ alinhamento é realizado encontrando correspondências entre pontos das duas ima
 que são usadas para encontrar uma função de deformação que mapeia todos os
 pontos da imagem alvo à pontos da imagem referência.
 
-O registro possibilita, por exemplo, a união de informação de imagens de
-diferentes modalidades (figura \ref{fig:multiModal}), o reconhecimento de
-objetos dentro de cenas, reconhecimento de diferenças entre imagens e
-a recuperação de pequenas deformações sofridas por uma imagem (figura
-\ref{fig:regExplicacao}).
+  Esse alinhamento é feito por uma gama de motivos, entre eles a união de informação
+de imagens de diferentes modalidades \ref{fig:multiModal}, o reconhecimento de
+objetos dentro de cenas e de diferenças entre imagens, e ainda a recuperação de
+pequenas deformações sofridas por uma imagem \ref{fig:regExplicacao}.
 
 Os algoritmos de registro podem ser divididos, com algumas resalvas, em cinco
 passos gerais:
@@ -246,10 +239,10 @@ temos uma característica de ponto.
 \subsubsection{Características de template}
 
   As características de template são construidas a partir de uma vizinhança
-ao redor de um voxel. Essas vizinhanças são construidas utilizando algum template
-geométrico, como um cubo ou esfera. Todos os voxels dentro da estrutura
-escolhida como template são usados para gerar métricas, que são compiladas
-dentro de um vetor, por exemplo, algo que lembra o funcionamento do SIFT e SURF.
+ao redor de um voxel. A criação do template pode ser feita partindo de uma
+forma geométrica, como um cubo ou esfera, ou utilizando as bordas de algum
+objeto de interesse na imagem. Com os templates construidos em uma das imagens,
+o próximo passo é encontrar as correspondências na outra imagem.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Correspondência de características}\index{Correspondência de características}
@@ -294,66 +287,242 @@ deve ser considerado.
 
 \subsubsection{Correspondência de características de região}
 
-    Com as características de cada uma das imagens encontradas, o próximo passo é realizar a correspondência entre elas.
-A função desse passo é encontrar a correspondência entre pontos da imagem Referência para a imagem Alvo, ou vice-versa.
-O processo pode ser realizado tanto escolhendo ponto a ponto da imagem Referência e procurando o ponto com maior valor
-de proximidade entre os pontos da imagem Alvo, quanto utilizando métodos estatísticos para determinar quais pontos são
-correspondentes entre as duas imagens. É importante que esse passo consiga identificar pontos físicos, com coordenadas,
-em cada par de características, para que uma primeira estimativa dos parâmetros da função de transformação possa ser
-utilizada como ponto de partida para o próximo passo.
+  A correspondência de região pode ser reduzida a uma correspondência de pontos
+se utilizarmos o centróide da região. Em outros casos, onde parte da informação
+está no formato ou em métricas sobre as intensidades dos voxels da região,
+por exemplo, outros algoritmos são utilizados.
 
-    A primeira solução a ser apresentada, a \textbf{Baseada em Área}, mescla o passo de Detecção com o de
-Correspondência. Esse método utiliza duas janelas, uma em cada imagem, com formato retangular ou circular, aplicando
-métricas em cada uma das janelas com a finalidade de calcular a relação entre as janelas. O algoritmo segue realizando
-esse cálculo para todas as combinações possíveis de janelas entre as duas imagens, e sempre que um máximo é encontrado
-o centro das janelas são usados para marcar a correspondência. Várias métricas podem ser utilizadas, como a
-Correlação entre as intensidades das janelas, o estudo do espectro da transformada de \textit{Fourier} das janelas ou
-o cálculo da informação mútua entre elas.
+  A busca pelos pares de uma região pode ser realizada com algoritmos de
+\textit{shape matching}. Tais algoritmos retiram propriedades de uma região,
+construindo representações matemáticas partindo do formato da região. Essa
+representações, normalmente chamadas de descritores, são empregadas na busca
+de correspondências. Os seguintes algoritmos são exemplos de \textit{shape matching}:
 
-    A descoberta de correspondência entre características \textbf{Baseadas em Região} é feita utilizando, principalmente, duas
-técnicas. A primeira, mais simples na sua ideia, é parear regiões da imagem Referência com a região da imagem Alvo a
-qual tenha o contorno mais parecido possível. Os métodos que fazem esse pareamento devem ser capazes de encontrar os
-pares mesmo que eles tenham sofrido rotações ou mudança de escala. Descritores de Fourier e representações matriciais
-das regiões são exemplos de métodos usados para realizar a correspondência entre características de região.
+\begin{description}
+    \item [Descritores de Fourier] Os descritores são construidos aplicando a
+          transformada de Fourier em cada um dos pontos da região. Os descritores
+          de Fourier são invariantes a rotações, translações e mudança de escala;
+    \item [\textit{Invariant Moments}] Esse conjunto de descritores são criados
+          a partir das intensidades de uma região. O descritor mais simples é construindo
+          por:
+          \begin{equation}
+            \mu_{pqr} = \sum_{i=0}^{N-1} (x_i - \bar{x})^p(y_i - \bar{y})^q(z_i - \bar{z})^rf(x, y, z)
+          \end{equation}
+          Onde $p, q, r$ são a ordem do descritor, e $f(x, y, z)$ é a função de intensidade da imagem.
+          Esse descritor é utilizado como base na criação de outros;
+\end{description}
 
-    Os métodos para encontrar correspondências entre \textbf{Baseada em Retas} tem as mesmas restrições que os
-de Região, ou seja, devem conseguir realizar o pareamento de linhas que sofreram rotação, mudança de escala ou
-translação. O primeiro passo de um algoritmo é comparar as retas da imagem Referência com todas as possíveis rotações
-de todas as retas da imagem Alvo. Quando um possível par é encontrado, um valor de correspondência é calculado,
-utilizando um peso maior para a direção da reta, algo que não sofre tanta influência de ruído, e um peso menor para
-atributos como comprimento e largura, que são influenciados pelo ruído. O algoritmo ainda deve ser capaz de parear mais
-de duas retas por vez, dada a possibilidade de uma reta em uma das imagens ser representada por duas retas na outra
-imagem.
+\subsubsection{Correspondência de características de template}
 
+  Com os templates encontrados na imagem referência, o objetivo agora é encontrar
+as correspondências na imagem alvo. Um template pode ser tratado como uma subimagem
+da imagem referência. Dado isso, o template é movimentado como uma janela
+atraves da imagem alvo, sofrendo rotações e mudanças de escala, até que uma
+subimagem da imagem alvo seja identificada como par do template.
 
+  O processo de identificação usado no pareamento do template com a subimagem é
+o ponto mais importante do algoritmo de correspondência. Alguns exemplos:
 
-  Abaixo falamos sobre o \textit{Scale Invariant Feature Transform} e o \textit{Speeded Up Robust Features}, que são
-métodos que fazem tanto a captura quanto a correspondência de características.
+\begin{description}
+    \item [Medida de Intensidade] Um template é pareado com a subimagem que resulte
+          na menor soma do absoluto das diferenças entre as intensidades
+          do template com a subimagem;
+    \item [Propriedades espacias] Aplicando transformações espaciais ao template,
+          como a transformada de Fourier ou de Haar, propriedades são extraidas,
+          que são comparadas entre o template e as subimagens da imagem alvo.
+\end{description}
 
 %% ------------------------------------------------------------------------- %%
-\subsection{Estimativa da função de transformação}\index{Estimativa da função de transformação}
+\subsection{Estimativa da função de deformação}\index{Estimativa da função de transformação}
 
-Com o conjunto de correspondências encontrado pelo passo anterior, os algoritmos de registro tem uma base para
-começar o processo de estimativa da função de transformação. Cada algoritmo assume um modelo de transformação diferente
-para a deformação que a imagem sofreu, como por exemplo, uma modelagem elástica, por propagação de fluidos ou uma
-simples translação. Juntando a modelagem com as correspondências, os algoritmos conseguem estimar parâmetros iniciais
-para a função de transformação. Utilizando alguma métrica para passear pelo espaço de parâmetros, os algoritmos encontram
-algum conjunto de parâmetros que alinhe a imagem Alvo com a imagem Referência. Na seção \ref{sec:algReg}, apresentaremos
-dois algoritmos estudados com enfase nessa etapa.
+  A função escolhida para deformar o espaço geométrico da imagem alvo deve ser
+escolhida conforme a necessidade do problema a ser resolvido, a qualidade das
+características encontradas, e a distribuição delas em torno das imagens. Com a
+função de deformação escolhida, esse passo usa as correspondências encontradas
+no passo anterior para defirnir os parâmetros utilizados pela função.
+
+  Dada as coordenadas dos $N$ pares de correspondências entre pontos da imagem
+referência e alvo, respectivamente:
+\begin{equation}
+  {(x_i, y_i, z_i), (X_i, Y_i, Z_i) : i = 1, \dots, N}
+\end{equation}
+  A função de deformação $f$ com componentes $f_x, f_y e f_z$ é definida como:
+\begin{align}
+  \begin{split}
+    f_x(x, y, z) \approx X_i \\
+    f_y(x, y, z) \approx Y_i \\
+    f_z(x, y, z) \approx Z_i
+  \end{split}
+\end{align}
+
+  A função de deformação tem uma componente rigida para lidar com as translações,
+rotações ou mudanças de escala necessárias no processo de registro. É necessário
+também a presença de uma componente não-rigida na função de deformação, seja para
+corrigir pequenas diferenças introduzidas pela não-linearidade presente no
+processo de aquisição de imagens, seja por deformações não-lineares entre imagens,
+por exemplo a presença movimentação do tecido mole entre duas imagens de um mesmo
+orgão humano.
 
 %% ------------------------------------------------------------------------- %%
 \subsection{Reamostragem da imagem Alvo}\index{Reamostragem da imagem Alvo}
 
-O último passo do registro é a montagem da imagem Registrada, ou a reamostragem da imagem Alvo. O passo anterior
-dá um conjunto de parâmetros para a montagem da imagem final, logo esse passo tem como objetivo a aplicação
-da transformação $f$ utilizando os parâmetros encontrados sob todas as posições da imagem Alvo. Temos:
+  O último passo do registro é a reamostragem da imagem alvo, ou a criação
+da imagem registrada. Aplicando a função $f$ e seus parâmetros definidos pelo
+passo anterior a todos os pontos da imagem alvo, temos o seguinte:
 
 \begin{align}\label{eq:reamostragem}
-    F(x_i,y_j) = A(f_o(x_i,y_j))), \forall (i = 1, \dots, n_c), (j = 1, \dots, n_l)
+    F(x_i, y_i, z_i) = A(I(f(x_i, y_i, z_i)))), \forall (i = 1, \dots, M)
 \end{align}
 
-    Onde $F(x_i,y_j)$ representa a posição $(x_i,y_j)$ da imagem Registrada e $f_o$ é a função $f$ sob os parâmetros
-encontrados no passo anterior.
+  Onde $F(x_i, y_i, z_i)$ representa a posição $(x_i, y_i, z_i)$ nas imagens e
+$M$ é a dimensão total das imagens.
+  Como o resultado da função de deformação é continuo e as imagens estão em um
+dominio discreto, uma função de interpolação, representada na equação \ref{eq:reamostragem}
+por $I$, é aplicada. Algoritmos de interpolação como, por exemplo,
+\textbf{Vizinhos próximos}, \textbf{Interpolação trilinear} ou \textbf{Splines Cúbicas}
+são aplicados.
+
+%% ------------------------------------------------------------------------- %%
+%% ------------------------------------------------------------------------- %%
+
+\section{Thin Plate Splines}\index{TPS}\label{thinPlateSplines}
+  O \textit{Thin plate splines} (TPS) é um algoritmo de registro não-rigido construido
+a partir de caratetŕisticas de ponto. O algoritmo aproxima o processo de registro
+a deformação de uma fina placa de metal, onde cada característica aplica uma força
+afundando a placa em alguma direção. O TPS, dado sua eficiencia e resultados, é
+um dos algoritmos mais aplicados em registro de imagens (\cite{goshtasby2005} e
+\cite{rohr1999approximating}).
+  A função de deformação adotada pelo TPS é uma função de interpolação radial. A
+função (definida por \cite{bookstein1989principal}), modificada para o caso em
+três dimensões, é:
+\begin{align}\label{math:tps}
+  \begin{split}
+    f(x, y, z) &= A_0 + A_1x + A_2y + A_3z + \sum_{i=0}^n F_i r_i^2 ln (r_i^2) \\
+    r_i^2 &= (x-x_i)^2 + (y-y_i)^2 + (z-z_i)^2 + d^2
+  \end{split}
+\end{align}
+  Onde $d$ é um fator de rigidez de superficie, utilizado para diminuir a ação
+das características sobre a placa de metal e $x, y, z$ são as características. A
+função do TPS é capaz de representar deformações rigidas e não-rigidas.
+Deformações rigidas são cálculadas pela primeira parte da função,
+$A_0 + A_1x + A_2y + A_3z$, enquanto deformações não-rigidas são cálculadas por
+$\sum_{i=0}^n F_i r_i^2 ln (r_i^2)$.
+
+Para definir os valores das variáveis $A_0, A_1, A_2 e A_3$, o seguinte sistema
+linear é utilizado:
+\begin{align}
+\begin{split}
+    \sum_{i=1}^n F_i &= 0 \\
+    \sum_{i=1}^n F_ix &= 0 \\
+    \sum_{i=1}^n F_iy &= 0 \\
+    \sum_{i=1}^n F_iz &= 0 \\
+    f(x_1,y_1) &= A_0 + A_1x + A_2y + \sum_{i=0}^n F_i r_{i1}^2 ln r_{i1}^2 \\
+    \vdots \\
+    f(x_n,y_n) &= A_0 + A_1x + A_2y + \sum_{i=0}^n F_i r_{in}^2 ln r_{in}^2
+\end{split}
+\end{align}
+  As quatro primeira equações aplicam restrições de movimento sobre o superficie no qual
+a transformação é aplicada. A primeira equação, $\sum_{i=1}^n F_i = 0$, garante que
+a soma dos pesos aplicados à superficie seja zero, logo o superficie não sofre translações.
+As três próximas equações, $\sum_{i=1}^n F_ix = 0$, $\sum_{i=1}^n F_iy = 0$ e
+$\sum_{i=1}^n F_iz = 0$, fazem com que o momento aplicado nas três dimensões sejam
+zero, garantindo que a superficie não rotaciona em relação a nenhum eixo.
+
+\subsubsection{Pseudo Algoritmo e Tempo Assintótico de Execução}
+
+  Como apresentado acima, o TPS é composto de dois passos inportantes, a resolução
+de três sistemas lineares, um para cada dimensão, e a aplicação da função de
+deformação. O pseudo-código abaixo está dividido para representar essas duas partes.
+A primeira função, \textit{tps}, recebe os voxels das imagens e as características
+das duas, ordenadas de tal maneira que os pares estão na mesma posição $i$ dos
+vetores. Essa função resolve os sistemas lineares e, chamando a função
+\textit{interpolar}, calcula o resultado da função de deformação no ponto
+$(x, y, z)$. A função \textit{interpolar} recebe a solução do sistema linear,
+que nada mais é a parametrização do TPS para o problema em especifico, e retorna
+o novo valor do ponto no espaço geométrico da imagem referência.
+
+\begin{lstlisting}[mathescape]
+tps(imagemReferencia, imagemAlvo, caracImagemRef, caracImagemAlvo):
+  solucaoDaEquLinearEmX <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  solucaoDaEquLinearEmY <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  solucaoDaEquLinearEmZ <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  para todo x, y, z em dimensoesDaImagem:
+    novoPontoX <- interpolar(x, y, z, solucaoDaEquLinearEmX, caracImagemRef)
+    novoPontoY <- interpolar(x, y, z, solucaoDaEquLinearEmY, caracImagemRef)
+    novoPontoZ <- interpolar(x, y, z, solucaoDaEquLinearEmZ, caracImagemRef)
+    novaImagem[x, y] = imagemAlvo[novoPontoX, novoPontoY]
+\end{lstlisting}
+
+\begin{lstlisting}[mathescape]
+interpolar(x, y, solucaoDaEquLinear, caracImagemRef):
+  v[0] = 1
+  v[1] = x
+  v[2] = y
+  v[3] = z
+  para n = 0, n menor que $n_{cp}$ :
+    xi = caracImagemRef[n].x
+    yi = caracImagemRef[n].y
+    zi = caracImagemRef[n].z
+    r = $\sqrt{(x-xi)^2 + (y-yi)^2 + (z-zi)^2}$
+    v[n+4] = $r*\log{r}$
+  return $v \cdot solucaoDaEquLinear$
+\end{lstlisting}
+
+  As tabelas abaixo mostram o tempo de execução assintótico do tps, totalizando
+$\mathcal{O}(n_{cp}^3+n_l*n_c*n_{cp})$:
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l|c}
+\hline
+Tempo de execução do algoritmo \textit{tps} \\
+\hline
+Linha&Tempo\\
+\hline
+2       &$\mathcal{O}(n_{cp}^3)$\\
+3       &$\mathcal{O}(n_{cp}^3)$\\
+4       &$\mathcal{O}(n_l)$\\
+5       &$\mathcal{O}(n_c)$\\
+6       &$\mathcal{O}(n_{cp})$\\
+7       &$\mathcal{O}(n_{cp})$\\
+8       &$\mathcal{O}(1)$\\
+\hline
+Total   &$\mathcal{O}(n_{cp}^3+n_l*n_c*n_{cp})$\\
+\hline
+\end{tabular}
+\caption{Tempo de execução do algoritmo \textit{tps}}
+\label{table:tps}
+\end{center}
+\end{table}
+
+  O tempo de execução da resolução do sistema linear foi retirada do livro escrito por
+\cite[Part~IV]{trefethen1997numerical}, assumindo uma fatoração LU da matriz.
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{l|c}
+\hline
+Tempo de execução do algoritmo \textit{interpolar} \\
+\hline
+Linha&Tempo\\
+\hline
+2       &$\mathcal{O}(1)$ \\
+3       &$\mathcal{O}(1)$ \\
+4       &$\mathcal{O}(1)$\\
+5       &$\mathcal{O}(n_{cp})$\\
+6       &$\mathcal{O}(1)$\\
+7       &$\mathcal{O}(1)$\\
+8       &$\mathcal{O}(1)$\\
+9       &$\mathcal{O}(1)$\\
+10      &$\mathcal{O}(n_{cp}+3)$\\
+\hline
+Total   &$\mathcal{O}(n_{cp})$\\
+\hline
+\end{tabular}
+\caption{Tempo de execução do algoritmo \textit{interpolar}}
+\label{table:interpolar}
+\end{center}
+\end{table}
 
 %% ------------------------------------------------------------------------- %%
 %% ------------------------------------------------------------------------- %%
@@ -374,7 +543,7 @@ de \textit{General-purpose computing on graphics processing units}, ou GPGPU. Co
 trazem e seu alto poder de realizar processamento paralelo, arquiteturas de HPC começaram a aparecer utilizando não a
 CPU, mas sim a GPU como principal carro chefe de processamento.
 
-\subsection{Unidade de Processamento Gráfico}
+\subsection{Unidade de Processamento Gráfico}\label{GPU}
     A GPU nasceu da necessidade de renderizar cenas complexas, mantendo uma taxa de quadros por segundos
 aceitável para o usuário, em tempo real. Ela foi projetada para executar uma sequência fixa de passos que transformam
 os dados da cena em objetos virtuais na tela. A sequência de passos se assemelha a uma linha de montagem de fabricas,
@@ -401,20 +570,17 @@ mesmo SM para qual o bloco foi escalonado. Existe um limite para a quantidade de
 dentro de um SM, que é definida pelos recursos que cada \textit{thread} consome. Por exemplo, não há como executar 10 \textit{threads}
 que consomem 10 registradores cada em um SM com 90 registradores.
 
-    A memória da GPU é limitada em relação à da CPU. GPUs tem, em média, 4GB
-de memória, enquanto CPUs tem acesso a, no minimo, 8GB. O acesso a um mesmo bloco de memória é concorrente, mas ao utilizar caches e leitura
+    A memória da GPU é limitada em relação à da CPU. O acesso a um mesmo bloco de memória é concorrente, mas ao utilizar caches e leitura
 ou escritas em conjunto podemos minimizar a taxa com que leituras ou escritas conflitantes são feitas. Mas ainda sim é
-necessário atenção ao escrever um kernel. Dada a estrutura do hardware da GPU, é melhor deixar \textit{threads} que façam
-operações sobre posições de memória próximas no mesmo SM, assim elas podem utilizar a memória compartilhada do mesmo, e
-elas podem requisitar em conjunto um mesmo bloco da memória principal, se necessário.
+necessário atenção ao construir um kernel. Dada a estrutura do hardware da GPU, é melhor deixar \textit{threads} que façam
+operações sobre posições de memória próximas no mesmo SM, dado que cada requisição
+a uma posição da memória principal retorna um bloco, e não uma posição especifica.
 
     Outro fator limitante é a transferência de dados da memória principal do computador para a memória
-principal da GPU. A transmissão é feita por um barramento PCI Express, com velocidades de até 16GB/s ( dado que o
-barramento seja utilizado somente pela GPU ). Essa transmissão é a parte mais lenta de todo o
-processo de execução na GPU e dado isso, em alguns casos é mais viável executar na GPU um pedaço do seu programa que
-seria executado na CPU do que retornar os dados computados na GPU para a CPU, executar esse pedaço especifico, e
-passá-los de volta para a GPU para mais operações e novamente retornar esses dados para a CPU no final, passando duas
-vezes a mais pelo PCI Express.
+principal da GPU. A transmissão é feita por um barramento PCI Express, com velocidades de até 16GB/s.
+Dada a presença dessa lentidão, é aconselhável manter pelo maior tempo possivel
+os dados na GPU, mesmo que isso implique na execução de trechos de código que não
+sejam altamente paralelizáveis.
 
 \begin{figure}[H]
     \centering
@@ -536,384 +702,3 @@ que ele quer que aquele elemento fique na memória. Os possíveis qualificadores
 \end{itemize}
 
 GPUs com Compute Cabapility maior ou igual a 2.0 podem alocar memória dentro do \textit{device} em tempo de execução.
-
-%% ------------------------------------------------------------------------- %%
-%% ------------------------------------------------------------------------- %%
-\section{Algoritmos de Registro}\label{sec:algReg}
-    Escolhemos dois algoritmos com base na facilidade deles em adotar uma paralelização seguindo o modelo SIMD.
-Falaremos mais sobre eles abaixo.
-
-%% ------------------------------------------------------------------------- %%
-\subsection{\textit{Demons}}\index{Demons}
-    O \textit{Demons} foi proposto por \cite{thirion1995fast}. Diferentemente de grande parte dos algoritmos de registro,
-ele não segue exatamente os passos descritos acima. Ele tem como base o modelo de atratores, que dado dois conjuntos de pontos
-em cada uma das imagens, os pontos da imagem Alvo são atraídos para seus pares na imagem Referência utilizando alguma métrica.
-A métrica mais básica de atração é a de vizinhos próximos, que leva cada ponto ao ponto mais próximo da imagem de
-referência, mas técnicas mais elaboradas como a similaridade de curvatura ou intensidade podem ser utilizadas para
-aumentar a acurácia. Os pontos da imagem alvo então movimentam a imagem até que eles encontrem algum ponto da imagem
-de referência.
-
-    O \textit{Demons} aplica uma dimensão de informação a mais ao modelo de atratores, acrescentando a cada ponto uma direção
-associada ao gradiente da imagem. Um exemplo pode ser visto na imagem \ref{fig:demons}.
-Chamamos cada um desses pontos de \textit{Demon}. Com essa informação o algoritmo é capaz
-de identificar pontos dentro e fora do modelo gerado a partir dos \textit{Demons} e direcionar a força para empurrá-los ou
-atraí-los, respectivamente. Para obtermos o melhor resultado possível adotamos um \textit{Demon} por pixel/voxel.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{figuras/demons.jpg}
-    \caption{A primeira linha demonstra o sistema de atratores, enquanto a segunda o Demons, por \citep{thirion1995fast}}
-    \label{fig:demons}
-\end{figure}
-
-\subsubsection{Aproximação matemática da transformação}
-    O \textit{Demons} supõe que a transformação não muda a função de densidade, ou seja, ela só movimenta os pixels e não muda
-suas intensidades. A equação seguinte resume isso:
-\begin{align}
-    i(x(t),y(t),z(t)) = const, \\
-\end{align}
-    onde $i$ é a intensidade da imagem na posição $x(t),y(t),z(t)$. Derivando (1) temos:
-\begin{align}
-    \frac{\partial i}{\partial x} \frac{\partial x}{\partial t} +
-    \frac{\partial i}{\partial y} \frac{\partial y}{\partial t} = - \frac{\partial i}{\partial t}
-\end{align}
-    Supondo que as duas imagens que temos diferem de uma unidade de tempo $\partial i/\partial t =
-r-a$, \textit{r} e \textit{a} as intensidades de R e A respectivamente e que a velocidade instantânea
-$\vec{v} = (dx/dt,dy/dt)$ é aplicada a cada pixel para movê-lo de A para R, chegamos a equação:
-\begin{align}
-    \vec{v}*\vec{\nabla}r = a - r, \ \text{onde} \ \vec{\nabla} r \ \text{é o gradiente de R}
-\end{align}
-    O inverso da transformação é aproximado por $\vec{v}$. Porém essa equação é instável em relação a norma de $\nabla
-r$. Se a sua norma for muito pequena o \textit{Demon} em questão é levado para o infinito em alguma direção. Podemos levar em
-conta a diferença dos pixeis de R e A para normalizar a equação (4), obtendo a forma final do \textit{Demons}:
-\begin{equation}
-    \vec{v} = \frac{\vec{\nabla}r * (a - r)}{\vec{\nabla}r^2 * (a - r)^2}
-\end{equation}
-
-\subsubsection{Implementação}
-    Como a formula (5) é degenerada, ou seja, não é possível encontrar uma solução analiticamente para ela,
-não podemos calcular o valor de $\vec{v}$ sem utilizar algum artificio. Para tal,
-utilizaremos um algoritmo iterativo. Esse algoritmo recebe como entrada as imagens R e A e um campo vetorial
-com as dimensões de A que contém uma aproximação da transformação aplicada, esse campo pode ser zero.
-Cada iteração realiza 3 passos:
-\begin{enumerate}
-    \item Para cada \textit{Demon} em $A_i$, calculamos $\vec{v_i}$, criando um novo campo vetorial $V_i$
-    \item Aplicamos um filtro Gaussiano para retirar o ruído introduzido pelo processo em $V_i$
-    \item Aplicamos $V_i$ em $A$ para obter $A_{i+1}$;
-\end{enumerate}
-    Esse processo é feito até que $A_i$ convirja à $R$. É importante lembrar que é necessário a
-utilização de um algoritmo de interpolação, já que é extremamente provável que o vetor $\vec{v}$
-leve os pontos para posições não inteiras. A interpolação trilinear já é suficiente para tal.
-
-\subsubsection{\textit{Demons} Simétrico}\index{Demons Simétrico}
-    O método acima é conhecido como \textit{Demons} Assimétrico, pois ele só utiliza informações vindas
-da imagem referência. No mesmo artigo, Thirion propõe um outro método, conhecido como Simétrico.
-Nele a equação para o cálculo de $\vec{v}$ leva o gradiente das imagens $A_i$. Ele obtém resultados
-melhores ao custo do cálculo do gradiente de $A_i$ em toda iteração. Sua fórmula é dada por:
-\begin{align}\label{math:demons}
-    \vec{v} = \frac{4(a - r)*\vec{\nabla}r|\vec{\nabla}r||\vec{\nabla}a|}
-                    {(\vec{\nabla}r+\vec{\nabla}a)^2*(\vec{\nabla}r^2 + \vec{\nabla}a^2 + 2(a - r)^2)}
-\end{align}
-
-\subsubsection{Pseudo Algoritmo e Tempo Assintótico de Execução do \textit{Demons} Simétrico}
-
-  Abaixo temos a construção de um pseudo algoritmo do \textit{Demons} Simétrico, e de uma subfunção importante para sua
-execução, a \textit{calcularCampoInstantaneo}, que calcula o deslocamento dos \textit{Demons} na iteração atual,
-deslocamento esse que será somando ao campo de deslocamento total:
-
-\begin{lstlisting}[mathescape]
-demons(imagemReferencia, imagemAlvo, campoDeslocamento):
-  gradienteRef <- calcularGradienteDaImagem(imagemReferencia)
-  campoInstantaneo = 0
-  execute:
-    campoInstantaneoAntigo = campoInstantaneo
-    imagemEstimada <- aplicarCampoAImagem(campoDeslocamento, imagemAlvo)
-    campoInstantaneo <- calcularCampoInstantaneo(gradienteRef, imagemReferencia, imagemEstimada)
-    campoInstantaneo = filtroGaussiano(campoInstantaneo)
-    campoDeslocamento = campoDeslocamento + campoInstantaneo
-  enquanto (campoInstantaneo - campoInstantaneoAntigo) <= $\epsilon$:
-\end{lstlisting}
-
-\begin{lstlisting}[mathescape]
-calcularCampoInstantaneo(gradienteRef, imagemReferencia, imagemEstimada):
-  campoInstantaneo = 0
-  para x = 0, x menor que $n_l$ :
-    para y = 0, y menor que $n_c$ :
-      gradienteEstimado <- calcularGradienteDaImagem(imagemEstimada)
-      diff = imagemEstimada[x,y] - imagemReferencia[x,y]
-      vetorGradSimetrico = gradienteEstimado[x,y] + gradienteRef[x,y]
-      campoInstantaneo[x,y] = $\frac{2*vetorGradSimetrico*diff}{(diff^2+vetorGradSimetrico^2)}$
-  return campoInstantaneo
-\end{lstlisting}
-
-\begin{lstlisting}[mathescape]
-calcularGradienteDaImagem(imagem):
-  gradiente = 0
-  para x = 0, x menor que $n_l$ :
-    para y = 0, y menor que $n_c$ :
-      gradienteLinha = $\frac{imagem[x+1,y] - imagem[x-1,y]}{2}$
-      gradienteColuna = $\frac{imagem[x+1,y] - imagem[x-1,y]}{2}$
-      gradiente[x,y] = {gradienteLinha, gradienteColuna}
-  return gradiente
-\end{lstlisting}
-
-  As tabelas abaixo mostram o tempo de execução assintótico do \textit{Demons} Simétrico, totalizando
-$\mathcal{O}(x*n_l^2*n_c^2)$:
-
-\begin{table}[H]
-\begin{center}
-\begin{tabular}{l|c}
-\hline
-Tempo de execução do algoritmo \textit{Demons} Simétrico \\
-\hline
-Linha&Tempo\\
-\hline
-2       &$\mathcal{O}(n_l*n_c)$ \\
-3       &$\mathcal{O}(1)$\\
-4       &$\mathcal{O}(1)$\\
-5       &$\mathcal{O}(1)$\\
-6       &$\mathcal{O}(n_l*n_c)$\\
-7       &$\mathcal{O}(n_l^2*n_c^2)$\\
-8       &$\mathcal{O}(n_l*n_c)$\\
-9       &$\mathcal{O}(1)$\\
-10       &$\mathcal{O}(x)$\\
-\hline
-Total   &$\mathcal{O}(x*n_l^2*n_c^2)$\\
-\hline
-\end{tabular}
-\caption{Tempo de execução do algoritmo \textit{Demons} Simétrico}
-\label{table:tps}
-\end{center}
-\end{table}
-
-\begin{table}[H]
-\begin{center}
-\begin{tabular}{l|c}
-\hline
-Tempo de execução do algoritmo \textit{calcularCampoInstantaneo} \\
-\hline
-Linha&Tempo\\
-\hline
-2       &$\mathcal{O}(1)$ \\
-3       &$\mathcal{O}(n_l)$ \\
-4       &$\mathcal{O}(n_c)$\\
-5       &$\mathcal{O}(n_l*n_c)$\\
-6       &$\mathcal{O}(1)$\\
-7       &$\mathcal{O}(1)$\\
-8       &$\mathcal{O}(1)$\\
-9       &$\mathcal{O}(1)$\\
-\hline
-Total   &$\mathcal{O}(n_l^2*n_c^2)$\\
-\hline
-\end{tabular}
-\caption{Tempo de execução do algoritmo \textit{calcularCampoInstantaneo}}
-\label{table:interpolar}
-\end{center}
-\end{table}
-
-\begin{table}[H]
-\begin{center}
-\begin{tabular}{l|c}
-\hline
-Tempo de execução do algoritmo \textit{calcularGradienteDaImagem} \\
-\hline
-Linha&Tempo\\
-\hline
-2       &$\mathcal{O}(1)$ \\
-3       &$\mathcal{O}(n_l)$ \\
-4       &$\mathcal{O}(n_c)$\\
-5       &$\mathcal{O}(1)$\\
-6       &$\mathcal{O}(1)$\\
-7       &$\mathcal{O}(1)$\\
-8       &$\mathcal{O}(1)$\\
-\hline
-Total   &$\mathcal{O}(n_l*n_c)$\\
-\hline
-\end{tabular}
-\caption{Tempo de execução do algoritmo \textit{calcularGradienteDaImagem}}
-\label{table:interpolar}
-\end{center}
-\end{table}
-
-\subsubsection{Aceleração do \textit{Demons}}
-    O primeiro passo do algoritmo iterativo pode ser acelerado utilizando a arquitetura SIMD. O calculo de um dos vetores
-depende do gradiente $\vec{\nabla}r$ e da diferença entre as intensidades da imagem Alvo e Referência $(a - r)$, logo
-todos os passos podem ser realizados em paralelo sem perda de desempenho. Tanto a aplicação do filtro gaussiano como
-a aplicação do campo vetorial $V$ também podem ser adaptados para a SIMD, pelo mesmo motivo apresentado anteriormente.
-Devemos tomar cuidado para garantir que os passos sejam executadas de forma sequencial, ou seja, nenhum pixel deve começar
-a execução do passo 2 antes que todos tenham executado o passo 1.
-
-%% ------------------------------------------------------------------------- %%
-\subsection{Thin Plate Splines}\index{TPS}
-    O Thin Plate Splines (TPS) segue mais rigorosamente os passos gerais de um algoritmo de registro. Ele utiliza
-características para criar uma função de interpolação que é utilizada para criar a imagem registrada a partir
-da imagem referência. Vários algoritmos podem ser utilizados para adquirir as características que serão usadas
-pelo TPS, mas não abordaremos esse assunto pois ele foge do escopo do trabalho. Assumimos no inicio da sua
-execução que 2 conjuntos de características existem, um para cada imagem, e que uma correspondência entre
-eles já é estabelecida.
-
-    Dados as características na imagem referência $(x_i,y_i, i=1,..,n)$ e na imagem alvo $(X_i,Y_i, i=1,..,n)$
-o TPS cria uma função que mapeia exatamente cada característica da imagem referência na sua
-correspondente na imagem alvo e que é capaz de interpolar os pontos restantes para a imagem final. Para realizar
-essa tarefa é utilizada uma função que define uma superfície que sofre a ação de pesos centrados nas
-características da imagem referência. A superfície é definida pela seguinte equação, escrita por \cite{bookstein1989principal}:
-
-\begin{align}\label{math:tps}
-    f(x,y) = A_0 + A_1x + A_2y + \sum_{i=0}^n F_i r_i^2 ln r_i^2
-\end{align}
-Onde $r_i^2 = (x-x_i)^2 + (y-y_i)^2 + d^2$, $d$ é um fator de rigidez da superfície, quanto mais próximo de
-zero $d$ é mais a superfície sofre ação dos pontos de controle, e os pontos $(x_i, y_i)$ são os pontos de controle.
-
-    O TPS deve então determinar os valores das variáveis $A_0, A_1, A_2$ e dos $F_i$.
-Isso é feito através do sistema linear:
-
-\begin{align}
-\begin{split}
-    \sum_{i=1}^n F_i &= 0 \\
-    \sum_{i=1}^n F_ix &= 0 \\
-    \sum_{i=1}^n F_iy &= 0 \\
-    f(x_1,y_1) &= A_0 + A_1x + A_2y + \sum_{i=0}^n F_i r_{i1}^2 ln r_{i1}^2 \\
-    \vdots \\
-    f(x_n,y_n) &= A_0 + A_1x + A_2y + \sum_{i=0}^n F_i r_{in}^2 ln r_{in}^2
-\end{split}
-\end{align}
-
-A equação $\sum_{i=1}^n F_i = 0$ faz com que a soma dos pesos aplicados a superfície seja zero, fazendo com que
-ele não se mova. As equações $\sum_{i=1}^n F_ix = 0$ e $\sum_{i=1}^n F_iy = 0$ garantem que a superfície não vai girar.
-
-    Esse sistema deve ser resolvido duas vezes, uma para $f(x,y) = X$ e outra para $g(x,y) = Y$. Com todas as variáveis
-encontradas, podemos aplicar as funções de interpolação para desenhar a imagem final.
-
-\subsubsection{Pseudo Algoritmo e Tempo Assintótico de Execução}
-
-  Abaixo temos a construção de um pseudo algoritmo do tps, e de uma subfunção importante para sua execução, a
-\textit{interpolar}, que realiza a interpolação da imagem Alvo na construção da imagem registrada:
-
-\begin{lstlisting}[mathescape]
-tps(imagemReferencia, imagemAlvo, caracImagemRef, caracImagemAlvo):
-  solucaoDaEquLinearEmX <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
-  solucaoDaEquLinearEmY <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
-  para x = 0, x menor que $n_l$ :
-    para y = 0, y menor que $n_c$ :
-      novoPontoX <- interpolar(x,y, solucaoDaEquLinearEmX, caracImagemRef)
-      novoPontoY <- interpolar(x,y, solucaoDaEquLinearEmY, caracImagemRef)
-      novaImagem[x, y] = imagemAlvo[novoPontoX, novoPontoY]
-\end{lstlisting}
-
-\begin{lstlisting}[mathescape]
-interpolar(x, y, solucaoDaEquLinear, caracImagemRef):
-  v[0] = 1
-  v[1] = x
-  v[2] = y
-  para n = 0, n menor que $n_{cp}$ :
-    xi = caracImagemRef[n].x
-    yi = caracImagemRef[n].y
-    r = $\sqrt{(x-xi)^2 + (y-yi)^2}$
-    v[n+3] = $r*\log{r}$
-  return $v \cdot solucaoDaEquLinear$
-\end{lstlisting}
-
-  As tabelas abaixo mostram o tempo de execução assintótico do tps, totalizando
-$\mathcal{O}(\frac{4}{3}n_{cp}^3+n_l*n_c*n_{cp})$:
-
-\begin{table}[H]
-\begin{center}
-\begin{tabular}{l|c}
-\hline
-Tempo de execução do algoritmo \textit{tps} \\
-\hline
-Linha&Tempo\\
-\hline
-2       &$\mathcal{O}(\frac{2}{3}n_{cp}^3)$\\
-3       &$\mathcal{O}(\frac{2}{3}n_{cp}^3)$\\
-4       &$\mathcal{O}(n_l)$\\
-5       &$\mathcal{O}(n_c)$\\
-6       &$\mathcal{O}(n_{cp})$\\
-7       &$\mathcal{O}(n_{cp})$\\
-8       &$\mathcal{O}(1)$\\
-\hline
-Total   &$\mathcal{O}(\frac{4}{3}n_{cp}^3+n_l*n_c*n_{cp})$\\
-\hline
-\end{tabular}
-\caption{Tempo de execução do algoritmo \textit{tps}}
-\label{table:tps}
-\end{center}
-\end{table}
-
-  O tempo de execução da resolução do sistema linear foi retirada do livro escrito por
-\cite[Part~IV]{trefethen1997numerical}, assumindo uma fatoração LU da matriz.
-
-\begin{table}[H]
-\begin{center}
-\begin{tabular}{l|c}
-\hline
-Tempo de execução do algoritmo \textit{interpolar} \\
-\hline
-Linha&Tempo\\
-\hline
-2       &$\mathcal{O}(1)$ \\
-3       &$\mathcal{O}(1)$ \\
-4       &$\mathcal{O}(1)$\\
-5       &$\mathcal{O}(n_{cp})$\\
-6       &$\mathcal{O}(1)$\\
-7       &$\mathcal{O}(1)$\\
-8       &$\mathcal{O}(1)$\\
-9       &$\mathcal{O}(1)$\\
-10      &$\mathcal{O}(n_{cp}+3)$\\
-\hline
-Total   &$\mathcal{O}(n_{cp})$\\
-\hline
-\end{tabular}
-\caption{Tempo de execução do algoritmo \textit{interpolar}}
-\label{table:interpolar}
-\end{center}
-\end{table}
-
-\subsubsection{Aceleração do Thin Plate Splines}
-
-    O primeiro passo para acelerar o TPS é utilizar algoritmos para resolver o sistema linear diretamente na GPU, o que
-não é difícil dado que a matriz que representa o sistema sempre é simétrica com uma diagonal de zeros por construção. O
-próximo passo para realizar a aceleração do TPS é criar dois vetores que guardam todos os valores possíveis de $(x-x^i)^2$
-e $(y-y^i)^2$. O uso desses vetores diminui o número de operações necessárias de $n_l*n_c*n_{cp}$ para $(n_l+n_c)*n_{cp}$.
-Da maneira original, a operação $(x-x^i)^2$ é repetida $n_c$ vezes para cada coluna, já com o uso dos vetores esse valor
-é calculado uma única vez e acessado toda vez que ele é necessário.
-
-\section{Outros algoritmos de registro estudados}
-
-\subsection{Multiquadrática}
-  A função utilizada por esse método de registro pertence a mesma familia do TPS, as funções de interpolação radial.
-Elas podem ser definidas, basicamente, pela seguinte fórmula:
-
-\begin{align}\label{math:multiquadric}
-    f(x,y) = \sum_{i=0}^n F_i R_i(x,y)
-\end{align}
-
-  Quando $R_i(x,y) = \sqrt{(x-x_i)^2 + (y-y_i)^2 + d^2}$, a função é chamada de multiquadrática. Todos os outros passos
-para o registro nesse caso seguem o TPS, desde a solução do sistema linear utilizando a correspondência entre as
-características para encontrar os $F_i$ até a interpolação realizada para registrar a imagem Alvo. Como reportado
-no livro escrito por \cite{goshtasby2005} o TPS é mais eficiente que as multiquadráticas quando existe um termo linear
-no registro, algo bastante comum em registro.
-%Logo esse método não foi estudado mais a fundo.
-
-\subsection{Média Ponderada}
-  Esse grupo de funções não realiza uma interpolação exata das características com suas correspondências como o TPS e
-a Multiquadrática fazem. Essas transformações aproximam as características utilizando pesos para cada uma delas em
-cada pixel da imagem. A função que a define é:
-
-\begin{align}\label{math:multiquadric}
-    f(x,y) = \sum_{i=0}^n f_i b_i(x,y) \\
-    b_i(x,y) = \frac{R_i(x,y)}{\sum_{i=0}^n R_i(x,y)}
-\end{align}
-
-  Onde $R_i$ é uma função radial descrecente. Quando $R_i$ é uma Gaussiana temos:
-
-\begin{align}\label{math:multiquadric}
-    R_i(x,y) = \exp{-\frac{(x-x_i)^2 + (y - y_i)^2}{2\sigma_i^2}}
-\end{align}
-
-  Neste caso, o registro por Média Ponderada é chamado de Registro por Gaussiana Racional (RaGs). Novamente os estudos
-realizados por \cite{goshtasby2005} mostram que os resultados obtidos pelas RaGs são superiores aos comparados com
-o TPS e a Multiquadrática quando todas as características tem correspondências e quando nenhuma característica se encontra
-fora da imagem. Quando qualquer uma dessas propriedades se perde, o TPS e a multiquadrática obtém resultados superiores.
-%Como os métodos de correspondências não garantem $100\%$ de pareamento, esse método não foi escolhido para passar pelos
-%testes abaixo.

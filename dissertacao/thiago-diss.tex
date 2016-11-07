@@ -276,15 +276,17 @@ efficiency.
         GPU         & Unidades de Processamento Gráfico (\textit{Graphic Processing Units})\\
         GPGPU       & Computação Genérica em GPUs (\textit{General-purpose computing on graphics processing units})\\
         CUDA        & \textit{Compute Unified Device Architecture}\\
-        SIFT        & \textit{Scale Invariant Feature Transform} \\
-        SURF        & \textit{Speeded Up Robust Features} \\
+        IA          & Imagem Alvo \\
+        IR          & Imagem Referência \\
 \end{tabular}
 
 % ---------------------------------------------------------------------------- %
 \chapter{Lista de Símbolos}
 \begin{tabular}{ll}
-        $n_l$   & Número de Linhas\\
-        $n_c$   & Número de Colunas\\
+        $n_l$   & Número de Linhas de uma imagem \\
+        $n_c$   & Número de Colunas de uma imagem \\
+        $n_p$   & Número de Cortes de uma imagem \\
+        $N$     & Tamanho da imagem \\
         $x$     & Variável usada para acessar a $n$-ésima linha de uma imagem \\
         $y$     & Variável usada para acessar a $n$-ésima coluna de uma imagem \\
         $n_{cp}$  & Número de características em uma imagem \\
@@ -305,10 +307,11 @@ efficiency.
 \singlespacing              % espaçamento simples
 %\onehalfspacing            % espaçamento um e meio
 
-\input{cap-introducao}        % associado ao arquivo: 'cap-introducao.tex'
+% \input{cap-introducao}        % associado ao arquivo: 'cap-introducao.tex'
 \input{cap-conceitos}         % associado ao arquivo: 'cap-conceitos.tex'
-\input{cap-resultados}        % associado ao arquivo: 'cap-resultados.tex'
-\input{cap-conclusoes}        % associado ao arquivo: 'cap-conclusoes.tex'
+\input{cap-metodologia}         % associado ao arquivo: 'cap-conceitos.tex'
+% \input{cap-resultados}        % associado ao arquivo: 'cap-resultados.tex'
+% \input{cap-conclusoes}        % associado ao arquivo: 'cap-conclusoes.tex'
 
 % cabeçalho para os apêndices
 \renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{\appendixname\ \thechapter}} {\MakeUppercase{#1}} }

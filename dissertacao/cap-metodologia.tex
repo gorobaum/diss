@@ -1,0 +1,173 @@
+%% ------------------------------------------------------------------------- %%
+\chapter{Metodologia}
+\label{cap:metodologia}
+
+  O cápitulo de metodologia irá explicar em detalhes como o objetivo do trabalho
+foi alcançado. Para alcançar o objetivo de portar o TPS para um ambiente GPGPU
+levando em conta possíveis melhorias de desempenho, os seguintes aspectos foram
+trabalhados: a portabilidade do TPS para GPGPU, metodologias para melhoria de
+desempenho no ambiente GPGPU e impacto das metodologias no TPS.
+
+%% ------------------------------------------------------------------------- %%
+\section{Mapeamento do Thin Plate Splines para GPU}
+
+  O TPS é composto de dois passos, como descrito na seção \ref{thinPlateSplines}.
+No primeiro passo, um sistema linear é construido usando os pares de correspondências
+encontradas nas duas imagens de entrada, e resolvido afim de encontrar os parâmetros
+da função de deformação. O próximo passo é o calculo da função de deformação em
+todos os pontos da imagem alvo, gerando a imagem resultado.
+
+\subsection{Mapeamento da resolução do sistema linear}
+
+  Pela natureza da sua construção, os sistemas lineares montados pelos TPS dificilmente
+serão esparsos, logo algoritmos mais simples podem ser aplicados na sua solução
+sem perda de desempenho. Essa etapa de mapeamento foi resolvida escolhendo a
+biblioteca \textit{cuSolver}, da \cite{cuSolver}. A fatoração QR foi escolhida
+para resolver o sistema linear.
+
+  Os sistemas lineares tem tamanho $n_{cp}^2$, e a solução tem tamanho $n_{cp}$.
+Logo, é necessário transferir $(n_{cp}^2 + n_{cp}) \times 3 \times 8$ bytes de
+dados para a GPU. O \textit{cuSolver} utiliza a matriz com o sistema linear para
+armazenar os resultados dos passos intermediários, deminuindo o consumo de memória
+do algoritmo.
+
+\subsection{Mapeamento da função de deformação}\label{segundoPasso}
+
+  O segundo passo do TPS envolve a função de deformação e a interpolação dos
+resultados da mesma. Como entrada são recebidos os resultados do passo anterior,
+os voxels da imagem alvo e a lista das características. O resultado final é gravado
+em memória da GPU, que é copiado para a memória da CPU após a execução do kernel.
+
+  O passo foi implementado em um kernel CUDA na linguagem C. Cada thread do Kernel
+é mapeada para o cálculo da função de deformação de um voxel da imagem, logo são necessários
+$\left \lceil{\frac{n_l}{8}}\right \rceil \times
+\left \lceil{\frac{n_c}{8}}\right \rceil \times
+\left \lceil{\frac{n_p}{8}}\right \rceil$ blocos, respectivamente para
+cada dimensão da image, e cada bloco tem dimensão $8 \times 8 \times 8$.
+
+  Somando o espaço em memória dos parametros com o da imagem resultado, o kernel
+reserva $N \times 2 \times 1 + n_{cp} \times 6 \times 8$ bytes
+
+  Com os resultados em mãos, o segundo passo é calcular a função de deformação.
+A função foi implementada em um kernel CUDA. É necessário prover os voxels da
+imagem alvo, as soluções dos três sistemas lineares, a lista de pontos de controle
+e o espaço em memória para gravar a imagem resultado. São necessários, então,
+$(N \times 2 + n_{cp} \times 6) \times 8$ bytes. O código do kernel é:
+
+\begin{lstlisting}
+  __global__ void tpsCuda(short* cudaImage, short* cudaRegImage,
+                          float* solutionX, float* solutionY,
+                          float* solutionZ, int width, int height,
+                          int slices, float* keyX, float* keyY,
+                          float* keyZ, int numOfKeys) {
+    int x = blockDim.x*blockIdx.x + threadIdx.x;
+    int y = blockDim.y*blockIdx.y + threadIdx.y;
+    int z = blockDim.z*blockIdx.z + threadIdx.z;
+
+    float newX = solutionX[0]+x*solutionX[1]+y*solutionX[2]+z*solutionX[3];
+    float newY = solutionY[0]+x*solutionY[1]+y*solutionY[2]+z*solutionY[3];
+    float newZ = solutionZ[0]+x*solutionZ[1]+y*solutionZ[2]+z*solutionZ[3];
+
+    for (int i = 0; i < numOfKeys; i++) {
+      float r = (x-keyX[i])*(x-keyX[i])+  (y-keyY[i])*(y-keyY[i])+(z-keyZ[i])*(z-keyZ[i]);
+      if (r != 0.0) {
+        newX += r*log(r)*solutionX[i+4];
+        newY += r*log(r)*solutionY[i+4];
+        newZ += r*log(r)*solutionZ[i+4];
+      }
+    }
+
+    if (x <= width-1 && x >= 0)
+      if (y <= height-1 && y >= 0)
+        if (z <= slices-1 && z >= 0)
+          cudaRegImage[z*height*width+y*width+x] = cudaTrilinearInterpolation(newX, newY, newZ, cudaImage, width, height, slices);
+  }
+\end{lstlisting}
+
+  As linhas 6, 7 e 8 usam o ID do bloco e ID da thread para calcular o voxel que será
+gerado. As linhas 10, 11 e 12 cálculam a deformação rígida. O laço da linha 14
+cálcula da deformação não-rigida. Por fim, uma interpolação trilinear é aplicada
+para resgatar a intensidade do voxel da imagem alvo que é usada para gerar a image
+resultado. A checagem antes da interpolação é necessária pois o número de threads
+usadas pelo kernel é maior que o número de voxels da imagem, salvo pelas dimensões
+que sejam multiplas de 8.
+
+  TODO: FAZER A IMAGEM DE MAPEAMENTO DAS THREADS PARA VOXELS.
+
+%% ------------------------------------------------------------------------- %%
+%% ------------------------------------------------------------------------- %%
+\section{Melhorias de desempenho}
+
+  O objetivo desse trabalho é apresentar uma implementação de alto desempenho
+do algoritmo Thin plate splines em um ambiente GPGPU. O mapeamento apresentado
+na seção anterior, por maior que seja seu aumento de velocidade comparativamente
+com uma implementação em CPU, não utiliza nenhum método de melhoria de desempenho.
+Essa seção se aprofunda em métodos aplicados para o aumento do desempenho de
+algoritmos desenvolvidos em \textbf{CUDA}, enquanto avaliamos a aplicabilidade
+de táis métodos ao TPS.
+
+\subsection{Melhorias de desempenho associadas à memória}
+
+  O acesso a memória é o responsável por grande parte da queda de desempenho
+em kernels. Isso se deve, em grande parte, pela diferença de cominucação entre o
+\textit{Host} e a memória principal da GPU e a comunicação entre a memória
+principal da GPU e os multiprocessadores
+(8 GB/s contra 177.6 GB/s na comparação feita em \cite{cudaBestPractices}). Logo,
+a transferência de memória entre \textit{Host} e \textit{Device} deve ser
+minimizada. Para tanto, a implementação apresentada nesse trabalho realiza uma
+etapa de pré-processamento onde o máximo de memória é reservado na GPU.
+
+  A implementação é focada no registro de várias imagens alvo para uma única
+imagem referência, logo os dados da imagem referência são transmitidos para a
+GPU uma única vez. O TPS só utiliza a lista de características da imagem referência.
+O próximo passo é ocupar o máximo possível de memória com instâncias diferentes
+de registro. Cada instância de registro, como dito na seção \ref{segundoPasso},
+precisa dos voxels da imagem alvo, das suas características e de espaço suficiente
+para guardar a imagem resultado. Ainda para diminuir o tempo de transferência,
+as soluções dos sistemas lineares são mantidos em memória na GPU.
+
+  O segundo método utilizado foi o mapeamento dos voxels da imagem alvo para uma
+textura tridimensional. A memória de textura é preservada em cache, com privilégio
+somente de leitura. Alem disso, estão presentes no hardware as seguintes operações
+em texturas: interpolação, normalização de coordenadas e checagem automática de
+fronteira.
+
+  Por último, afim de minimizar o \textit{downtime} dos multiprocessadores da GPU, a
+execução paralela de várias instâncias de registro foi aplicada. O paralelismo
+é iniciado na CPU, onde cada chamada do kernel do TPS parte de uma thread separada.
+O escalonador da GPU é capaz de criar contextos diferentes para cada instância
+diferente, e organizar os recursos da GPU entre todas as instâncias.
+
+  No entanto, nem todas as técnicas de melhoria de desempenho são aplicaveis ao
+TPS. O uso de \textit{Pinned memory}, método em que a memória da CPU é mapeada
+diretamente a uma região da memória da CPU, aumentando a taxa de transferência entre
+os diferentes espaços de memória. Mas esse mapeamento introduz uma restrição ao
+kernel, já que leituras ou escritas feitas por threads diferentes ao mesmo banco
+de memória causam lentidão. A memória compartilhada não foi explorada, já que
+cada bloco divide entre todas as suas \textit{threads} uma pequena seção do
+bloco de memória compartilhada, o que limita o que pode ser mantido nessa região.
+
+\subsection{Melhorias de desempenho associadas ao processamento}
+
+  O objetivos das melhorias descritas nessa seção é maximizar o tempo que cada
+multiprocessador passa ativo. Vários fatores devem ser levados em conta na
+na construção das tarefas das threads e dos blocos de execução, como o número
+disponível de registradores por multiprocessador e a quantidade de memória
+compartilhada por bloco. Como explicado na seção \ref{GPU}, o
+warp é a menor unidade de execução em um multiprocessador. Cada warp é
+constituida de 32 \textit{threads}, que executam, ao mesmo tempo, a mesma linha de
+código. Ao executar uma instrução de acesso a memória, como por exemplo uma leitura
+a memória global, todas as \textit{threads} de um warp ficam travadas esperando o
+resultado. Para compensar isso, o multiprocessador pode executar instruções de um
+outro warp. Podemos calcular a \textbf{Ocupação} de um kernel, que é uma razão
+entre o número máximo de warps em execução de um kernel pelo número máximo de warps
+em execução no hardware.
+
+  Agora, sejam $TM$ o número máximo de
+\textit{threads} por multiprocessador e $RB$ o número máximo de registradores por
+bloco, o número máximo de registradores que cada
+
+
+  O principal objetivo das melhorias de desempenho aplicadas ao processamento é
+minimizar o tempo inativo de cada um dos microprocessadores na GPU. Vários
+parametros controlam a porcentagem de ocupação dos processadores
