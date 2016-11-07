@@ -2,12 +2,6 @@
 \chapter{Metodologia}
 \label{cap:metodologia}
 
-  O cápitulo de metodologia irá explicar em detalhes como o objetivo do trabalho
-foi alcançado. Para alcançar o objetivo de portar o TPS para um ambiente GPGPU
-levando em conta possíveis melhorias de desempenho, os seguintes aspectos foram
-trabalhados: a portabilidade do TPS para GPGPU, metodologias para melhoria de
-desempenho no ambiente GPGPU e impacto das metodologias no TPS.
-
 %% ------------------------------------------------------------------------- %%
 \section{Mapeamento do Thin Plate Splines para GPU}
 
@@ -108,16 +102,16 @@ de táis métodos ao TPS.
 
 \subsection{Melhorias de desempenho associadas à memória}
 
-  O acesso a memória é o responsável por grande parte da queda de desempenho
-em kernels. Isso se deve, em grande parte, pela diferença de cominucação entre o
+O acesso a memória é o responsável por grande parte da queda de desempenho
+em kernels. Isso se deve, em grande parte, pela diferença de comunicação entre o
 \textit{Host} e a memória principal da GPU e a comunicação entre a memória
 principal da GPU e os multiprocessadores
 (8 GB/s contra 177.6 GB/s na comparação feita em \cite{cudaBestPractices}). Logo,
 a transferência de memória entre \textit{Host} e \textit{Device} deve ser
-minimizada. Para tanto, a implementação apresentada nesse trabalho realiza uma
+minimizada. Para tanto, a implementação apresentada neste trabalho realiza uma
 etapa de pré-processamento onde o máximo de memória é reservado na GPU.
 
-  A implementação é focada no registro de várias imagens alvo para uma única
+A implementação é focada no registro de várias imagens alvo para uma única
 imagem referência, logo os dados da imagem referência são transmitidos para a
 GPU uma única vez. O TPS só utiliza a lista de características da imagem referência.
 O próximo passo é ocupar o máximo possível de memória com instâncias diferentes
@@ -126,48 +120,71 @@ precisa dos voxels da imagem alvo, das suas características e de espaço sufici
 para guardar a imagem resultado. Ainda para diminuir o tempo de transferência,
 as soluções dos sistemas lineares são mantidos em memória na GPU.
 
-  O segundo método utilizado foi o mapeamento dos voxels da imagem alvo para uma
+O segundo método utilizado foi o mapeamento dos voxels da imagem alvo para uma
 textura tridimensional. A memória de textura é preservada em cache, com privilégio
-somente de leitura. Alem disso, estão presentes no hardware as seguintes operações
+somente de leitura. Além disso, estão presentes no hardware as seguintes operações
 em texturas: interpolação, normalização de coordenadas e checagem automática de
 fronteira.
 
-  Por último, afim de minimizar o \textit{downtime} dos multiprocessadores da GPU, a
+Por último, a fim de minimizar o \textit{downtime} dos multiprocessadores da GPU, a
 execução paralela de várias instâncias de registro foi aplicada. O paralelismo
 é iniciado na CPU, onde cada chamada do kernel do TPS parte de uma thread separada.
 O escalonador da GPU é capaz de criar contextos diferentes para cada instância
-diferente, e organizar os recursos da GPU entre todas as instâncias.
+diferente, e organizar os recursos da GPU entre todas as instâncias. A execução
+em paralelo de vários kernels esconde a latência de cópia de memória entre a
+CPU e GPU executando um kernel que já esteja pronto enquanto popula a memória
+para a execução de outro.
 
-  No entanto, nem todas as técnicas de melhoria de desempenho são aplicaveis ao
+No entanto, nem todas as técnicas de melhoria de desempenho são aplicáveis ao
 TPS. O uso de \textit{Pinned memory}, método em que a memória da CPU é mapeada
 diretamente a uma região da memória da CPU, aumentando a taxa de transferência entre
 os diferentes espaços de memória. Mas esse mapeamento introduz uma restrição ao
 kernel, já que leituras ou escritas feitas por threads diferentes ao mesmo banco
 de memória causam lentidão. A memória compartilhada não foi explorada, já que
 cada bloco divide entre todas as suas \textit{threads} uma pequena seção do
-bloco de memória compartilhada, o que limita o que pode ser mantido nessa região.
+bloco de memória compartilhada, o que limita o que pode ser mantido nesta região.
 
 \subsection{Melhorias de desempenho associadas ao processamento}
 
-  O objetivos das melhorias descritas nessa seção é maximizar o tempo que cada
-multiprocessador passa ativo. Vários fatores devem ser levados em conta na
-na construção das tarefas das threads e dos blocos de execução, como o número
-disponível de registradores por multiprocessador e a quantidade de memória
-compartilhada por bloco. Como explicado na seção \ref{GPU}, o
-warp é a menor unidade de execução em um multiprocessador. Cada warp é
-constituida de 32 \textit{threads}, que executam, ao mesmo tempo, a mesma linha de
-código. Ao executar uma instrução de acesso a memória, como por exemplo uma leitura
-a memória global, todas as \textit{threads} de um warp ficam travadas esperando o
-resultado. Para compensar isso, o multiprocessador pode executar instruções de um
-outro warp. Podemos calcular a \textbf{Ocupação} de um kernel, que é uma razão
-entre o número máximo de warps em execução de um kernel pelo número máximo de warps
-em execução no hardware.
+  Melhorar o desempenho do processamento de um kernel quer dizer maximizar o
+tempo que cada um dos multiprocessadores está ocupando executando algo. Atingir
+esse objetivo não é trivial, pois a distribuição das threads entre multiprocessadores
+é parametrizada por vários fatores como o número disponível de registradores
+em cada multiprocessador e a quantidade de memória compartilhada por bloco, por exemplo.
+Como explicado na seção \ref{GPU}, o warp é a menor unidade de execução em um
+multiprocessador. Cada warp é constituída de 32 \textit{threads}, que executam,
+ao mesmo tempo, a mesma linha de código. A razão entre o número máximo de warps
+em execução de um kernel pelo número máximo de warps em execução no hardware,
+chamada de \textbf{Ocupação}, será a métrica usada para calcular o desempenho
+de um kernel.
 
-  Agora, sejam $TM$ o número máximo de
-\textit{threads} por multiprocessador e $RB$ o número máximo de registradores por
-bloco, o número máximo de registradores que cada
+  A API do CUDA disponibiliza uma função que recebe o kernel e um tamanho de
+bloco e retorna a ocupação da GPU dado esses parametros. Utilizando essa função,
+uma calculadora de Ocupação foi construida. A calculadora incrementa o
+tamanho do bloco de 32 em 32 threads (para garantir que um novo warp sempre
+seja criado), e o bloco que obter a maior taxa de Ocupação é escolhido, com
+preferência para blocos pequenos se houver algum empate. Essa preferência beneficia
+a execução em paralelo de vários kernels.
 
+  Outra técnica aplicada foi a de controlar o número de registradores do kernel.
+Sejam $TM$ o número máximo de \textit{threads} por multiprocessador e $RB$ o
+número máximo de registradores por bloco, o número máximo de registradores que
+cada \textit{thread} pode usar é $\left \lceil{\frac{RB}{TM}}\right \rceil$.
+O número de registradores utilizado por thread pode ser verificado pelas flags
+de compilação \textit{-Xptxas -v}. Nas arquiteturas atuais, o número de
+registradores deve ficar abaixo de $32$ por thread. Esse número foi atingido pelos
+kernels escritos para este trabalho.
 
-  O principal objetivo das melhorias de desempenho aplicadas ao processamento é
-minimizar o tempo inativo de cada um dos microprocessadores na GPU. Vários
-parametros controlam a porcentagem de ocupação dos processadores
+  Maximizar o número de \textit{threads} executando em um dado momento ajuda em
+esconder a latência das instruções das mesmas. Ao executar uma instrução,
+como por exemplo um acesso a memória, todas as \textit{threads} de um warp
+ficam bloqueadas esperando o resultado. Para compensar isso, o multiprocessador
+pode executar instruções de um outro warp. Como definido em \cite{cudaProgrammingGuide},
+seja $L$ a quantidade de ciclos do \textit{clock} necessário para executar uma
+instrução, são necessárias $8L$ instruções para esconder sua latência, dado um
+\textit{device} de \textit{compute capabillity} $3.x$.
+
+  Por fim, a execução paralela de vários kernels, alem de esconder a latência
+na cópia de memória como dito na seção acima, esconde a latência de instruções.
+Com vários kernels executando ao mesmo tempo, o escalonador da GPU pode escolher
+um warp associado a outro kernel enquanto espera a execução de outro warp.
