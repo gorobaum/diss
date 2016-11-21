@@ -2,14 +2,22 @@
 \chapter{Metodologia}
 \label{cap:metodologia}
 
-%% ------------------------------------------------------------------------- %%
-\section{Mapeamento do Thin Plate Splines para GPU}
-
   O TPS é composto de dois passos, como descrito na seção \ref{thinPlateSplines}.
 No primeiro passo, um sistema linear é construido usando os pares de correspondências
 encontradas nas duas imagens de entrada, e resolvido afim de encontrar os parâmetros
-da função de deformação. O próximo passo é o calculo da função de deformação em
-todos os pontos da imagem alvo, gerando a imagem resultado.
+da função de deformação. O próximo passo é o calculo da função de deformação e
+a interpolação necessária para gerar a imagem resultado. Nossa implementação
+do TPS foi separada em 3 módulos principais, os quais podem ser executados tanto
+na CPU quanto na GPU:
+
+\begin{enumerate}
+  \item Sistema Linear
+  \item Função de Deformação
+  \item Função de Interpolação
+\end{enumerate}
+
+%% ------------------------------------------------------------------------- %%
+\section{Implementação do Thin Plate Splines em GPU}
 
 \subsection{Mapeamento da resolução do sistema linear}
 
@@ -25,7 +33,7 @@ dados para a GPU. O \textit{cuSolver} utiliza a matriz com o sistema linear para
 armazenar os resultados dos passos intermediários, deminuindo o consumo de memória
 do algoritmo.
 
-\subsection{Mapeamento da função de deformação}\label{segundoPasso}
+\subsection{Mapeamento da função de deformação e interpolação}\label{segundoPasso}
 
   O segundo passo do TPS envolve a função de deformação e a interpolação dos
 resultados da mesma. Como entrada são recebidos os resultados do passo anterior,
@@ -90,7 +98,7 @@ que sejam multiplas de 8.
 
 %% ------------------------------------------------------------------------- %%
 %% ------------------------------------------------------------------------- %%
-\section{Melhorias de desempenho}
+\section{Melhorias de desempenho}\label{melhoriaDesempenho}
 
   O objetivo desse trabalho é apresentar uma implementação de alto desempenho
 do algoritmo Thin plate splines em um ambiente GPGPU. O mapeamento apresentado

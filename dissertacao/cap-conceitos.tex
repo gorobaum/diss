@@ -425,9 +425,9 @@ zero, garantindo que a superficie não rotaciona em relação a nenhum eixo.
 
 \subsubsection{Pseudo Algoritmo e Tempo Assintótico de Execução}
 
-  Como apresentado acima, o TPS é composto de dois passos inportantes, a resolução
-de três sistemas lineares, um para cada dimensão, e a aplicação da função de
-deformação. O pseudo-código abaixo está dividido para representar essas duas partes.
+  Como apresentado acima, o TPS é composto de três passos, a resolução
+dos sistemas lineares, um para cada dimensão, e a aplicação da função de
+deformação, seguida da interpolação da imagem alvo.
 A primeira função, \textit{tps}, recebe os voxels das imagens e as características
 das duas, ordenadas de tal maneira que os pares estão na mesma posição $i$ dos
 vetores. Essa função resolve os sistemas lineares e, chamando a função
@@ -438,29 +438,31 @@ o novo valor do ponto no espaço geométrico da imagem referência.
 
 \begin{lstlisting}[mathescape]
 tps(imagemReferencia, imagemAlvo, caracImagemRef, caracImagemAlvo):
-  solucaoDaEquLinearEmX <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
-  solucaoDaEquLinearEmY <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
-  solucaoDaEquLinearEmZ <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  solucaoEquLinearX <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  solucaoEquLinearY <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  solucaoEquLinearZ <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+
   para todo x, y, z em dimensoesDaImagem:
-    novoPontoX <- interpolar(x, y, z, solucaoDaEquLinearEmX, caracImagemRef)
-    novoPontoY <- interpolar(x, y, z, solucaoDaEquLinearEmY, caracImagemRef)
-    novoPontoZ <- interpolar(x, y, z, solucaoDaEquLinearEmZ, caracImagemRef)
-    novaImagem[x, y] = imagemAlvo[novoPontoX, novoPontoY]
+    novoX <- funcaoDeformacao(x, y, z, solucaoEquLinearX, caracImagemRef)
+    novoY <- funcaoDeformacao(x, y, z, solucaoEquLinearY, caracImagemRef)
+    novoZ <- funcaoDeformacao(x, y, z, solucaoEquLinearZ, caracImagemRef)
+    novaImagem[x, y, z] <- interpolar(novoX, novoY, novoZ, imagemAlvo)
 \end{lstlisting}
 
 \begin{lstlisting}[mathescape]
-interpolar(x, y, solucaoDaEquLinear, caracImagemRef):
-  v[0] = 1
-  v[1] = x
-  v[2] = y
-  v[3] = z
+funcaoDeformacao(x, y, z, solucaoDaEquLinear, caracImagemRef):
+  v[0] = 1 * solucaoDaEquLinear[0]
+  v[1] = x * solucaoDaEquLinear[1]
+  v[2] = y * solucaoDaEquLinear[2]
+  v[3] = z * solucaoDaEquLinear[3]
+
   para n = 0, n menor que $n_{cp}$ :
     xi = caracImagemRef[n].x
     yi = caracImagemRef[n].y
     zi = caracImagemRef[n].z
-    r = $\sqrt{(x-xi)^2 + (y-yi)^2 + (z-zi)^2}$
-    v[n+4] = $r*\log{r}$
-  return $v \cdot solucaoDaEquLinear$
+    r = $($x-xi$)^2$ + $($y-yi$)^2$ + $($z-zi$)^2$
+    v[n+4] = r*$\log{r}$*solucaoDaEquLinear[n+4]
+  return v
 \end{lstlisting}
 
   As tabelas abaixo mostram o tempo de execução assintótico do tps, totalizando

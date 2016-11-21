@@ -1,122 +1,91 @@
 %% ------------------------------------------------------------------------- %%
 \chapter{Introdução}
 \label{cap:introducao}
-	O alinhamento espacial ou geométrico entre duas ou mais imagens é um problema clássico dentro de visão computacional. 
-Ele leva pontos de uma imagem para pontos de outra imagem, criando uma função de correspondência entre imagens. Uma vez
-alinhadas, uma série de aplicações distintas podem ser beneficiadas, dependendo do contexto do problema. 
-A partir  dessa função podemos criar imagens maiores costurando imagens menores uma nas outras, processo esse chamado de 
-\textit{stitching ou mosaicking}, utilizá-la para realizar a junção de imagens diferentes da mesma cena em uma única 
-imagem, chamado de fusão (\textit{image fusion}), ou ainda extrair diferenças anatômicas a partir de imagens médicas.
-
-	Chamamos o processo de alinhamento de imagens de registro de imagens. Os algoritmos de registro são categorizados 
-baseando-se na natureza da transformação usada para alinhar as imagens. O primeiro grupo, o registro rígido, 
-alinha as imagens aplicando transformações simples às imagens, como rotações e translações. Ele é pode
-ser usado para corrigir movimentações simples, como a movimentação da cabeça de um paciente entre captura de imagens. Porém
-essas transformações não são suficientes para corrigir movimentações fisiológicas mais complexas, como os batimentos do coração
-ou o movimento respiratório. O registro desses casos é então realizado pelos algoritmos de registro não-rígido, 
-que utilizam transformações não lineares para representar as deformações presentes nas imagens. O fluxo óptico ou a 
-utilização de equações de dinâmica de fluidos para aproximar a transformação são exemplos de soluções para esses casos.
-
-	O registro é altamente custoso computacionalmente por dois motivos. O primeiro é o número de etapas que devem ser
-realizadas antes do algoritmo de registro em si. Dependendo da qualidade das imagens ou do algoritmo usado, todas as 
-imagens devem passar por um pré-processamento. Depois, características são encontradas em cada imagem, e correspondências
-são feitas entre características de imagens diferentes. O algoritmo de registro é então executado para
-encontrar, dentro do espaço de parâmetros da transformação escolhida, o melhor conjunto que quando aplicado a transformação
-nos dê o alinhamento espacial das imagens.
-
-	O outro motivo que eleva o custo do registro é a grande quantidade de dados à disposição de pesquisadores atualmente,
-dada a crescente facilidade em se manter e distribuir dados com os avanços na pesquisa com computação em nuvem, por exemplo.
-Um destes exemplos são as imagens \textit{Gigapixel} \cite{cossairt2011gigapixel} compostas por milhões de pixels, criadas para 
-representar, com a maior quantidade de detalhes possíveis, panoramas de cidades e até de microestruturas em 
-estudos biológicos. Em 2010, o projeto criado por \cite{sevilla111}, que mantinha o recorde mundial com uma imagem de 111 
-\textit{Gigapixels}, foi composto usando 9.750 imagens. Em apenas dois anos o projeto de \cite{london320} criou uma foto
-esférica de Londres com 320 \textit{Gigapixels}, criada a partir de 48.640 imagens. Essa quantidade de imagens pode ser
-facilmente encontrada em estudos dessa década em outras áreas de processamento de imagens.
-
-	Logo o registro se beneficia de algum tipo de aceleração. O principal objetivo do trabalho é traduzir o registro de 
-imagens para o modelo de execução \textit{Single Instruction, Multiple Data} \cite{patterson2013computer}, que é adotado 
-nas Unidades de Processamento Gráfico (GPU). A escolha das GPUs como hardware para a execução do processo de registro vem da 
-velocidade com que a sua capacidade de processamento aumenta, atrelado ao baixo custo de processamento dessas placas. Ao
-escolher o algoritmo de registro que será utilizado temos que tomar o cuidado para que ele se adapte ao paradigma de 
-programação em GPU a ponto de ganhar um aumento de velocidade considerável e que ainda sim seja capaz de registrar uma 
-gama grande de imagens.
 
 %% ------------------------------------------------------------------------- %%
 \section{Trabalhos Relacionados}
-\label{sec:objetivo}
-	Desde que as Unidades de Processamento Gráfico começaram a ser usadas em meados dos anos 2002 para execução de 
-código genérico, ou seja, sem a finalidade de renderizar uma cena, vários trabalhos traduziram algoritmos para a GPU.
-Algoritmos esses que são aplicados em várias áreas, como cálculo numérico, simulações cientificas e processamento de 
-imagens.
+\label{sec:trabalhosRelacionados}
 
-	Uma das primeira aplicações envolvendo o uso de GPUs no processamento de imagens foi feito por 
-\cite{fung2005openvidia}, que descreve o arcabouço de programação \textit{OpenVIDIA}, criado a partir do 
-\textit{OpenGL}, desenvolvido por \cite{opengl}. Antes do \textit{OpenVIDIA} o processamento de imagens em GPUs era
-feito utilizando o \textit{OpenGL}, uma linguagem para processamento gráfico, voltada para a renderização de cenas. Os
-algoritmos para processamento de imagem eram reescritos para utilizarem primitivas do \textit{OpenGL}. O 
-\textit{OpenVIDIA} criou um encapsulamento de chamadas do \textit{OpenGL} voltado para imagens, retirando a necessidade
-de traduzir os algoritmos e facilitando a utilização dos \textit{shaders} programáveis da GPU.
+% \subsection{GPGPU}
+%    \textit{survey} \cite{owens2007survey}
+%
+% 	Uma das primeira aplicações envolvendo o uso de GPUs no processamento de imagens foi feito por
+% \cite{fung2005openvidia}, que descreve o arcabouço de programação \textit{OpenVIDIA}, criado a partir do
+% \textit{OpenGL}, desenvolvido por \cite{opengl}. Antes do \textit{OpenVIDIA} o processamento de imagens em GPUs era
+% feito utilizando o \textit{OpenGL}, uma linguagem para processamento gráfico, voltada para a renderização de cenas. Os
+% algoritmos para processamento de imagem eram reescritos para utilizarem primitivas do \textit{OpenGL}. O
+% \textit{OpenVIDIA} criou um encapsulamento de chamadas do \textit{OpenGL} voltado para imagens, retirando a necessidade
+% de traduzir os algoritmos e facilitando a utilização dos \textit{shaders} programáveis da GPU.
+%
+% 	Com a introdução de linguagens próprias para programação em GPU, vários algoritmos de processamento de imagens foram
+% traduzidos para a execução em GPUs. Na área de registro um dos primeiros artigos a tratar do assunto foi
+% \cite{strzodka2004image}, que apresenta uma implementação de um algoritmo de registro não-rígido que utiliza uma técnica
+% de redução de energia da diferença das imagens. \cite{kohn2006gpu} expandiu o trabalho anterior, criando uma versão do
+% algoritmo para imagens em três dimensões e realizando um registro rígido antes do não-rígido. Ainda programando
+% diretamente em \textit{OpenGL}, \cite{vetter2007non} propõem um algoritmo de registro multimodal para imagens médicas
+% executando em uma GPU 7800 da \textit{NVIDIA}. O artigo leva em conta a organização da imagem na memória da GPU e o
+% tempo de transmissão dos dados da CPU para a GPU.
+%
+% 	O trabalho de \cite{grossauer2008gpu} relata a criação de um algoritmo para registro que utiliza fluxo óptico em
+% conjunto com métodos de \textit{Multi Grid}, usados para resolver equações diferenciais parciais. Ele descreve
+% a aceleração do \textit{Multi Grid}, dada a sua afinidade com o \textit{Pipeline} gráfico. Em \cite{bui2009performance}
+% o passo de interpolação de um algoritmo de registro multi modal entre imagens médicas é traduzido utilizando uma
+% linguagem para programação genérica em GPUs, o CUDA \cite{nvidia2007compute}. O estudo realiza uma comparação de
+% eficiência entre o código em CPU e GPU de uma interpolação bilinear, apresentando como resultado uma aceleração de 60
+% vezes da GPU em relação a CPU. O algoritmo de registro proposto por \cite{han2009gpu} utiliza Informação Mutua para
+% realizar um registro não-rígido entre imagens de ressonância magnética entre cérebros de indivíduos e um atlas com a
+% finalidade de segmentar regiões de interesse no individuo. O estudo utiliza uma GPU \textit{NVIDIA} em conjunto com a
+% linguagem CUDA para registrar as imagens, apresentando uma aceleração de 25 vezes em relação a CPU. Esse estudo,
+% juntamente com o anterior, se preocupa com a organização dos dados na memória da GPU, algo que era de dificil controle
+% antes do surgimento de linguagens voltadas para GPGPU.
+%
+% 	Em 2010, o artigo de \cite{modat2010fast} define um algoritmo de registro não-rígido chamado de \textit{Free-Form
+% Deformation}, desenvolvido para registrar imagens de ressonância magnética pesadas em T1. Diferente de outros algoritmos,
+% ele foi desenvolvido para executar em GPUs diretamente. Para tal, os autores utilizam uma interpolação B-Spline cúbica e
+% uma modificação da informação mutua como métrica para o registro. Ele separa cara passo em vários \textit{kernels} diferentes, fazendo
+% com que cada \textit{kernel} utilize o máximo de memória possível e então espalha o processamento para um maior número
+% de processadores na GPU, melhorando o desempenho do algoritmo.
+%
+% 	O estudo de \cite{membarth2011frameworks} realiza uma comparação entre vários arcabouços de programação para GPU,
+% entre eles o CUDA e o OpenCL utilizando como caso de comparação o registro de imagens 2D/3D, ou seja, o registro de
+% imagens em três dimensões de tomografia computadorizada para imagens de raio-X. O artigo então segue primeiro com uma
+% comparação conceitual entre os vários arcabouços e depois com uma comparação de desempenho. Foram feitas comparações
+% com a execução sequencial, em paralelo e em GPU do algoritmo.
 
-	Com a introdução de linguagens próprias para programação em GPU, vários algoritmos de processamento de imagens foram
-traduzidos para a execução em GPUs. Na área de registro um dos primeiros artigos a tratar do assunto foi 
-\cite{strzodka2004image}, que apresenta uma implementação de um algoritmo de registro não-rígido que utiliza uma técnica
-de redução de energia da diferença das imagens. \cite{kohn2006gpu} expandiu o trabalho anterior, criando uma versão do 
-algoritmo para imagens em três dimensões e realizando um registro rígido antes do não-rígido. Ainda programando 
-diretamente em \textit{OpenGL}, \cite{vetter2007non} propõem um algoritmo de registro multimodal para imagens médicas 
-executando em uma GPU 7800 da \textit{NVIDIA}. O artigo leva em conta a organização da imagem na memória da GPU e o 
-tempo de transmissão dos dados da CPU para a GPU.
-
-	O trabalho de \cite{grossauer2008gpu} relata a criação de um algoritmo para registro que utiliza fluxo óptico em 
-conjunto com métodos de \textit{Multi Grid}, usados para resolver equações diferenciais parciais. Ele descreve
-a aceleração do \textit{Multi Grid}, dada a sua afinidade com o \textit{Pipeline} gráfico. Em \cite{bui2009performance}
-o passo de interpolação de um algoritmo de registro multi modal entre imagens médicas é traduzido utilizando uma 
-linguagem para programação genérica em GPUs, o CUDA \cite{nvidia2007compute}. O estudo realiza uma comparação de 
-eficiência entre o código em CPU e GPU de uma interpolação bilinear, apresentando como resultado uma aceleração de 60 
-vezes da GPU em relação a CPU. O algoritmo de registro proposto por \cite{han2009gpu} utiliza Informação Mutua para
-realizar um registro não-rígido entre imagens de ressonância magnética entre cérebros de indivíduos e um atlas com a 
-finalidade de segmentar regiões de interesse no individuo. O estudo utiliza uma GPU \textit{NVIDIA} em conjunto com a 
-linguagem CUDA para registrar as imagens, apresentando uma aceleração de 25 vezes em relação a CPU. Esse estudo, 
-juntamente com o anterior, se preocupa com a organização dos dados na memória da GPU, algo que era de dificil controle 
-antes do surgimento de linguagens voltadas para GPGPU.
-
-	Em 2010, o artigo de \cite{modat2010fast} define um algoritmo de registro não-rígido chamado de \textit{Free-Form 
-Deformation}, desenvolvido para registrar imagens de ressonância magnética pesadas em T1. Diferente de outros algoritmos, 
-ele foi desenvolvido para executar em GPUs diretamente. Para tal, os autores utilizam uma interpolação B-Spline cúbica e 
-uma modificação da informação mutua como métrica para o registro. Ele separa cara passo em vários \textit{kernels} diferentes, fazendo
-com que cada \textit{kernel} utilize o máximo de memória possível e então espalha o processamento para um maior número
-de processadores na GPU, melhorando o desempenho do algoritmo. 
-
-	O estudo de \cite{membarth2011frameworks} realiza uma comparação entre vários arcabouços de programação para GPU,
-entre eles o CUDA e o OpenCL utilizando como caso de comparação o registro de imagens 2D/3D, ou seja, o registro de
-imagens em três dimensões de tomografia computadorizada para imagens de raio-X. O artigo então segue primeiro com uma
-comparação conceitual entre os vários arcabouços e depois com uma comparação de desempenho. Foram feitas comparações 
-com a execução sequencial, em paralelo e em GPU do algoritmo. 
-	
 %% ------------------------------------------------------------------------- %%
 \section{Objetivos}
-	Vários trabalhos na última década levaram o registro de imagens para o mundo GPGPU. Alguns deles implementam somente
-algumas operações especificas do algoritmo em GPU, enquanto outros traduzem todo o processo do algoritmo. Porém o registro é composto de 
-várias etapas auxiliares feitas antes do algoritmo principal, como etapas de pré-processamento, descoberta de 
-características e correspondência das mesmas. Falaremos mais sobre isso no Capitulo \ref{cap:conceitos}. Ainda, a tradução 
-proposta por eles não leva em conta a execução do mesmo algoritmo de registro repetidas vezes na GPU, ponto que pode ser
-explorado para incrementar a velocidade do registro entre várias imagens.
-	
-	O objetivo principal do trabalho é identificar, entre os algoritmos mais utilizados para registrar imagens com 
-deformações não-rígidas, o melhor candidato para ser portado para execução em GPUs. Os objetivos específicos deste
+
+  Vários trabalhos na última década estudam o mapeamento de algoritmos de
+registro para GPUs. Normalmente, só o mapeamento dos métodos é apresentado, sem
+explorar recursos encontrados nas placas gráficas que podem ser aplicados para
+aumentar o desempenho da implementação. Dentre tais recursos estão a utilização
+a execução concorrente de vários kernels ou a utilização de texturas
+tridimensionais.
+
+  O principal objetivo do trabalho é apresentar uma implementação do Thin Plate
+Splines em GPU, aperfeiçoado para a execução de $n$ instâncias de registro, onde
+cada instância registra uma imagem alvo diferente para a mesma imagem referência.
+Nossa implementação será separada em blocos, que podem ser executados tanto em
+CPU quanto em GPU, a escolha do usuário. Os objetivos específicos deste
 trabalho são:
 
 \begin{enumerate}
-	\item Identificar os algoritmos de registro não-rídidos mais comuns e implementá-los em GPU
-	\item Otimizar a ocupação dos recursos da GPU, preferencialmente entre as etapas do registro, com a finalidade de 
-				minimizar a transferência de dados entre a CPU e a GPU
-	\item Lidar com o registro de mais de duas imagens por vez
-	\item Avaliar a eficiência quando comparados à implementações em CPU
+	\item Explorar soluções para incrementar o desempenho na execução do registro
+        de várias imagens alvo para a mesma imagem referência
+	\item Identificar quais melhorias de desempenho características da GPU podem
+        ser aplicadas no mapeamento do TPS
+	\item Desenvolver uma implementação configurável, que possa ser executada
+        em ambientes GPU ou CPU
+  \item Estudo comparativo entre as melhorias aplicadas
 \end{enumerate}
 
 %% ------------------------------------------------------------------------- %%
 \section{Organização do Trabalho}
 \label{sec:organizacao_trabalho}
 
-No Capítulo~\ref{cap:conceitos}, apresentamos o que é Registro, Unidade de Processamento Gráfico, GPGPU e os algoritmos 
-de registro estudados. No Capítulo \ref{cap:resultados} resultados preliminares da implementação de dois algoritmos
-de registro em CPU são apresentados. Finalmente, no Capítulo~\ref{cap:conclusoes} analisamos os resultados obtidos. 
+No Capítulo~\ref{cap:conceitos}, os conceitos utilizados pelo trabalho
+são apresentados, como registro e GPGPU. O capítulo \ref{cap:metodologia}
+mostra como os conceitos são combinados para a criação da implementação que
+satisfaz nossos objetivos. No Capítulo \ref{cap:resultados} os experimentos são
+descritos e os seus resultados avaliados. Finalmente, no Capítulo
+~\ref{cap:conclusoes} analisamos os resultados obtidos.
