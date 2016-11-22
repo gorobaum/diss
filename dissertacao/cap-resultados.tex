@@ -5,11 +5,45 @@
 %% ------------------------------------------------------------------------- %%
 %% ------------------------------------------------------------------------- %%
 \section{Experimentos}
-  Os testes foram inspirados pelo estudo de \cite{zagorchev2006comparative}.
-A imagem Referência utilizada para os testes foi retirada do software BioImage
-\cite{papademetris2005bioimage}, uma ressonância magnética cerebral. A imagem
-alvo foi construida aplicando uma função senoidal com diferentes parâmetros
-nas três dimensões da imagem referência. A função de deformação escolhida foi:
+  Os objetivos dos experimentos são: (i) comparar o impacto de cada umas das
+melhorias de desempenho apresentadas na seção \ref{melhoriaDesempenho} aplicadas
+individualmente; (ii) estudar a correlação entre duas melhorias aplicadas ao
+mesmo tempo; (iii) tentar identificar métricas para decidir em qual ambiente
+cada passo deve ser executado, baseando-se nas entradas do registro.
+
+  As melhorias de desempenho podem ser ativadas independentemente nos testes,
+controladas atráves de um arquivo de configuração, passado como entrada para os
+testes. Logo, usando os mesmos dados, os seguintes testes são executados:
+
+\begin{enumerate}
+  \item Paralelamente em CPU (nosso \textit{guideline})
+  \item GPU sem nenhuma das melhorias ativadas
+  \item GPU com a interpolação executando em CPU
+  \item Melhoria de cálculo de Ocupação
+  \item Melhoria de textura 3D
+  \item Melhoria de execução em paralelo
+  \item Todas as combinações de duas melhorias ativas por vez
+  \item Todas as melhorias ativas
+\end{enumerate}
+
+  Os testes consistem de quatro registros, sempre da mesma imagem alvo para a
+mesma imagem referência, com cada uma das quatro execuções utilizando um
+conjunto cada vez maior de caracteristicas. Como visto na seção
+\ref{thinPlateSplines}, o tempo de execução do algoritmo cresce com o cubo do
+número de características, e o número de threads necessárias para executar o
+kernel cresce com o tamanho da imagem, logo aumentar o número de características
+é a melhor escolha para aumentar a complexidade das instâncias diferentes de
+registro.
+
+  A imagem referência foi adiquirida no software \cite{papademetris2005bioimage}.
+A imagem alvo foi criada aplicando uma deformação senoidal nas três dimensões da
+imagem referência, ver figura \ref{fig:testImg}. A construção artificial das
+imagens alvo foi realizada pelos seguintes motivos: (1) provar a aplicabilidade
+do algoritmo TPS não é nosso objetivo, (2) com a função que provocou a
+deformação em mãos, gerar um conjunto de características se torna um processo
+trivial, assim como encontrar as correspondências entre elas, e (3) a corretude
+da nossa implementação do TPS é facilmente verificavel. A função de deformação
+escolhida foi:
 
 \begin{align} \label{math:composta}
 \begin{split}
@@ -19,53 +53,39 @@ nas três dimensões da imagem referência. A função de deformação escolhida
 \end{split}
 \end{align}
 
+  Os coeficientes utilizados na função acima foram escolhidos para criar uma
+deformação que não seja muito intensa, onde mesmo com um mapeamento trivial
+entre as características o TPS não seria capaz de registrar as imagens, mas
+intensa o suficiente para deslocar pontos da imagem para longe de sua região
+inicial, o que fará com que threads responsáveis pelo seu registro tenham que
+acessar regiões diferentes na memória da GPU, criando uma situação menos
+favorável para a implementação do registro em CUDA e mais próxima do real.
+
 \begin{figure}[H]
     \centering
     \begin{subfigure}[t]{0.8\textwidth}
       \includegraphics[width=\textwidth]{figuras/referenceImg.png}
       \subcaption*{(a)}
-      \label{fig:unequalizedImage}
+      \label{fig:refImg}
     \end{subfigure}
     \begin{subfigure}[t]{0.8\textwidth}
       \includegraphics[width=\textwidth]{figuras/targetImg.png}
       \subcaption*{(b)}
-      \label{fig:equalizedImage}
+      \label{fig:tarImg}
     \end{subfigure}
     \source{\cite{papademetris2005bioimage}}
     \caption{Imagens usadas nos testes. A primeira coluna é um corte sagital,
              a segunda coluna um corte coronal e a última um corte axial.
              (a) Imagem referência. (b) Imagem alvo.}
-    \label{fig:equalization}
+    \label{fig:testImg}
 \end{figure}
 
-  A construção artificial das imagens alvo foi escolhida pelos seguintes motivos:
-(1) provar a aplicabilidade do algoritmo TPS não é nosso objetivo, (2) com a
-função que provocou a deformação em mãos, gerar um conjunto de características
-se torna um processo trivial, assim como encontrar as correspondências entre
-elas, e (3) a corretude da nossa implementação do TPS é facilmente verificavel.
-
-  Para apurar o ganho de desempenho de cada uma das possiveis modificações
-descritas na seção \ref{melhoriaDesempenho}, elas foram implementadas de tal
-maneira que elas podem ser ativadas ou desativadas independentemente atráves de
-um arquivo de configuração. Logo, nosso casos de teste são:
-
-\begin{enumerate}
-  \item Paralelamente em CPU (nosso \textit{guideline})
-  \item GPU sem nenhuma das melhorias ativadas
-  \item Melhoria de cálculo de Ocupação
-  \item Melhoria de textura 3D
-  \item Melhoria de execução em paralelo
-  \item Todas as combinações de duas melhorias ativas por vez
-  \item Todas as melhorias ativas
-\end{enumerate}
-
-  Cada teste é composto de quatro execuções do TPS, registrando a mesma imagem
-alvo com a mesma imagem referência. As características da imagem referência
-são distribuidas uniformemente pelas dimensões da imagem, com um fator que
-determina a quantidade de características utilizadas. As características da
-imagem alvo são construidas aplicando a função de deformação em cada uma das
-características da imagem referência, criando um cenário ideal para a execução
-do TPS.
+  As características da imagem referência são distribuidas uniformemente pelas
+dimensões da imagem, com um fator que determina a quantidade de características
+utilizadas. As características da imagem alvo são construidas aplicando a
+função de deformação em cada uma das características da imagem referência,
+criando um cenário ideal para a execução do TPS, onde sabemos o mapeamento de
+cada uma das características da imagem referência.
 
   Os testes foram executados em duas máquinas. A primeira é um notebook com
 um processador quadcore Intel i5-3337U @ 1.80GHZ, 6GB de memória, e uma GPU
