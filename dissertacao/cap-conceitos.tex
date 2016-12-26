@@ -135,9 +135,12 @@ exemplo de segmentação, temos:
       \subcaption*{(f)}
       \label{fig:lenaRegistrada}
     \end{subfigure}
-    \caption{(a) Imagem Referência. (b) Imagem Alvo deformada pela função seno.
-             (c) Detecção de características. (d) Correspondência de características.
-             (e) Estimativa da função de transformação. (f) Reamostragem da imagem Alvo.}
+    \caption{Exemplo de uma instância de registro. (a) Imagem Referência.
+             (b) Imagem Alvo deformada artificialmente.
+             (c) Detecção de características utilizando o SURF.
+             (d) Correspondência de características.
+             (e) Estimativa da função de transformação.
+             (f) Reamostragem da imagem Alvo.}
     \label{fig:regExplicacao}
 \end{figure}
 
@@ -381,21 +384,23 @@ são aplicados.
 %% ------------------------------------------------------------------------- %%
 
 \section{Thin Plate Splines}\index{TPS}\label{thinPlateSplines}
-  O \textit{Thin plate splines} (TPS) é um algoritmo de registro não-rigido construido
-a partir de caratetŕisticas de ponto. O algoritmo aproxima o processo de registro
-a deformação de uma fina placa de metal, onde cada característica aplica uma força
-afundando a placa em alguma direção. O TPS, dado sua eficiencia e resultados, é
-um dos algoritmos mais aplicados em registro de imagens (\cite{goshtasby2005} e
+  O \textit{Thin plate splines} (TPS) \cite{bookstein1989principal} é um
+algoritmo de registro não-rigido construido a partir de caratetŕisticas de
+ponto. O algoritmo aproxima o processo de registro a deformação de uma fina
+placa de metal, onde cada característica aplica uma força afundando a placa em
+alguma direção. O TPS, dado sua eficiencia e resultados, é um dos algoritmos
+mais aplicados em registro de imagens (\cite{goshtasby2005} e
 \cite{rohr1999approximating}).
+
   A função de deformação adotada pelo TPS é uma função de interpolação radial. A
-função (definida por \cite{bookstein1989principal}), modificada para o caso em
-três dimensões, é:
+função modificada para registro de imagens tridimensionais é:
 \begin{align}\label{math:tps}
   \begin{split}
     f(x, y, z) &= A_0 + A_1x + A_2y + A_3z + \sum_{i=0}^n F_i r_i^2 ln (r_i^2) \\
     r_i^2 &= (x-x_i)^2 + (y-y_i)^2 + (z-z_i)^2 + d^2
   \end{split}
 \end{align}
+
   Onde $d$ é um fator de rigidez de superficie, utilizado para diminuir a ação
 das características sobre a placa de metal e $x, y, z$ são as características. A
 função do TPS é capaz de representar deformações rigidas e não-rigidas.
@@ -403,67 +408,85 @@ Deformações rigidas são cálculadas pela primeira parte da função,
 $A_0 + A_1x + A_2y + A_3z$, enquanto deformações não-rigidas são cálculadas por
 $\sum_{i=0}^n F_i r_i^2 ln (r_i^2)$.
 
-Para definir os valores das variáveis $A_0, A_1, A_2 e A_3$, o seguinte sistema
-linear é utilizado:
-\begin{align}
+Para definir os valores das variáveis $A_0, A_1, A_2, A_3, F_i, \{i = 0, ..., n\}$,
+o seguinte sistema linear é utilizado:
+
+\begin{align}\label{math:tpsSystem}
 \begin{split}
     \sum_{i=1}^n F_i &= 0 \\
     \sum_{i=1}^n F_ix &= 0 \\
     \sum_{i=1}^n F_iy &= 0 \\
     \sum_{i=1}^n F_iz &= 0 \\
-    f(x_1,y_1) &= A_0 + A_1x + A_2y + \sum_{i=0}^n F_i r_{i1}^2 ln r_{i1}^2 \\
+    f(x_1,y_1,z_1) &= A_0 + A_1x + A_2y + A_3z + \sum_{i=0}^n F_i r_{i1}^2 ln r_{i1}^2 \\
     \vdots \\
-    f(x_n,y_n) &= A_0 + A_1x + A_2y + \sum_{i=0}^n F_i r_{in}^2 ln r_{in}^2
+    f(x_n,y_n,z_n) &= A_0 + A_1x + A_2y + A_3z + \sum_{i=0}^n F_i r_{in}^2 ln r_{in}^2
 \end{split}
 \end{align}
-  As quatro primeira equações aplicam restrições de movimento sobre o superficie no qual
-a transformação é aplicada. A primeira equação, $\sum_{i=1}^n F_i = 0$, garante que
-a soma dos pesos aplicados à superficie seja zero, logo o superficie não sofre translações.
-As três próximas equações, $\sum_{i=1}^n F_ix = 0$, $\sum_{i=1}^n F_iy = 0$ e
-$\sum_{i=1}^n F_iz = 0$, fazem com que o momento aplicado nas três dimensões sejam
-zero, garantindo que a superficie não rotaciona em relação a nenhum eixo.
+
+  As quatro primeiras equações aplicam restrições de movimento sobre a
+superficie na qual a transformação é aplicada. A primeira equação,
+$\sum_{i=1}^n F_i = 0$, garante que a soma dos pesos aplicados à superficie
+seja zero, logo o superficie não sofre translações. As três próximas equações,
+$\sum_{i=1}^n F_ix = 0$, $\sum_{i=1}^n F_iy = 0$ e $\sum_{i=1}^n F_iz = 0$,
+garantem que o momento aplicado em cada uma das três dimensões seja zero, e
+assim que a superficie não rotacione em relação a nenhum dos eixos.
 
 \subsubsection{Pseudo Algoritmo e Tempo Assintótico de Execução}
 
-  Como apresentado acima, o TPS é composto de três passos, a resolução
-dos sistemas lineares, um para cada dimensão, e a aplicação da função de
-deformação, seguida da interpolação da imagem alvo.
-A primeira função, \textit{tps}, recebe os voxels das imagens e as características
-das duas, ordenadas de tal maneira que os pares estão na mesma posição $i$ dos
-vetores. Essa função resolve os sistemas lineares e, chamando a função
-\textit{interpolar}, calcula o resultado da função de deformação no ponto
-$(x, y, z)$. A função \textit{interpolar} recebe a solução do sistema linear,
-que nada mais é a parametrização do TPS para o problema em especifico, e retorna
-o novo valor do ponto no espaço geométrico da imagem referência.
+  O TPS recebe como entrada a correspondência entre os pontos de controle, a
+imagem alvo e a imagem referência. O primeiro passo do TPS é resolver o
+sistema linear construido a partir da equação \ref{math:tpsSystem}. Esse sistema
+é subdividido em três sistemas distintos, cada um aplicado à uma das dimensões
+da imagem. Com o resultado dos sistemas lineares, o TPS tem os valores
+necessários para computar o próximo passo, dado pela equação \ref{math:tps}.
+A imagem resultado é construida por essa equação, que recebe as coordenadas da
+imagem resultado e devolve a intensidade do pixel construida a partir de uma
+interpoalção de pixels da imagem alvo.
 
-\begin{lstlisting}[mathescape]
-tps(imagemReferencia, imagemAlvo, caracImagemRef, caracImagemAlvo):
-  solucaoEquLinearX <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
-  solucaoEquLinearY <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
-  solucaoEquLinearZ <- resolverEquLinear(caracImagemRef, caracImagemAlvo)
+  Logo, a implementação do trabalho utiliza três funções na sua implementação
+do TPS. A primeira, \codepagode{resolverEquLinear}, cria e resolve uma equação
+linear. Essa função é chamada uma vez para cada dimensão da imagem. Logo após,
+temos a \codepagode{funcaoDeformacao}, que dado uma coordenada na imagem
+resultado, retorna a coordenada da imagem alvo na qual está a sua intensidade.
+Por fim, a \codepagode{interpolacao} retorna a intensidade com base na
+coordenada encontrada no passo anterior. A execução de uma instância de registro
+está na função \codepagode{tps}, abaixo:
 
-  para todo x, y, z em dimensoesDaImagem:
-    novoX <- funcaoDeformacao(x, y, z, solucaoEquLinearX, caracImagemRef)
-    novoY <- funcaoDeformacao(x, y, z, solucaoEquLinearY, caracImagemRef)
-    novoZ <- funcaoDeformacao(x, y, z, solucaoEquLinearZ, caracImagemRef)
-    novaImagem[x, y, z] <- interpolar(novoX, novoY, novoZ, imagemAlvo)
-\end{lstlisting}
+\begin{minipage}{\linewidth}
+  \begin{lstlisting}[mathescape]
+  Imagem tps(Imagem imagemReferencia, Imagem imagemAlvo, float* caracImagemRef, float* caracImagemAlvo):
+    float* solucaoEquLinearX = resolverEquLinear(caracImagemRef.x, caracImagemAlvo.x)
+    float* solucaoEquLinearY = resolverEquLinear(caracImagemRef.y, caracImagemAlvo.y)
+    float* solucaoEquLinearZ = resolverEquLinear(caracImagemRef.z, caracImagemAlvo.z)
 
-\begin{lstlisting}[mathescape]
-funcaoDeformacao(x, y, z, solucaoDaEquLinear, caracImagemRef):
-  v[0] = 1 * solucaoDaEquLinear[0]
-  v[1] = x * solucaoDaEquLinear[1]
-  v[2] = y * solucaoDaEquLinear[2]
-  v[3] = z * solucaoDaEquLinear[3]
+    para todo x, y, z em dimensoesDaImagem:
+      float novoX = funcaoDeformacao(x, y, z, solucaoEquLinearX, caracImagemRef)
+      float novoY = funcaoDeformacao(x, y, z, solucaoEquLinearY, caracImagemRef)
+      float novoZ = funcaoDeformacao(x, y, z, solucaoEquLinearZ, caracImagemRef)
 
-  para n = 0, n menor que $n_{cp}$ :
-    xi = caracImagemRef[n].x
-    yi = caracImagemRef[n].y
-    zi = caracImagemRef[n].z
-    r = $($x-xi$)^2$ + $($y-yi$)^2$ + $($z-zi$)^2$
-    v[n+4] = r*$\log{r}$*solucaoDaEquLinear[n+4]
-  return v
-\end{lstlisting}
+      novaImagem[x, y, z] = interpolar(novoX, novoY, novoZ, imagemAlvo)
+
+    return novaImagem
+  \end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+  \begin{lstlisting}[mathescape]
+  float* funcaoDeformacao(int x, int y, int z, float* solucaoDaEquLinear, float* caracImagemRef):
+    v[0] = 1 * solucaoDaEquLinear[0]
+    v[1] = x * solucaoDaEquLinear[1]
+    v[2] = y * solucaoDaEquLinear[2]
+    v[3] = z * solucaoDaEquLinear[3]
+
+    para n = 0, n menor que $n_{cp}$ :
+      xi = caracImagemRef[n].x
+      yi = caracImagemRef[n].y
+      zi = caracImagemRef[n].z
+      r = $($x-xi$)^2$ + $($y-yi$)^2$ + $($z-zi$)^2$
+      v[n+4] = r*$\log{r}$*solucaoDaEquLinear[n+4]
+    return v
+  \end{lstlisting}
+\end{minipage}
 
   As tabelas abaixo mostram o tempo de execução assintótico do tps, totalizando
 $\mathcal{O}(n_{cp}^3+n_l*n_c*n_{cp})$:
@@ -474,17 +497,18 @@ $\mathcal{O}(n_{cp}^3+n_l*n_c*n_{cp})$:
 \hline
 Tempo de execução do algoritmo \textit{tps} \\
 \hline
-Linha&Tempo\\
+Função & Tempo\\
 \hline
 2       &$\mathcal{O}(n_{cp}^3)$\\
 3       &$\mathcal{O}(n_{cp}^3)$\\
-4       &$\mathcal{O}(n_l)$\\
-5       &$\mathcal{O}(n_c)$\\
-6       &$\mathcal{O}(n_{cp})$\\
-7       &$\mathcal{O}(n_{cp})$\\
-8       &$\mathcal{O}(1)$\\
+4       &$\mathcal{O}(n_{cp}^3)$\\
+6       &$\mathcal{O}(n_l \times n_c \times n_p)$\\
+7       &$\mathcal{O}(n_c)$\\
+8       &$\mathcal{O}(n_{cp})$\\
+9       &$\mathcal{O}(n_{cp})$\\
+11      &$\mathcal{O}(1)$\\
 \hline
-Total   &$\mathcal{O}(n_{cp}^3+n_l*n_c*n_{cp})$\\
+Total   &$\mathcal{O}(n_{cp}^3+n_l \times n_c \times n_p \times n_{cp})$\\
 \hline
 \end{tabular}
 \caption{Tempo de execução do algoritmo \textit{tps}}
@@ -506,12 +530,12 @@ Linha&Tempo\\
 2       &$\mathcal{O}(1)$ \\
 3       &$\mathcal{O}(1)$ \\
 4       &$\mathcal{O}(1)$\\
-5       &$\mathcal{O}(n_{cp})$\\
-6       &$\mathcal{O}(1)$\\
-7       &$\mathcal{O}(1)$\\
+5       &$\mathcal{O}(1)$\\
+7       &$\mathcal{O}(n_{cp})$\\
 8       &$\mathcal{O}(1)$\\
 9       &$\mathcal{O}(1)$\\
-10      &$\mathcal{O}(n_{cp}+3)$\\
+10      &$\mathcal{O}(1)$\\
+11      &$\mathcal{O}(n_{cp})$\\
 \hline
 Total   &$\mathcal{O}(n_{cp})$\\
 \hline
@@ -629,19 +653,19 @@ tempo maior de execução que chamadas subsequentes a mesma diretiva. Na inicial
 os \textit{devices} existentes e escolhe um deles para ser o responsável pelas execuções posteriores.
 
 O próximo passo é a alocação de memória no \textit{device}. As operações de leitura de memória de um kernel são feitas somente
-na memória de um \textit{device}. A alocação dessa memória é feita pelo \textit{host}, usando \verb#cudaMalloc()#.
+na memória de um \textit{device}. A alocação dessa memória é feita pelo \textit{host}, usando \codepagode{codaMalloc()}.
 Para copiar a memória do \textit{host} para o \textit{device} ou vice-versa,
-\verb#cudaMemcpy()# é usada. Para liberar o espaço alocado após a execução basta usar o \verb#cudaFree()#.
+\codepagode{cudaMemcpy()} é usada. Para liberar o espaço alocado após a execução basta usar o \codepagode{cudaFree()}.
 Todas essas diretivas recebem um ponteiro do \textit{host}, usado para o controle sobre qual posição da memória está sendo
 operado em cada operação.
 
-O CUDA dá suporte a alocação de vetores em duas ou três dimensões através de: \verb#cudaMallocPitch()# e
-\verb#cudaMalloc3D()#, respectivamente. É necessário usar as modificações dos comandos \verb#Memcpy# para
-duas ou três dimensões também, que são: \verb#cudaMemcpy2D()#, \verb#cudaMemcpy3D()#.
+O CUDA dá suporte a alocação de vetores em duas ou três dimensões através de: \codepagode{cudaMallocPitch()} e
+\codepagode{cudaMalloc3D()}, respectivamente. É necessário usar as modificações dos comandos \codepagode{Memcpy} para
+duas ou três dimensões também, que são: \codepagode{cudaMemcpy2D()}, \codepagode{cudaMemcpy3D()}.
 
 \subsubsection{Modelo de Programação}
 Um kernel no CUDA é uma função C que será executada paralelamente $n$ vezes em $n$ \textit{threads} diferentes na GPU. Um kernel pode ser
-definido em qualquer lugar do seu código, usando a declaração \verb#__global__# do lado esquerdo do tipo de retorno do kernel.
+definido em qualquer lugar do seu código, usando a declaração \codepagode{\_\_global\_\_} do lado esquerdo do tipo de retorno do kernel.
 Para invocar um kernel, o \textit{host} faz a chamada de uma função com a sintaxe parecida com o C, mas usa uma configuração de
 execução definida pelo CUDA, que usa a sintaxe \verb#<<<...>>># junto da chamada da função. Os parâmetros da configuração são
 o número de blocos de \textit{threads} e o número de \textit{threads} por blocos. Para somar dois vetores de tamanho M e guardar o resultado num
@@ -660,8 +684,8 @@ outro vetor, o código é o seguinte:
   }
 \end{lstlisting}
 
-No kernel acima, a linha \verb#int i = threadIdx.x# atribui a variável i o valor do índice da \textit{thread} em execução.
-A estrutura \verb#threadIdx# é um vetor de 3 dimensões, logo as \textit{threads} podem ser organizadas em 1, 2 ou 3 dimensões dentro de um
+No kernel acima, a linha \codepagode{int i = threadIdx.x} atribui a variável i o valor do índice da \textit{thread} em execução.
+A estrutura \codepagode{threadIdx} é um vetor de 3 dimensões, logo as \textit{threads} podem ser organizadas em 1, 2 ou 3 dimensões dentro de um
 \textit{device}. As \textit{threads} são organizadas por blocos. Cada bloco tem dimensões maleáveis. Blocos são organizados em
 grids, que tem seu tamanho configurado na chamada o kernel, bem como o tamanho de cada bloco. No nosso exemplo acima, na linha
 \verb#VecAdd<<<1,M>>>(a,b,c)#, o 1 determina o número de blocos e o M o número de \textit{threads} por bloco.
@@ -693,10 +717,10 @@ Por padrão, o compilador do CUDA cuida do gerenciamento da memória, ou seja, e
 entre os locais diferentes de memória. O programador pode dar dicas para o compilador usando qualificadores indicando o local
 que ele quer que aquele elemento fique na memória. Os possíveis qualificadores são:
 \begin{itemize}
-  \item \verb#__device__# Fica na memória global.
-  \item \verb#__constant__# Fica na area constante da memória global.
-  \item \verb#__shared__# Fica na memória compartilhada das \textit{threads}.
-  \item \verb#__restrict__# Indica para o compilador que todos os ponteiros com esse qualificador apontam para locais diferentes
+  \item \codepagode{\_\_device\_\_} Fica na memória global.
+  \item \codepagode{\_\_constant\_\_} Fica na area constante da memória global.
+  \item \codepagode{\_\_shared\_\_} Fica na memória compartilhada das \textit{threads}.
+  \item \codepagode{\_\_restrict\_\_} Indica para o compilador que todos os ponteiros com esse qualificador apontam para locais diferentes
                             da memória. Isso é importante pois o compilador pode fazer otimizações com o código sabendo dessa informação.
 \end{itemize}
 

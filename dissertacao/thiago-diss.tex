@@ -49,6 +49,7 @@
 \fancyhf{}
 \renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{#1}}{}}
 \renewcommand{\sectionmark}[1]{\markright{\MakeUppercase{#1}}{}}
+\newcommand{\codepagode}[1]{{\fontfamily{lmss}\selectfont {#1}}}
 \newcommand{\source}[1]{\caption*{Source: {#1}} }
 \renewcommand{\headrulewidth}{0pt}
 
@@ -67,16 +68,17 @@
 % Ref: http://en.wikibooks.org/wiki/LaTeX/Packages/Listings
 \lstset{ %
 language=C,                  % choose the language of the code
-basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+basicstyle=\ttfamily,       % the size of the fonts that are used for the code
 numbers=left,                   % where to put the line-numbers
-numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
+numberstyle=\ttfamily,      % the size of the fonts that are used for the line-numbers
+keywordstyle=\bfseries,
 stepnumber=1,                   % the step between two line-numbers. If it's 1 each line will be numbered
-numbersep=5pt,                  % how far the line-numbers are from the code
+numbersep=1pt,                  % how far the line-numbers are from the code
 showspaces=false,               % show spaces adding particular underscores
 showstringspaces=false,         % underline spaces within strings
 showtabs=false,                 % show tabs within strings adding particular underscores
 frame=single,                   % adds a frame around the code
-framerule=0.6pt,
+framerule=1.5pt,
 tabsize=2,                      % sets default tabsize to 2 spaces
 captionpos=b,                   % sets the caption-position to bottom
 breaklines=true,                % sets automatic line breaking
@@ -85,10 +87,11 @@ escapeinside={\%*}{*)},         % if you want to add a comment within your code
 backgroundcolor=\color[rgb]{1.0,1.0,1.0}, % choose the background color.
 rulecolor=\color[rgb]{0.8,0.8,0.8},
 extendedchars=true,
-xleftmargin=10pt,
-xrightmargin=10pt,
-framexleftmargin=10pt,
-framexrightmargin=10pt
+xleftmargin=11pt,
+xrightmargin=11pt,
+framexleftmargin=11pt,
+framexrightmargin=11pt,
+morekeywords={Imagem}
 }
 
 % ---------------------------------------------------------------------------- %
@@ -228,18 +231,22 @@ Qualificação (Mestrado) - Instituto de Matemática e Estatística,
 Universidade de São Paulo, São Paulo, 2015.
 \\
 
-O alinhamento geométrico, comumente conhecido como registro de imagens, é uma etapa essencial em várias
-aplicações na área de processamento de imagens, que incluem desde análises populacionais na área
-médica até reconstrução de mapas utilizando imagens de satélite. Deformações não rígidas representam
-uma ampla gama das possíveis deformações presentes nas várias categorias de imagens que são registradas.
-Atualmente, estudos que envolvem milhares de imagens estão se tornando cada vez mais comuns, sugerindo
-que técnicas de aceleração sejam desenvolvidas de forma a minimizar o
-tempo de análise e processamento. Como as técnicas de registro não-rígido são tradicionalmente custosas
-computacionalmente, o uso de \textit{graphic processing units} (GPUs) possibilita a
-aceleração das diversas etapas do processo via hardware, tais como a extração de características,
-determinação de correspondências e cálculo das funções de deformação. Este trabalho
-tem como objetivo a paralelização de técnicas de registro não-rígido aplicadas à arquiteturas modernas de
-GPU, e avaliação de sua eficiência.
+O alinhamento geométrico, comumente conhecido como registro de imagens, é uma
+etapa essencial em várias aplicações na área de processamento de imagens, que
+incluem desde análises populacionais na área médica até reconstrução de mapas
+utilizando imagens de satélite. Deformações não rígidas representam uma ampla
+gama das possíveis deformações presentes nas várias categorias de imagens que
+são registradas. Atualmente, estudos que envolvem milhares de imagens estão se
+tornando cada vez mais comuns, sugerindo que técnicas de aceleração sejam
+desenvolvidas de forma a minimizar o tempo de análise e processamento. Um dos
+métodos mais usados para resolver casos de registro não-rigido é o
+Thin Plate Splies (TPS). Como as técnicas de registro
+não-rígido, o TPS incluso, são tradicionalmente custosas computacionalmente,
+o uso de \textit{graphic processing units} (GPUs) possibilita a aceleração das
+diversas etapas do processo via hardware, tais como a extração de
+características, determinação de correspondências e cálculo das funções de
+deformação. Este trabalho tem como objetivo a paralelização do TPS aplicado à
+arquiteturas modernas de GPU, e avaliação de sua eficiência.
 \\
 
 \noindent \textbf{Palavras-chave:} Registro de Imagens, Thin Plate Splines, Demons, \textit{Graphic Processing Units}.
@@ -252,16 +259,21 @@ GPU, e avaliação de sua eficiência.
 Qualificação (Mestrado) - Instituto de Matemática e Estatística,
 Universidade de São Paulo, São Paulo, 2015.
 \\
-Geometrical image alignment, commonly known as image registration, is an essential step in a number of image processing applications,
-ranging from populational studies in medical imaging to map reconstruction based on satellite images. Non-rigid deformations
-represent a big slice of all possible deformations in images that need to be registered.
-Presently, studies that involve thousands of images are becoming commonplace,
-suggesting that acceleration techniques should be developed to diminish the analysis or processing time.
-Registration techniques are usually very computational demanding, hence the use of \textit{graphic processing units} (GPUs)
-creates a possibility to speedup several stages of the registration process, such as extraction of features,
-determination of feature correlation and calculaton of the deformation function. This project targets the
-parallelization of non-rigid registration techniques in modern GPU architecture and evaluate their
-efficiency.
+Geometrical image alignment, commonly known as image registration, is an
+essential step in a number of image processing applications, ranging from
+populational studies in medical imaging to map reconstruction based on
+satellite images. Non-rigid deformations represent a big slice of all possible
+deformations in images that need to be registered. Presently, studies that
+involve thousands of images are becoming commonplace, suggesting that
+acceleration techniques should be developed to diminish the analysis or
+processing time. One of the most used methods for solving non-rigid registration
+is the Thin Plate Splines (TPS). Non-rigid registration techniques, TPS included,
+are usually very computational demanding, hence the use of
+\textit{graphic processing units} (GPUs) creates a possibility to speedup
+several stages of the registration process, such as extraction of features,
+determination of feature correlation and calculaton of the deformation function.
+This project targets the parallelization of the Thin Plate Splines in modern
+GPU architecture and evaluate their efficiency.
 \\
 
 \noindent \textbf{Keywords:} Image Registration, Thin Plate Splines, Demons, Graphic Processing Units.
@@ -317,7 +329,8 @@ efficiency.
 % cabeçalho para os apêndices
 \renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{\appendixname\ \thechapter}} {\MakeUppercase{#1}} }
 \fancyhead[RE,LO]{}
-\appendix
+
+\newcommand{\codesnippet}[1]{\fontfamily{lmss}\selectfont {#1}}\appendix
 
 % ---------------------------------------------------------------------------- %
 % Bibliografia

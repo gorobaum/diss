@@ -6,9 +6,9 @@
 No primeiro passo, um sistema linear é construido usando os pares de correspondências
 encontradas nas duas imagens de entrada, e resolvido afim de encontrar os parâmetros
 da função de deformação. O próximo passo é o calculo da função de deformação e
-a interpolação necessária para gerar a imagem resultado. Nossa implementação
-do TPS foi separada em 3 módulos principais, os quais podem ser executados tanto
-na CPU quanto na GPU:
+a interpolação necessária para gerar a imagem resultado. A implementação do TPS
+no trabalho foi separada em 3 módulos principais, os quais podem ser executados
+tanto na CPU quanto na GPU:
 
 \begin{enumerate}
   \item Sistema Linear
@@ -178,9 +178,9 @@ a execução em paralelo de vários kernels.
 Sejam $TM$ o número máximo de \textit{threads} por multiprocessador e $RB$ o
 número máximo de registradores por bloco, o número máximo de registradores que
 cada \textit{thread} pode usar é $\left \lceil{\frac{RB}{TM}}\right \rceil$.
-O número de registradores utilizado por thread pode ser verificado pelas flags
-de compilação \textit{-Xptxas -v}. Nas arquiteturas atuais, o número de
-registradores deve ficar abaixo de $32$ por thread. Esse número foi atingido pelos
+O número de registradores utilizado por thread pode ser verificado utilizando
+flags na compilação. Nas arquiteturas atuais, o número de registradores
+utilizados por thread deve ficar abaixo de $32$. Esse número foi atingido pelos
 kernels escritos para este trabalho.
 
   Maximizar o número de \textit{threads} executando em um dado momento ajuda em
