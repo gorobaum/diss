@@ -1,5 +1,5 @@
 %
-% Versão modificada do arquivo plainnat.bst
+% Versï¿½o modificada do arquivo plainnat.bst
 % by J.P. Mena-Chalco
 % Wed Nov 25 09:38:47 BRST 2009
 % 

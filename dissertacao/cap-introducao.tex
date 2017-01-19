@@ -2,126 +2,104 @@
 \chapter{Introdução}
 \label{cap:introducao}
 
-  O alinhamento espacial ou geométrico entre duas imagens - a imagem
-\textbf{Referência} e a \textbf{Alvo} - da mesma cena é um problema clássico de
-visão computacional, chamado de \textbf{Registro de Imagens}. O registro é uma
-função de transformação que leva uma das imagens para o espaço geométrico da
-outra, atenuando deformações presentes nas imagens. O registro parte de uma
-correspondência entre pontos de interesse das duas imagens, criando um
-mapeamento pixel a pixel entre as imagens. As deformações corrigidas pelo
-registro são introduzidas por várias condições, como aquisições em horários
-diferentes, utilização de sensores diferentes ou mudanças na posição do sensor.
+  O alinhamento espacial ou geométrico entre duas imagens é um problema clássico
+de visão computacional, chamado de registro de imagens. O registro é aplicado
+para alinhar imagens da mesma cena oriundas de diferentes sensores, adquiridas
+em diferentes intervalos ou capturadas de diferentes pontos de vista. O resultado
+do registro é uma imagem que contém o alinhamento de duas imagens diferentes, somando
+as informações contidas em cada uma das imagens em um mesmo espaço. O registro é
+usado para identificar modificações em cenas, alinhar imagens ou encontrar objetos.
 
-  O registro é aplicado em imagens médicas com várias finalidades, como por
-exemplo: (i) na junção de informações de imagens de diferentes modalidades,
-como a sobreposição de imagens de ressonância magnética com imagens de raio-x;
-(ii) estudos envolvendo atlas anatómicos, onde cada paciente do estudo tem seus
-dados registrados para um modelo de estudo; (iii) corrigir diferenças de
-imagens de pré- e pós-operatório, causadas por movimentações do paciente e por
-movimentação de tecido mole, como a movimentação do pulmão na respiração.
+  No estudo e processamento de imagens tomográficas, o registro é aplicados
+com as seguintes finalidades: (i) na junção de informações de imagens de 
+diferentes modalidades, como a sobreposição de imagens de ressonância magnética 
+com imagens de raio-x; (ii) estudos envolvendo atlas anatômicos, onde cada 
+paciente do estudo tem seus dados registrados para um modelo de estudo; 
+(iii) corrigir diferenças de imagens de pré- e pós-operatório, causadas 
+por movimentações do paciente e por movimentação de tecido mole, como a 
+movimentação do pulmão na respiração.
 
-  Os algoritmos de registro são categorizados baseando-se na natureza da
-transformação usada para alinhar as imagens. Os \textbf{Algoritmos de Registro
-Rígido} definem o primeiro grupo, onde estão os algoritmos que usam
-transformações rigidas, usadas para corrigir deformações simples. Esses
-algoritmos modelam a função de registro com uma combinação de rotações,
-translações, mudanças de escala ou cisalhamentos. Esse tipo de modelagem não
-é sulficiente para corrigir movimentações fisiológicas mais complexas, como
-as resultantes do batimento do coração ou do movimento respiratório. Para tal,
-os \textbf{Algoritmos de Registro Não-Rígido} são utilizados nesse caso. Esses
-algoritmos utilizam transformações não lineares para modelar a deformaçãyo
-presente nas imagens. O fluxo óptico ou a utilização de equações de dinâmica de
-fluidos para aproximar a transformação são exemplos de soluções para casos
-não-rigidos. O estudo se foca nos registros não-rigidos.
+  O registro deve ser capaz de modelar fielmente as deformações sofridas
+pelos tecidos do corpo humano, sejam elas rígidas, como a movimentação
+de um osso ou membro, ou não rígidas, como a movimentação de tecidos mole.
+O estudo, então, se restringe á algoritmos de registro que utilizem funções
+de alinhamento com componentes rígidas e não rígidas.Um dos algoritmos mais utilizados 
+pela comunidade cientifica para resolver casos de registro não-rígidos é 
+o \textbf{Thin Plate Splies} (TPS) \cite{goshtasby1988registration} e 
+\cite{bookstein1989principal}. O TPS é facilmente aplicavel a uma gama
+de problemas, já que ele só necessita de uma relação entre conjuntos de pontos
+das duas imagens, e dado que sua função de alinhamento é composta de 
+uma componente rígida e outra não rígida. Mas essa maleabilidade vem com
+um custo, o alto tempo de execução, que é fortemente influenciado pelo
+tamanho do conjunto de pontos usado como entrada. Esse dilema cria uma
+busca por um equilíbrio no tamanho desse conjunto, já que um número pequeno
+de correspondências resulta em uma imagem mal alinhada, e um número muito
+grande eleva muito o tempo de execução.
 
-  Um dos algoritmos mais utilizados pela comunidade cientifica para resolver
-casos de registro não-rigidos é o \textbf{Thin Plate Splies} (TPS). O TPS
-utiliza uma função de transformação radial, onde cada ponto de controle exerce
-uma influencia, atenuada pela distancia entre eles, sobre todos os outros
-pontos de controle. O TPS modela a deformação presente nas imagens como uma
-deformação aplicada a uma chapa fina de metal, onde os pontos de controle
-escolhidos nas imagens funcionam como pesos, modelando a chapa no espaço.
-O TPS é capaz de registrar deformações complexas, mas seu tempo de execução
-é fortemente influenciado pelo número de pontos de controle empregados no
-registro \cite{zitova2003image}.
-
-  Logo o TPS se beneficia de algum tipo de aceleração. O principal objetivo do
-trabalho é apresentar uma implementação do TPS para o modelo \textit{Single
-Instruction, Multiple Data} \cite{patterson2013computer}, modelo esse adotado
-pelas Unidades de Processamento Gráfico (GPU). A escolha de GPUs para a
-aceleração do TPS vem do crescimento na simplicidade da utilização delas para
-tarefas que não estão ligadas a processamento gráfico, e o baixo custo do
-processamento por dolar do seu hardware. Neste trabalho, a implementação do TPS
-para o paradigma Programação Genérica em Unidades de Processamento Gráfico
-(GPGPU) é chamanda de mapeamento para GPU. Os resultados apresentados por
-\cite{membarth2011frameworks} levaram a escolha do CUDA como a linguagem
-utilizada neste trabalho.
+  A fim de apresentar um resultado de qualidade dentro de um espaço de tempo
+razoável, o trabalho apresenta uma implementação do TPS no paradigma Programação 
+Genérica em Unidades de  Processamento Gráfico (GPGPU). Para atingir um tempo
+de execução realista, artifícios ligados a arquitetura das GPUs foram utilizados,
+como a otimização de utilização de recursos da GPU, mapeamento de imagens para
+texturas e execução concorrente de instâncias diferentes de registro. Para a
+implementação do código, a linguagem CUDA foi escolhida, a partir dos resultados
+do estudo de \cite{membarth2011frameworks}.
 %% ------------------------------------------------------------------------- %%
 \section{Trabalhos Relacionados}
 \label{sec:trabalhosRelacionados}
 
-  O TPS foi introduzido como um método de registro por
-\cite{bookstein1989principal}. O autor realiza um extenso estudo sobre a
-influência da escolha e do espaçamento entre pontos de controle no resultado do
-TPS, e valida a utiliza do TPS como algoritmo de registro aplicando-o no estudo
-da Sindrome de Apert, onde pacientes apresentam deformações nos ossos faciais
-\ref{fig:apert}.
+  O TPS foi introduzido por \cite{bookstein1989principal} e \cite{goshtasby1988registration}.
+O trabalho de \citeauthor{goshtasby1988registration} introduz o TPS como um método
+de registro não rígido. \citeauthor{bookstein1989principal} argumenta que as splines 
+utilizadas pela componente não rígida do TPS compõem um bom modelo para representar
+deformações em tecidos vivos. Ele ainda realiza um extenso estudo sobre a
+construção do conjunto de relações entre os pontos de controle em cada uma das imagens
+no resultado do registro. Ele demonstra que, principalmente, a localidade e o 
+espaçamento entre os pontos escolhidos tem grande influência na qualidade do resultado.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{figuras/apert.png}
-    \source{\cite{bookstein1989principal}}
-    \caption{Entrada do TPS no registro da Sindrome de Apert. Na imagem a
-             esquerda estão os pontos de controle em uma criança normal. Na
-             imagem a direita os pontos de controle em uma criança portadora de
-             Apert.}
-    \label{fig:apert}
-\end{figure}
-
-  A implementação do TPS descrita por \textit{Bookstein} utiliza a mesma
-função de transformação apresentada por \cite{goshtasby1988registration}, onde
-cada ponto de controle é interpolado na exata possição de outro ponto na
-imagem alvo. \cite{rohr1996nonrigid} introduz um fator de suavização à função
-de transformação do TPS, com a justificativa que essa suavização permite um
-melhor resultado quando os pontos de controle não são bem relacionados e uma
-exata interpolação é impossivel. Em uma continuação do seu trabalho,
-\cite{rohr2001landmark} acresenta uma modelagem para pontos de controles que
-foram mal definidos, adicionando uma aproximação quadrática quando a posição
+  \cite{rohr1996nonrigid} introduz um fator de suavização à função de transformação
+do TPS. Esse fator melhora o resultado quando a correspondência entre os pontos de controle
+não é exata, seja por presença de ruido ou por má marcação dos pontos. Em uma continuação 
+do seu trabalho, \cite{rohr2001landmark} acrescenta uma modelagem para pontos de controles
+mal definidos, adicionando uma aproximação quadrática quando a posição
 de algum ponto de controle é usado. Para melhorar o tempo de execução do TPS,
-\cite{flusser1992adaptive} propõe a aplicação do TPS em subregiões quadradas ou
+\cite{flusser1992adaptive} propõe a aplicação do TPS em sub regiões quadradas ou
 triangulares das imagens, diminuindo o número de pontos de controle e cada uma
 das instâncias do TPS. \cite{beatson1992fast} aplica expansões hierárquicas na
 função de transformação do TPS para reduzir o tempo de execução final. Esse
-método cálcula explicitamente a influência de pontos de controles próximos,
+método calcula explicitamente a influência de pontos de controles próximos,
 enquanto simplifica a interação de pontos de controles distantes. Com isso,
 o tempo de execução da influência de um ponto de controle sobre os outros cai de
-$\mathcal{O}(n_{cp}^2)$ para $\mathcal{O}(n_{cp}\log{n_{cp}})$.
+$\mathcal{O}(n_{cp}^2)$ para $\mathcal{O}(n_{cp}\log{n_{cp}})$. Ainda sim, a
+eficiência do TPS é limitada pelo número de pontos de controle escolhidos.
 
-\subsection{GPGPU e Registro}
+\subsection{Aceleração de registro por GPGPU}
 
   A utilização de GPUs para agilizar o processo de registro é algo comum
 atualmente, principalmente pela facilidade e mapear problemas de visão
 computacional para GPUs. \cite{strzodka2004image} foi um dos primeiros artigos
-a portar um algoritmo de registro não-rigido para GPUs. Nele, um método discreto
+a portar um algoritmo de registro não rígido para GPUs. Nele, um método discreto
 de minimização de fluxo de gradiente foi implementado em GPGPU, utilizado o
-\textbf{DirectX 9} para a implementação. \cite{kohn2006gpu} expandiu o trabalho
-anterior, criando uma versão do algoritmo para imagens em três dimensões,
-realizando uma etapa de registro rígido antes do não-rígido. \cite{vetter2007non}
-realiza o mapeamento de um algoritmo de registro multimodal para imagens médicas.
-Esse trabalho é um dos primeiros a explicar como os recursos da GPU foram
-utlizados no mapemento, como por exemplo a organização dos dados na memória.
-O trabalho de \cite{grossauer2008gpu} relata a criação de um algoritmo para
-registro que utiliza fluxo óptico em conjunto com métodos de \textit{Multi Grid},
-usados para resolver equações diferenciais parciais. Ele descreve a aceleração
-do \textit{Multi Grid}, dada a sua afinidade com o \textit{Pipeline} gráfico.
+\textbf{DirectX 9} para a implementação. O método foi aplicado no registro
+de imagens cerebrais. \cite{kohn2006gpu} expandiu o trabalho
+anterior, criando uma versão do algoritmo para imagens em três dimensões, 
+especialmente imagens tomográficas, realizando uma etapa de registro rígido antes 
+do não rígido. \cite{vetter2007non} realiza o mapeamento de um algoritmo de 
+registro multimodal para imagens médicas. Esse trabalho é um dos primeiros a 
+explicar como os recursos da GPU foram utilizados no mapeamento, como por 
+exemplo a organização dos dados na memória. O trabalho de \cite{grossauer2008gpu} 
+relata a criação de um algoritmo para registro que utiliza fluxo óptico em conjunto 
+com métodos de \textit{Multi Grid}, usados para resolver equações diferenciais 
+parciais. Ele descreve a aceleração do \textit{Multi Grid}, dada a sua 
+afinidade com o \textit{Pipeline} gráfico.
 
-  Em \cite{bui2009performance} o registro rigido de imagens multimodais médicas
-utilizando flúxo optico. A implementação foi realizada em CUDA
+  Em \cite{bui2009performance} o registro rígido de imagens multimodais médicas
+utilizando fluxo óptico. A implementação foi realizada em CUDA
 \cite{nvidia2007compute}. \cite{han2009gpu} utiliza Informação Mutua para
-realizar um registro não-rígido de imagens cerebrais de ressonância magnética
+realizar um registro não rígido de imagens cerebrais de ressonância magnética
 e 17 atlas médicos, com a finalidade de segmentar regiões de interesse nos
 pacientes.Em 2010, o artigo de \cite{modat2010fast} define um algoritmo de
-registro não-rígido chamado de \textit{Free-Form Deformation}, desenvolvido
+registro não rígido chamado de \textit{Free-Form Deformation}, desenvolvido
 para registrar imagens de ressonância magnética T1. Diferente de outros
 algoritmos, ele foi desenvolvido para executar em GPUs diretamente. Para tal,
 os autores utilizam uma interpolação B-Spline cúbica e uma modificação da
@@ -138,59 +116,53 @@ segue primeiro com uma comparação conceitual entre os vários arcabouços e
 depois com uma comparação de desempenho. Foram feitas comparações com a
 execução sequencial, em paralelo e em GPU do algoritmo.
 
-\begin{center}
-  \begin{tabular}{| l | l | l | p{6em} |}
-  \hline
-  Artigo & Hardware (Implementação) & Tamanho da Imagem & Tempo de Execução (Speedup) \\ \hline
-  \cite{strzodka2004image} & GeForceFX 5800 (DX9) & $513 \times 769$ & 8.3s (4x) \\ \hline
-  \cite{kohn2006gpu} & GeForce 6800 (DX9) & $256 \times 256 \times 128$ & 5s (12x) \\ \hline
-  \cite{vetter2007non} & GeForce 7800 GTX (DX10) & $512 \times 512$ & 3.9s (6x) \\ \hline
-  \cite{bui2009performance} & Tesla C870 (CUDA) & $512 \times 512$ & 0.69s (7.48x) \\ \hline
-  \cite{han2009gpu} & GeForce GTX 280 (CUDA) & $256 \times 256 \times 128$ & 19s (25x) \\ \hline
-  \cite{modat2010fast} & GeForce 8800 GTX (CUDA) & $181 \times 217 \times 181$ & 42s (9.89x) \\ \hline
-  \cite{luo2014gpu} & Tesla C2050 (CUDA) & $256 \times 256 \times 94$ & 0.252s (69x) \\ \hline
-  \end{tabular}
-\end{center}
+\begin{table}[]
+    \begin{tabular}{| l | l | l | p{6em} |}
+      \hline
+      Artigo & Hardware (Implementação) & Tamanho da Imagem & Tempo de Execução (Aceleração) \\ \hline
+      \cite{strzodka2004image}\ding{108} & GeForceFX 5800 (DX9) & $513 \times 769$ & 8.3s (4x) \\ \hline
+      \cite{kohn2006gpu}\ding{108} & GeForce 6800 (DX9) & $256 \times 256 \times 128$ & 5s (12x) \\ \hline
+      \cite{vetter2007non}\ding{108} & GeForce 7800 GTX (DX10) & $512 \times 512$ & 3.9s (6x) \\ \hline
+      \cite{bui2009performance}\ding{109} & Tesla C870 (CUDA) & $512 \times 512$ & 0.69s (7.48x) \\ \hline
+      \cite{han2009gpu}\ding{108} & GeForce GTX 280 (CUDA) & $256 \times 256 \times 128$ & 19s (25x) \\ \hline
+      \cite{modat2010fast}\ding{108} & GeForce 8800 GTX (CUDA) & $181 \times 217 \times 181$ & 42s (9.89x) \\ \hline
+      \cite{luo2014gpu}\ding{108} & Tesla C2050 (CUDA) & $256 \times 256 \times 94$ & 0.252s (69x) \\ \hline
+    \end{tabular}
+    \caption{Tabela contendo o hardware, tamanho da imagem e aceleração dos artigos citados.
+             \ding{108} registro não rígido. \ding{109} registro rígido.}
+\end{table}
+  
 
   Pouco avanço foi feito na melhoria do desempenho do TPS utilizando GPU. A
 grande parte dos trabalhos emprega um mapeamento trivial, sem entrar em detalhes
 sobre a implementação nem evidenciar a utilização de recursos da GPU para tentar
-melhorar o mapemanto. Tanto \cite{richa2011towards} quanto
-\cite{schoob2013stereoscopic} apresentam algoritmos usados por cameras no
+melhorar a implementação. Tanto \cite{richa2011towards} quanto
+\cite{schoob2013stereoscopic} apresentam algoritmos usados por câmeras no
 auxilio em operações cardiovasculares. Para operar em tempo real, requisito
 minimo para esse tipo de sistema, os dois trabalhos utilizam implementações
 em GPUs NVIDIA do TPS, mas sem entrar em detalhes sobre o mapeamento feito.
 \cite{luo2014gpu} apresenta um mapeamento completo do TPS utilizando CUDA,
-explicando como cada etapa do algoritmo é implementado. O trabalho, porém, não
-desfruta de nenhum método para melhorar o desempenho de aplicações em CUDA,
-como mapeamento de imagens para texturas ou cálculo ativo de ocupação de
-recursos.
+explicando como cada etapa do algoritmo é implementado.
 
 %% ------------------------------------------------------------------------- %%
 \section{Objetivos}
 
-  Vários trabalhos na última década estudam o mapeamento de algoritmos de
-registro para GPUs. Normalmente, só o mapeamento dos métodos é apresentado, sem
-explorar recursos encontrados nas placas gráficas que podem ser aplicados para
-aumentar o desempenho da implementação. Dentre tais recursos estão a utilização
-a execução concorrente de vários kernels ou a utilização de texturas
-tridimensionais.
-
-  O principal objetivo do trabalho é apresentar uma implementação do Thin Plate
-Splines em GPU, aperfeiçoado para a execução de $n$ instâncias de registro, onde
-cada instância registra uma imagem alvo diferente para a mesma imagem referência.
-Nossa implementação será separada em blocos, que podem ser executados tanto em
-CPU quanto em GPU, a escolha do usuário. Os objetivos específicos deste
-trabalho são:
+  Os trabalhos apresentados acima não desfrutam de nenhum método para melhorar
+o desempenho de suas aplicações em CUDA. Este trabalho tem como objetivo aplicar
+e confirmar o impacto de métodos para melhorar o desempenho do TPS em GPGPU.
+Esses métodos serão aplicados na implementação do TPS voltada para solução de 
+registros para atlas médicos, onde várias imagens diferentes são registradas 
+para a mesma imagem referência. Os objetivos específicos do trabalho são:
 
 \begin{enumerate}
-  \item Desenvolver uma implementação configurável, que possa ser executada
-  em ambientes GPU ou CPU
-	\item Identificar quais melhorias de desempenho características da GPU podem
-        ser aplicadas no mapeamento do TPS
-  \item Estudo comparativo entre as melhorias aplicadas
-  \item Explorar soluções para incrementar o desempenho na execução do registro
-  de várias imagens alvo para a mesma imagem referência
+  \item Desenvolver uma implementação para GPGPU que contemple os seguintes métodos
+        de melhora de desempenho: (i) execução concorrente de kernels; 
+        (ii) utilização de textura tridimensional;
+        (iii) cálculo de ocupação de recursos da GPU
+
+  \item Avaliar o desempenho de cada uma das melhorias aplicadas
+  
+  \item Avaliar o desempenho da aplicação resultante no registro de imagens médicas tomográficas
 \end{enumerate}
 
 %% ------------------------------------------------------------------------- %%
@@ -202,4 +174,4 @@ são apresentados, como registro e GPGPU. O capítulo \ref{cap:metodologia}
 mostra como os conceitos são combinados para a criação da implementação que
 satisfaz nossos objetivos. No Capítulo \ref{cap:resultados} os experimentos são
 descritos e os seus resultados avaliados. Finalmente, no Capítulo
-~\ref{cap:conclusoes} analisamos os resultados obtidos.
+~\ref{cap:conclusao} analisamos os resultados obtidos.

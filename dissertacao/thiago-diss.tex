@@ -27,7 +27,12 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{pifont}
+\usepackage{rotating}
 \usepackage{wrapfig}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage[linesnumbered,ruled]{algorithm2e}
 %\usepackage[bf,small,compact]{titlesec} % cabeçalhos dos títulos: menores e compactos
 \usepackage[fixlanguage]{babelbib}
 \usepackage[font=small,format=plain,labelfont=bf,up,textfont=it,up]{caption}
@@ -114,7 +119,7 @@ morekeywords={Imagem}
 \thispagestyle{empty}
 \begin{center}
     \vspace*{2.3cm}
-    \textbf{\Large{Aceleração de Registro Não-Rígido de Imagens em GPU}}\\
+    \textbf{\Large{Aceleração de Registro Não-Rígido de Imagens Tomográficas utilizando GPU}}\\
 
     \vspace*{1.2cm}
     \Large{Thiago de Gouveia Nunes}
@@ -157,7 +162,7 @@ morekeywords={Imagem}
 \thispagestyle{empty}
     \begin{center}
         \vspace*{2.3 cm}
-        \textbf{\Large{Aceleração de Registro Não-Rígido de Imagens em GPU}}\\
+        \textbf{\Large{Aceleração de Registro Não-Rígido de Imagens Tomográficas utilizando GPU}}\\
         \vspace*{2 cm}
     \end{center}
 
@@ -225,7 +230,7 @@ morekeywords={Imagem}
 % Resumo
 \chapter*{Resumo}
 
-\noindent Nunes, T. G. - \textbf{Aceleração de Registro Não-Rígido de Imagens em GPU}.
+\noindent Nunes, T. G. - \textbf{Aceleração de Registro Não-Rígido de Imagens Tomográficas utilizando GPU}.
 2015.
 Qualificação (Mestrado) - Instituto de Matemática e Estatística,
 Universidade de São Paulo, São Paulo, 2015.
@@ -254,7 +259,7 @@ arquiteturas modernas de GPU, e avaliação de sua eficiência.
 % ---------------------------------------------------------------------------- %
 % Abstract
 \chapter*{Abstract}
-\noindent Nunes, T. G. - \textbf{Acceleration of Non-Rigid Image Registration in GPU}.
+\noindent Nunes, T. G. - \textbf{Acceleration of Non-Rigid Tomographic Image Registration using GPU}.
 2015.
 Qualificação (Mestrado) - Instituto de Matemática e Estatística,
 Universidade de São Paulo, São Paulo, 2015.
@@ -309,6 +314,7 @@ GPU architecture and evaluate their efficiency.
 % Listas de figuras e tabelas criadas automaticamente
 \listoffigures
 \listoftables
+\listofalgorithms
 
 % ---------------------------------------------------------------------------- %
 % Capítulos do trabalho
@@ -317,14 +323,18 @@ GPU architecture and evaluate their efficiency.
 % cabeçalho para as páginas de todos os capítulos
 \fancyhead[RE,LO]{\thesection}
 
-\singlespacing              % espaçamento simples
-%\onehalfspacing            % espaçamento um e meio
+% \doublespacing              % espaçamento simples
+\onehalfspacing            % espaçamento um e meio
 
 \input{cap-introducao}        % associado ao arquivo: 'cap-introducao.tex'
 \input{cap-conceitos}         % associado ao arquivo: 'cap-conceitos.tex'
 \input{cap-metodologia}         % associado ao arquivo: 'cap-conceitos.tex'
 \input{cap-resultados}        % associado ao arquivo: 'cap-resultados.tex'
-% \input{cap-conclusoes}        % associado ao arquivo: 'cap-conclusoes.tex'
+\input{cap-conclusoes}        % associado ao arquivo: 'cap-conclusoes.tex'
+
+\appendix
+\input{apendiceA}        % associado ao arquivo: 'apendiceA.tex'
+\input{apendiceB}        % associado ao arquivo: 'apendiceB.tex'
 
 % cabeçalho para os apêndices
 \renewcommand{\chaptermark}[1]{\markboth{\MakeUppercase{\appendixname\ \thechapter}} {\MakeUppercase{#1}} }
